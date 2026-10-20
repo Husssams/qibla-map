@@ -1,0 +1,29 @@
+/* Definiert allgemeine Einstellungen der Webseite. */
+:root {
+  /* Legt die Schriftart unserer Anwendung fest. */
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  /* Legt die normale Textfarbe fest. */
+  color: #1f2937;
+
+  /* Legt die Hintergrundfarbe fest. */
+  background-color: #f8fafc;
+}
+
+/* Entfernt den Standard-Außenabstand des Browsers. */
+body {
+  /* Setzt den Außenabstand auf null. */
+  margin: 0;
+}
+
+/* Gestaltet das Wurzelelement unserer React-Anwendung. */
+#root {
+  /* Nutzt die gesamte verfügbare Bildschirmbreite. */
+  width: 100%;
+
+  /* Nutzt mindestens die sichtbare Bildschirmhöhe. */
+  min-height: 100svh;
+
+  /* Berücksichtigt Padding und Rahmen bei der Größenberechnung. */
+  box-sizing: border-box;
+}

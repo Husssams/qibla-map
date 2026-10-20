@@ -1,0 +1,15 @@
+/* Gestaltet den Hauptbereich unserer Anwendung. */
+main {
+
+  /* Begrenzt die maximale Breite auf 720 Pixel. */
+  max-width: 720px;
+
+  /* Zentriert den Hauptbereich horizontal. */
+  margin: 0 auto;
+
+  /* Fügt innen Abstand hinzu. */
+  padding: 48px 24px;
+
+  /* Zentriert die Texte. */
+  text-align: center;
+}
