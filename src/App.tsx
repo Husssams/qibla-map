@@ -4,6 +4,8 @@ import './App.css'
 import type { Coordinates } from './types/geo'
 // Importiert die geografischen Koordinaten der Kaaba.
 import { KAABA_COORDINATES } from './constants/kaaba'
+// Importiert unsere Funktion zur Berechnung der Qibla-Richtung.
+import { calculateQiblaBearing } from './utils/qiblaBearing'
 
 // Erstellt einen festen Teststandort.
 const testLocation: Coordinates = {
@@ -13,6 +15,8 @@ const testLocation: Coordinates = {
   // Längengrad von Gießen.
   longitude: 8.68,
 }
+// Berechnet die Qibla-Richtung für unseren Teststandort.
+const qiblaBearing = calculateQiblaBearing(testLocation)
 
 // Definiert unsere Hauptkomponente.
 function App() {
@@ -33,6 +37,10 @@ function App() {
       {/* Zeigt die geografischen Koordinaten der Kaaba an. */}
       <p>
         Kaaba: {KAABA_COORDINATES.latitude}°, {KAABA_COORDINATES.longitude}°
+      </p>
+      {/* Zeigt den berechneten Qibla-Winkel an. */}
+      <p>
+        Qibla-Richtung: {qiblaBearing.toFixed(1)}°
       </p>
     </main>
   )
