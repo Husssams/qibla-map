@@ -47,4 +47,60 @@ describe('calculateQiblaBearing', () => {
             longitude: 250,
         })).toThrow('Ungültiger Längengrad.')
     })
+
+    // Prüft, ob der erlaubte Grenzwert 180 akzeptiert wird.
+    it('accepts longitude at 180 degrees', () => {
+
+        // Erwartet, dass die Berechnung keinen Fehler auslöst.
+        expect(() => calculateQiblaBearing({
+            // Verwendet einen gültigen Breitengrad.
+            latitude: 50.59,
+
+            // Verwendet den maximal erlaubten Längengrad.
+            longitude: 180,
+        })).not.toThrow()
+    })
+
+    // Prüft, ob ein Längengrad oberhalb des Grenzwerts abgelehnt wird.
+    it('rejects longitude above 180 degrees', () => {
+
+        // Erwartet einen Fehler für den ungültigen Längengrad.
+        expect(() => calculateQiblaBearing({
+            // Verwendet einen gültigen Breitengrad.
+            latitude: 50.59,
+
+            // Überschreitet den maximal erlaubten Längengrad.
+            longitude: 180.01,
+        })).toThrow('Ungültiger Längengrad.')
+    })
+
+    // Prüft, ob NaN als Breitengrad abgelehnt wird.
+    it('rejects NaN as latitude', () => {
+
+        // Erwartet einen Fehler bei einem ungültigen Breitengrad.
+        expect(() => calculateQiblaBearing({
+
+            // NaN ist keine gültige geografische Koordinate.
+            latitude: NaN,
+
+            // Verwendet einen gültigen Längengrad.
+            longitude: 8.68,
+
+        })).toThrow('Ungültiger Breitengrad.')
+    })
+
+    // Prüft, ob Infinity als Längengrad abgelehnt wird.
+    it('rejects Infinity as longitude', () => {
+
+        // Erwartet einen Fehler bei einem unendlichen Längengrad.
+        expect(() => calculateQiblaBearing({
+
+            // Verwendet einen gültigen Breitengrad.
+            latitude: 50.59,
+
+            // Infinity ist kein gültiger geografischer Längengrad.
+            longitude: Infinity,
+
+        })).toThrow('Ungültiger Längengrad.')
+    })
 })
