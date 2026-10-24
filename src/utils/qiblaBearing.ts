@@ -1,5 +1,3 @@
-
-{/* no code */ }
 // Importiert die geografische Berechnungsbibliothek.
 import { Geodesic } from 'geographiclib-geodesic'
 
@@ -31,10 +29,29 @@ export function calculateQiblaBearing(location: Coordinates): number {
         KAABA_COORDINATES.longitude,
     )
 
-    // Prüft, ob Startpunkt und Zielpunkt identisch sind.
-    if (result.s12 === 0) {
-        // Meldet, dass an der Kaaba keine eindeutige Richtung existiert.
+
+    // Prüft, ob die Koordinaten exakt mit der Kaaba übereinstimmen.
+    if (
+        location.latitude === KAABA_COORDINATES.latitude &&
+        location.longitude === KAABA_COORDINATES.longitude
+    ) {
+        // Am Zielpunkt gibt es keine eindeutige Qibla-Richtung.
         throw new Error('Am Zielpunkt ist keine Qibla-Richtung definiert.')
+    }
+
+    // Speichert die berechnete Entfernung in Metern.
+    const distance = result.s12
+
+    // Prüft, ob die Entfernung eine gültige Zahl ist.
+    if (distance === undefined || !Number.isFinite(distance)) {
+        // Meldet einen Fehler, wenn keine gültige Entfernung vorliegt.
+        throw new Error('Die Entfernung zur Kaaba konnte nicht berechnet werden.')
+    }
+
+    // Prüft, ob die Entfernung kleiner als 10 Meter ist.
+    if (distance < 10) {
+        // Verhindert die Anzeige bei sehr geringer Entfernung.
+        throw new Error('Zu nah an der Kaaba.')
     }
 
     // Liest den Anfangswinkel aus dem Ergebnis.

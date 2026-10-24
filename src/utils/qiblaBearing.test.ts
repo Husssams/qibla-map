@@ -154,4 +154,45 @@ describe('calculateQiblaBearing', () => {
         // Vergleicht den Winkel mit dem WGS84-Referenzwert.
         expect(result).toBeCloseTo(58.40, 2)
     })
+
+    // Testet die Normalisierung eines negativen Anfangswinkels.
+    it('normalizes the Qibla direction for Tokyo', () => {
+
+        // Berechnet die Qibla-Richtung für Tokio.
+        const result = calculateQiblaBearing({
+
+            // Breitengrad von Tokio.
+            latitude: 35.6762,
+
+            // Längengrad von Tokio.
+            longitude: 139.6503,
+        })
+
+        // Prüft den erwarteten geografischen Winkel.
+        expect(result).toBeCloseTo(293.07, 2)
+
+        // Prüft, dass der Winkel nicht negativ ist.
+        expect(result).toBeGreaterThanOrEqual(0)
+
+        // Prüft, dass der Winkel kleiner als 360 Grad ist.
+        expect(result).toBeLessThan(360)
+    })
+
+    // Testet einen Standort ungefähr einen Meter von der Kaaba entfernt.
+    it('rejects locations extremely close to the Kaaba', () => {
+
+        // Erstellt einen Teststandort ungefähr 1,1 Meter nördlich der Kaaba.
+        const nearbyLocation = {
+
+            // Erhöht den Breitengrad der Kaaba minimal.
+            latitude: KAABA_COORDINATES.latitude + 0.00001,
+
+            // Verwendet denselben Längengrad wie die Kaaba.
+            longitude: KAABA_COORDINATES.longitude,
+        }
+
+        // Erwartet, dass keine unzuverlässige Richtung zurückgegeben wird.
+        expect(() => calculateQiblaBearing(nearbyLocation))
+            .toThrow('Zu nah an der Kaaba')
+    })
 })
