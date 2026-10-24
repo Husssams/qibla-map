@@ -1,0 +1,46 @@
+# Name des Workflows auf GitHub.
+name: CI
+
+# Legt fest, wann GitHub den Workflow startet.
+on:
+  # Bei neuen oder aktualisierten Pull Requests nach main.
+  pull_request:
+    branches: [main]
+
+  # Auch bei direkten Änderungen auf main.
+  push:
+    branches: [main]
+
+# Der Workflow darf den Repository-Code lesen.
+permissions:
+  contents: read
+
+# Definiert die Aufgaben des Workflows.
+jobs:
+  test-and-build:
+    # GitHub verwendet einen Linux-Rechner.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Lädt unseren Repository-Code herunter.
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # Installiert Node.js.
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      # Installiert exakt die Abhängigkeiten aus package-lock.json.
+      - name: Install dependencies
+        run: npm ci
+
+      # Führt unsere Unit Tests aus.
+      - name: Run tests
+        run: npm test
+
+      # Prüft, ob die Anwendung gebaut werden kann.
+      - name: Build application
+        run: npm run build
