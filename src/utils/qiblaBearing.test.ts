@@ -103,4 +103,55 @@ describe('calculateQiblaBearing', () => {
 
         })).toThrow('Ungültiger Längengrad.')
     })
+
+    // Testet die Qibla-Richtung für Berlin.
+    it('calculates the Qibla direction for Berlin', () => {
+
+        // Ruft unsere Berechnungsfunktion mit den Koordinaten von Berlin auf.
+        const result = calculateQiblaBearing({
+
+            // Breitengrad von Berlin.
+            latitude: 52.52,
+
+            // Längengrad von Berlin.
+            longitude: 13.405,
+        })
+
+        // Vergleicht den berechneten Winkel mit unserem Referenzwert.
+        expect(result).toBeCloseTo(136.58, 2)
+    })
+
+    // Testet die Qibla-Richtung für London.
+    it('calculates the Qibla direction for London', () => {
+
+        // Berechnet die Qibla-Richtung für London.
+        const result = calculateQiblaBearing({
+
+            // Breitengrad von London.
+            latitude: 51.5074,
+
+            // Negativer Längengrad, weil London westlich des Nullmeridians liegt.
+            longitude: -0.1278,
+        })
+
+        // Vergleicht das Ergebnis mit dem unabhängigen WGS84-Referenzwert.
+        expect(result).toBeCloseTo(118.87, 2)
+    })
+
+    // Testet die Qibla-Richtung für New York.
+    it('calculates the Qibla direction for New York', () => {
+
+        // Berechnet die Qibla-Richtung für New York.
+        const result = calculateQiblaBearing({
+
+            // Breitengrad von New York.
+            latitude: 40.7128,
+
+            // Negativer Längengrad von New York.
+            longitude: -74.0060,
+        })
+
+        // Vergleicht den Winkel mit dem WGS84-Referenzwert.
+        expect(result).toBeCloseTo(58.40, 2)
+    })
 })
