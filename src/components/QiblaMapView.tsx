@@ -18,11 +18,7 @@ export default function QiblaMapView({ location }: QiblaMapViewProps) {
   // Gibt die Benutzeroberfläche der Karte zurück.
   return (
     // Erstellt eine Karte mit dem übergebenen Standort als Mittelpunkt.
-    <MapContainer
-      center={[location.latitude, location.longitude]}
-      zoom={16}
-      style={{ height: '500px', width: '100%' }}
-    >
+    <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">
       {/* Lädt die Straßenkarte von OpenStreetMap. */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
