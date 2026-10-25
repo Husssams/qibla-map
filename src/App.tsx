@@ -6,6 +6,8 @@ import type { Coordinates } from './types/geo'
 import { KAABA_COORDINATES } from './constants/kaaba'
 // Importiert unsere Funktion zur Berechnung der Qibla-Richtung.
 import { calculateQiblaBearing } from './utils/qiblaBearing'
+// Importiert unsere neue Kartenkomponente.
+import QiblaMapView from './components/QiblaMapView'
 
 // Erstellt einen festen Teststandort.
 const testLocation: Coordinates = {
@@ -42,6 +44,8 @@ function App() {
       <p>
         Qibla-Richtung: {qiblaBearing.toFixed(1)}°
       </p>
+      {/* Zeigt unsere interaktive Straßenkarte an. */}
+      <QiblaMapView />
     </main>
   )
 }
