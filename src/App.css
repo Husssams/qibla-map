@@ -1,6 +1,5 @@
 /* Gestaltet den Hauptbereich unserer Anwendung. */
 main {
-
   /* Begrenzt die maximale Breite auf 720 Pixel. */
   max-width: 720px;
 
@@ -12,4 +11,17 @@ main {
 
   /* Zentriert die Texte. */
   text-align: center;
+}
+
+/* Standardgröße unserer interaktiven Karte. */
+.qibla-map {
+  height: 500px;
+  width: 100%;
+}
+
+/* Anpassung für Smartphones mit kleinen Bildschirmen. */
+@media (max-width: 480px) and (max-height: 750px) {
+  .qibla-map {
+    height: 50svh;
+  }
 }

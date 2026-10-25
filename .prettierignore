@@ -1,0 +1,16 @@
+# Installed dependencies
+node_modules/
+
+# Generated build files
+dist/
+dist-ssr/
+
+# Test coverage reports
+coverage/
+
+# Automatically generated npm lockfile
+package-lock.json
+
+# Local environment files
+.env
+.env.*
