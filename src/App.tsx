@@ -12,10 +12,10 @@ import QiblaMapView from './components/QiblaMapView'
 // Erstellt einen festen Teststandort.
 const testLocation: Coordinates = {
   // Breitengrad von Gießen.
-  latitude: 50.59,
+  latitude: 33.439073,
 
   // Längengrad von Gießen.
-  longitude: 8.68,
+  longitude: 36.078122,
 }
 // Berechnet die Qibla-Richtung für unseren Teststandort.
 const qiblaBearing = calculateQiblaBearing(testLocation)
@@ -41,11 +41,10 @@ function App() {
         Kaaba: {KAABA_COORDINATES.latitude}°, {KAABA_COORDINATES.longitude}°
       </p>
       {/* Zeigt den berechneten Qibla-Winkel an. */}
-      <p>
-        Qibla-Richtung: {qiblaBearing.toFixed(1)}°
-      </p>
+      <p>Qibla-Richtung: {qiblaBearing.toFixed(1)}°</p>
       {/* Zeigt unsere interaktive Straßenkarte an. */}
-      <QiblaMapView />
+      {/* Übergibt den Teststandort an unsere Kartenkomponente. */}
+      <QiblaMapView location={testLocation} />
     </main>
   )
 }

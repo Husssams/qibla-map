@@ -1,15 +1,28 @@
 // Importiert die Kartenkomponenten und den Standortmarker.
 import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet'
+// Importiert unseren vorhandenen Typ für geografische Koordinaten.
+import type { Coordinates } from '../types/geo'
 
 // Importiert das benötigte CSS von Leaflet.
 import 'leaflet/dist/leaflet.css'
 
+// Definiert die Eingabewerte unserer Kartenkomponente.
+type QiblaMapViewProps = {
+  // Die geografische Position, die auf der Karte angezeigt wird.
+  location: Coordinates
+}
+
 // Definiert unsere neue React-Komponente.
-export default function QiblaMapView() {
+// Empfängt den Standort von der übergeordneten React-Komponente.
+export default function QiblaMapView({ location }: QiblaMapViewProps) {
   // Gibt die Benutzeroberfläche der Karte zurück.
   return (
     // Erstellt eine Karte mit dem Mittelpunkt Gießen.
-    <MapContainer center={[50.59, 8.68]} zoom={16} style={{ height: '500px', width: '100%' }}>
+    <MapContainer
+      center={[location.latitude, location.longitude]}
+      zoom={16}
+      style={{ height: '500px', width: '100%' }}
+    >
       {/* Lädt die Straßenkarte von OpenStreetMap. */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
