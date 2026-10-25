@@ -17,7 +17,7 @@ type QiblaMapViewProps = {
 export default function QiblaMapView({ location }: QiblaMapViewProps) {
   // Gibt die Benutzeroberfläche der Karte zurück.
   return (
-    // Erstellt eine Karte mit dem Mittelpunkt Gießen.
+    // Erstellt eine Karte mit dem übergebenen Standort als Mittelpunkt.
     <MapContainer
       center={[location.latitude, location.longitude]}
       zoom={16}
@@ -29,10 +29,10 @@ export default function QiblaMapView({ location }: QiblaMapViewProps) {
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* Markiert unseren Teststandort Gießen auf der Karte. */}
+      {/* Markiert den übergebenen Teststandort auf der Karte. */}
       <CircleMarker
         // Die geografischen Koordinaten unseres Teststandorts.
-        center={[50.59, 8.68]}
+        center={[location.latitude, location.longitude]}
 
         // Der Radius des Kreises beträgt 8 Bildschirmpixel.
         radius={8}

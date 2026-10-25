@@ -11,10 +11,10 @@ import QiblaMapView from './components/QiblaMapView'
 
 // Erstellt einen festen Teststandort.
 const testLocation: Coordinates = {
-  // Breitengrad von Gießen.
+  // Breitengrad des Teststandorts.
   latitude: 33.439073,
 
-  // Längengrad von Gießen.
+  // Längengrad des Teststandorts.
   longitude: 36.078122,
 }
 // Berechnet die Qibla-Richtung für unseren Teststandort.
