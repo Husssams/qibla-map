@@ -30,6 +30,9 @@ function App() {
   // Speichert eine Fehlermeldung, falls die Standortermittlung fehlschlägt.
   const [locationError, setLocationError] = useState<string | null>(null)
 
+  // Speichert, ob gerade eine Standortermittlung läuft.
+  const [isLocating, setIsLocating] = useState(false)
+
   // Verwendet den ermittelten Standort, falls einer vorhanden ist.
   const activeLocation: Coordinates = detectedLocation ?? testLocation
 
@@ -40,6 +43,8 @@ function App() {
   async function handleDetectLocation() {
     // Entfernt eine alte Fehlermeldung vor einer neuen Standortanfrage.
     setLocationError(null)
+    // Aktiviert den Ladezustand.
+    setIsLocating(true)
     // Versucht, den Standort des Benutzers zu ermitteln.
     try {
       // Wartet auf die Antwort der Geolocation API.
@@ -48,12 +53,20 @@ function App() {
       // Speichert den ermittelten Standort im React State.
       setDetectedLocation(location)
     } catch (error) {
-      // Zeigt einen Fehler, wenn die Standortermittlung fehlschlägt.
+      // Zeigt den technischen Fehler in der Entwicklerkonsole.
       console.error('Standortermittlung fehlgeschlagen:', error)
-      // Speichert eine verständliche Fehlermeldung für den Benutzer.
-      setLocationError(
-        'Der Standort konnte nicht ermittelt werden. Bitte überprüfe die Standortberechtigung.',
-      )
+
+      // Übernimmt die passende Fehlermeldung aus getUserLocation.ts.
+      if (error instanceof Error) {
+        setLocationError(error.message)
+      } else {
+        // Behandelt den Fall, dass kein normales Error-Objekt vorliegt.
+        setLocationError('Ein unbekannter Fehler ist aufgetreten.')
+      }
+    } finally {
+      // Wird nach Erfolg oder Fehler ausgeführt.
+      // Beendet den Ladezustand.
+      setIsLocating(false)
     }
   }
 
@@ -80,8 +93,9 @@ function App() {
       <p>Qibla-Richtung: {qiblaBearing.toFixed(1)}°</p>
 
       {/* Startet die Standortermittlung erst nach einem Klick. */}
-      <button type="button" onClick={handleDetectLocation}>
-        Meinen Standort ermitteln
+      {/* Zeigt während der Standortermittlung einen Ladezustand an. */}
+      <button type="button" onClick={handleDetectLocation} disabled={isLocating}>
+        {isLocating ? 'Standort wird ermittelt ...' : 'Meinen Standort ermitteln'}
       </button>
 
       {/* Zeigt einen Fehler an, falls die Standortermittlung fehlschlägt. */}

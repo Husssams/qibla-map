@@ -33,7 +33,35 @@ export function getUserLocation(): Promise<UserLocation> {
 
       // Wird ausgeführt, wenn die Standortermittlung fehlschlägt.
       (error) => {
-        reject(error)
+        // Prüft, ob der Benutzer die Standortberechtigung verweigert hat.
+        if (error.code === error.PERMISSION_DENIED) {
+          // Gibt eine verständliche Fehlermeldung zurück.
+          reject(new Error('Standortzugriff wurde verweigert.'))
+          return
+        }
+
+        // Prüft, ob die geografische Position nicht verfügbar ist.
+        if (error.code === error.POSITION_UNAVAILABLE) {
+          // Meldet, dass kein Standort bestimmt werden konnte.
+          reject(new Error('Dein Standort ist momentan nicht verfügbar.'))
+          return
+        }
+
+        // Prüft, ob die Standortermittlung zu lange gedauert hat.
+        if (error.code === error.TIMEOUT) {
+          // Meldet eine Zeitüberschreitung.
+          reject(new Error('Die Standortermittlung hat zu lange gedauert.'))
+          return
+        }
+
+        // Behandelt alle anderen, unerwarteten Fehler.
+        reject(new Error('Ein unbekannter Standortfehler ist aufgetreten.'))
+      },
+
+      // Konfiguriert die Standortermittlung.
+      {
+        // Begrenzt die Positionssuche auf 10 Sekunden.
+        timeout: 10_000,
       },
     )
   })
