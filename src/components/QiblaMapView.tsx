@@ -5,6 +5,8 @@ import type { Coordinates } from '../types/geo'
 
 // Importiert das benötigte CSS von Leaflet.
 import 'leaflet/dist/leaflet.css'
+// Importiert unsere Komponente zur Aktualisierung des Kartenmittelpunkts.
+import MapCenterUpdater from './MapCenterUpdater'
 
 // Definiert die Eingabewerte unserer Kartenkomponente.
 type QiblaMapViewProps = {
@@ -24,6 +26,8 @@ export default function QiblaMapView({ location }: QiblaMapViewProps) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      {/* Aktualisiert den Kartenmittelpunkt bei einem neuen Standort. */}
+      <MapCenterUpdater location={location} />
 
       {/* Markiert den übergebenen Teststandort auf der Karte. */}
       <CircleMarker
