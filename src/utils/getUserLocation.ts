@@ -36,7 +36,7 @@ export function getUserLocation(): Promise<UserLocation> {
         // Prüft, ob der Benutzer die Standortberechtigung verweigert hat.
         if (error.code === error.PERMISSION_DENIED) {
           // Gibt eine verständliche Fehlermeldung zurück.
-          reject(new Error('Standortzugriff wurde verweigert.'))
+          reject(new Error('locationErrors.permissionDenied'))
           return
         }
 

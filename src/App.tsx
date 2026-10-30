@@ -12,6 +12,7 @@ import QiblaMapView from './components/QiblaMapView'
 import { getUserLocation, type UserLocation } from './utils/getUserLocation'
 // Importiert den React Hook zum Speichern von Zustandswerten.
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // Erstellt einen festen Teststandort.
 const testLocation: Coordinates = {
@@ -24,6 +25,7 @@ const testLocation: Coordinates = {
 
 // Definiert unsere Hauptkomponente.
 function App() {
+  const { t, i18n } = useTranslation()
   // Speichert den ermittelten Standort oder null, solange keiner vorliegt.
   const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(null)
 
@@ -61,7 +63,7 @@ function App() {
         setLocationError(error.message)
       } else {
         // Behandelt den Fall, dass kein normales Error-Objekt vorliegt.
-        setLocationError('Ein unbekannter Fehler ist aufgetreten.')
+        setLocationError('locationErrors.unexpected')
       }
     } finally {
       // Wird nach Erfolg oder Fehler ausgeführt.
@@ -74,48 +76,68 @@ function App() {
   return (
     <main>
       {/* Zeigt den Namen unserer Anwendung. */}
-      <h1>QiblaMap</h1>
+      <h1>{t('appTitle')}</h1>
+
+      <div>
+        <label htmlFor="language-select">{t('languageLabel')}: </label>
+
+        <select
+          id="language-select"
+          value={i18n.language}
+          onChange={(event) => {
+            void i18n.changeLanguage(event.target.value)
+          }}
+        >
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="ar">العربية</option>
+        </select>
+      </div>
 
       {/* Beschreibt die Aufgabe unserer Anwendung. */}
-      <p>Finde deine Gebetsrichtung auf der Karte.</p>
+      <p>{t('subtitle')}</p>
 
       {/* Zeigt den gerade verwendeten Standort an. */}
       <p>
-        {detectedLocation ? 'Gemeldeter Standort' : 'Teststandort'}: {activeLocation.latitude}°,{' '}
-        {activeLocation.longitude}°
+        {detectedLocation ? t('reportedLocation') : t('testLocation')}:{' '}
+        <bdi dir="ltr">
+          {activeLocation.latitude}°, {activeLocation.longitude}°
+        </bdi>
       </p>
 
       {/* Zeigt die geografischen Koordinaten der Kaaba an. */}
       <p>
-        Kaaba: {KAABA_COORDINATES.latitude}°, {KAABA_COORDINATES.longitude}°
+        {t('kaaba')}:{' '}
+        <bdi dir="ltr">
+          {KAABA_COORDINATES.latitude}°, {KAABA_COORDINATES.longitude}°
+        </bdi>
       </p>
       {/* Zeigt den berechneten Qibla-Winkel an. */}
-      <p>Qibla-Richtung: {qiblaBearing.toFixed(1)}°</p>
+      <p>
+        {t('qiblaDirection')}: <bdi dir="ltr">{qiblaBearing.toFixed(1)}°</bdi>
+      </p>
 
       {/* Startet die Standortermittlung erst nach einem Klick. */}
       {/* Zeigt während der Standortermittlung einen Ladezustand an. */}
       <button type="button" onClick={handleDetectLocation} disabled={isLocating}>
-        {isLocating ? 'Standort wird ermittelt ...' : 'Meinen Standort ermitteln'}
+        {isLocating ? t('locating') : t('detectLocation')}
       </button>
 
       {/* Zeigt einen Fehler an, falls die Standortermittlung fehlschlägt. */}
-      {locationError && <p role="alert">{locationError}</p>}
+      {locationError && <p role="alert">{t(locationError)}</p>}
 
       {/* Zeigt Informationen an, sobald ein Standort ermittelt wurde. */}
       {detectedLocation && (
         <p>
-          Standort ermittelt. Geschätzte Genauigkeit: ±
-          {Math.round(detectedLocation.accuracy).toLocaleString('de-DE')} m
+          {t('locationAccuracy', {
+            meters: Math.round(detectedLocation.accuracy).toLocaleString(i18n.language),
+          })}
         </p>
       )}
 
       {/* Warnt den Benutzer, wenn die Standortgenauigkeit schlechter als 1 km ist. */}
       {detectedLocation && detectedLocation.accuracy > 1000 && (
-        <p role="alert">
-          ⚠️ Dein Standort ist ungenau. Besonders auf Computern ohne GPS kann die Position mehrere
-          Kilometer abweichen. Du kannst deinen Standort später manuell auf der Karte auswählen oder
-          über eine Adresse suchen.
-        </p>
+        <p role="alert">{t('lowAccuracyWarning')}</p>
       )}
       {/* Übergibt den aktuell verwendeten Standort an die Karte. */}
       <QiblaMapView location={activeLocation} />

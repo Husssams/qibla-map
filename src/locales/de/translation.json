@@ -1,0 +1,21 @@
+{
+  "appTitle": "QiblaMap",
+  "languageLabel": "Sprache",
+  "subtitle": "Finde deine Gebetsrichtung auf der Karte.",
+  "testLocation": "Teststandort",
+  "reportedLocation": "Gemeldeter Standort",
+  "kaaba": "Standort der Kaaba",
+  "qiblaDirection": "Qibla-Richtung",
+  "detectLocation": "Meinen Standort ermitteln",
+  "locating": "Standort wird ermittelt ...",
+  "locationAccuracy": "Standortgenauigkeit: ±{{meters}} m",
+  "lowAccuracyWarning": "Dieser Standort kann ungenau sein, besonders auf Computern ohne GPS. Die manuelle Standortwahl und Adresssuche werden später ergänzt.",
+  "locationErrors": {
+    "unsupported": "Standortermittlung wird nicht unterstützt.",
+    "permissionDenied": "Standortzugriff wurde verweigert.",
+    "positionUnavailable": "Dein Standort ist momentan nicht verfügbar.",
+    "timeout": "Die Standortermittlung hat zu lange gedauert.",
+    "unknown": "Ein unbekannter Standortfehler ist aufgetreten.",
+    "unexpected": "Ein unbekannter Fehler ist aufgetreten."
+  }
+}

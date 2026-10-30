@@ -1,0 +1,21 @@
+{
+  "appTitle": "QiblaMap",
+  "languageLabel": "Language",
+  "subtitle": "Find your prayer direction on the map.",
+  "testLocation": "Sample location",
+  "reportedLocation": "Detected location",
+  "kaaba": "Kaaba location",
+  "qiblaDirection": "Qibla direction",
+  "detectLocation": "Detect my location",
+  "locating": "Detecting location...",
+  "locationAccuracy": "Location accuracy: ±{{meters}} m",
+  "lowAccuracyWarning": "This location may be inaccurate, especially on computers without GPS. Manual location selection and address search will be added later.",
+  "locationErrors": {
+    "unsupported": "Location detection is not supported by your browser.",
+    "permissionDenied": "Location access was denied.",
+    "positionUnavailable": "Your location is currently unavailable.",
+    "timeout": "Location detection took too long.",
+    "unknown": "An unknown location error occurred.",
+    "unexpected": "An unexpected error occurred."
+  }
+}
