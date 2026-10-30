@@ -11,18 +11,23 @@ import type { Coordinates } from '../types/geo'
 type MapCenterUpdaterProps = {
   // Die geografische Position, auf die wir die Karte bewegen.
   location: Coordinates
+  // Bei manueller Standortwahl soll die Karte nicht automatisch springen.
+  enabled: boolean
 }
 
 // Aktualisiert den Kartenmittelpunkt bei einer Standortänderung.
-export default function MapCenterUpdater({ location }: MapCenterUpdaterProps) {
+export default function MapCenterUpdater({ location, enabled }: MapCenterUpdaterProps) {
   // Holt die vorhandene Leaflet-Karte.
   const map = useMap()
 
   // Reagiert auf Änderungen der geografischen Koordinaten.
   useEffect(() => {
-    // Bewegt die Karte zum Standort und behält die aktuelle Zoomstufe.
+    // Bei manueller Standortwahl bleibt der aktuelle Kartenausschnitt erhalten.
+    if (!enabled) return
+
+    // Bei GPS-Ermittlung bewegt sich die Karte zum neuen Standort.
     map.setView([location.latitude, location.longitude], map.getZoom())
-  }, [map, location.latitude, location.longitude])
+  }, [map, enabled, location.latitude, location.longitude])
 
   // Diese Komponente zeigt selbst kein sichtbares Element an.
   return null

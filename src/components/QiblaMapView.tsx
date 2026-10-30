@@ -1,67 +1,114 @@
-// Importiert die Kartenkomponenten und den Standortmarker.
-import { MapContainer, CircleMarker } from 'react-leaflet'
-// Importiert unseren vorhandenen Typ für geografische Koordinaten.
+import { useEffect, useRef } from 'react'
+import { divIcon, type Marker as LeafletMarker } from 'leaflet'
+import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
+
 import type { Coordinates } from '../types/geo'
-
-// Importiert das benötigte CSS von Leaflet.
-import 'leaflet/dist/leaflet.css'
-// Importiert unsere Komponente zur Aktualisierung des Kartenmittelpunkts.
-import MapCenterUpdater from './MapCenterUpdater'
-
-import MapBaseLayer from './MapBaseLayer'
 import type { Theme } from '../theme'
 
-import { useMapEvents } from 'react-leaflet'
+import MapCenterUpdater from './MapCenterUpdater'
+import MapBaseLayer from './MapBaseLayer'
+
+import 'leaflet/dist/leaflet.css'
 
 // Definiert die Eingabewerte unserer Kartenkomponente.
 type QiblaMapViewProps = {
-  // Die geografische Position, die auf der Karte angezeigt wird.
   location: Coordinates
   theme: Theme
-  onMapTap?: () => void
+  isSelectingLocation: boolean
+  followLocation: boolean
+  onSelectLocation: (location: Coordinates) => void
 }
 
-// Reagiert auf ein Antippen der interaktiven Leaflet-Karte.
-function MapTapHandler({ onTap }: { onTap: () => void }) {
+// Definiert einen eigenen Standortmarker, unabhängig von Leaflet-Bilddateien.
+const locationPinIcon = divIcon({
+  className: 'qm-location-marker',
+  html: '<span class="qm-location-marker__pin"></span>',
+  iconSize: [40, 42],
+  iconAnchor: [20, 38],
+})
+
+// Aktualisiert Leaflet, wenn sich der Kartencontainer vergrößert.
+function MapResizeHandler() {
+  const map = useMap()
+
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize({ pan: false })
+    })
+
+    observer.observe(map.getContainer())
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [map])
+
+  return null
+}
+
+// Reagiert auf einen kurzen Klick oder Fingertipp auf die Karte.
+function MapLocationClickHandler({
+  onSelectLocation,
+}: {
+  onSelectLocation: (location: Coordinates) => void
+}) {
   useMapEvents({
-    click: onTap,
+    click(event) {
+      // Nur ein Kartenklick setzt einen Standort, nicht das Verschieben der Karte.
+      onSelectLocation({
+        latitude: event.latlng.lat,
+        longitude: event.latlng.lng,
+      })
+    },
   })
 
   return null
 }
 
-// Definiert unsere neue React-Komponente.
-// Empfängt den Standort von der übergeordneten React-Komponente.
-export default function QiblaMapView({ location, theme, onMapTap }: QiblaMapViewProps) {
-  // Gibt die Benutzeroberfläche der Karte zurück.
+// Zeigt die Karte und den verschiebbaren Standortmarker an.
+export default function QiblaMapView({
+  location,
+  theme,
+  isSelectingLocation,
+  followLocation,
+  onSelectLocation,
+}: QiblaMapViewProps) {
+  const markerRef = useRef<LeafletMarker | null>(null)
+
   return (
-    // Erstellt eine Karte mit dem übergebenen Standort als Mittelpunkt.
     <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">
-      {/* Zeigt die Straßenkarte im passenden Light- oder Dark-Mode an. */}
+      {/* Korrigiert die Kartengröße nach dem Öffnen und Schließen. */}
+      <MapResizeHandler />
+
+      {/* Zeigt die Karte im ausgewählten Design an. */}
       <MapBaseLayer theme={theme} />
-      {/* Aktualisiert den Kartenmittelpunkt bei einem neuen Standort. */}
-      <MapCenterUpdater location={location} />
-      {/* Ein Antippen schließt die vergrößerte Kartenansicht. */}
-      {onMapTap && <MapTapHandler onTap={onMapTap} />}
 
-      {/* Markiert den übergebenen Teststandort auf der Karte. */}
-      <CircleMarker
-        // Die geografischen Koordinaten unseres Teststandorts.
-        center={[location.latitude, location.longitude]}
+      {/* Zentriert nur dann neu, wenn die Position von außen vorgegeben wird. */}
+      <MapCenterUpdater location={location} enabled={followLocation} />
 
-        // Der Radius des Kreises beträgt 8 Bildschirmpixel.
-        radius={8}
+      {/* Ein Kartenklick wählt nur im geöffneten Auswahlmodus einen Standort. */}
+      {isSelectingLocation && <MapLocationClickHandler onSelectLocation={onSelectLocation} />}
 
-        // Legt die Darstellung des Standortmarkers fest.
-        pathOptions={{
-          // Farbe der Kreisumrandung.
-          color: '#2563eb',
+      {/* Der Marker bleibt geografisch verankert und ist im Auswahlmodus verschiebbar. */}
+      <Marker
+        position={[location.latitude, location.longitude]}
+        icon={locationPinIcon}
+        draggable={isSelectingLocation}
+        autoPan
+        autoPanPadding={[60, 60]}
+        ref={markerRef}
+        eventHandlers={{
+          dragend() {
+            // Erst beim Loslassen übernehmen wir die neue Position.
+            const position = markerRef.current?.getLatLng()
 
-          // Farbe der Kreisfläche.
-          fillColor: '#2563eb',
+            if (!position) return
 
-          // Deckkraft der Kreisfläche: 80 Prozent.
-          fillOpacity: 0.8,
+            onSelectLocation({
+              latitude: position.lat,
+              longitude: position.lng,
+            })
+          },
         }}
       />
     </MapContainer>

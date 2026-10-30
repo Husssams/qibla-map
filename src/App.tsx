@@ -8,6 +8,12 @@ import { KAABA_COORDINATES } from './constants/kaaba'
 import { calculateQiblaBearing } from './utils/qiblaBearing'
 // Importiert unsere neue Kartenkomponente.
 import QiblaMapView from './components/QiblaMapView'
+import { readManualLocation, saveManualLocation, clearManualLocation } from './utils/manualLocation'
+import {
+  readSessionLocation,
+  saveSessionLocation,
+  clearSessionLocation,
+} from './utils/detectedLocationSession'
 // Importiert unsere Funktion zur Standortermittlung.
 import { getUserLocation, type UserLocation } from './utils/getUserLocation'
 // Importiert den React Hook zum Speichern von Zustandswerten.
@@ -31,8 +37,11 @@ function App() {
   const [theme, setTheme] = useState<Theme>(initialTheme)
 
   const themeButtonLabel = theme === 'light' ? t('switchToDark') : t('switchToLight')
-  // Speichert den ermittelten Standort oder null, solange keiner vorliegt.
-  const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(null)
+  // Lädt einen GPS-Standort aus der aktuellen Browsersitzung, falls vorhanden.
+  const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(readSessionLocation)
+
+  // Unterscheidet einen wiederhergestellten GPS-Standort von einer neuen Messung.
+  const [gpsFromStorage, setGpsFromStorage] = useState(true)
 
   // Speichert eine Fehlermeldung, falls die Standortermittlung fehlschlägt.
   const [locationError, setLocationError] = useState<string | null>(null)
@@ -42,6 +51,21 @@ function App() {
 
   // Steuert die interaktive Kartenansicht auf Smartphones.
   const [isMapExpanded, setIsMapExpanded] = useState(false)
+
+  // Manuell gewählte Koordinaten bleiben nach einem Neuladen erhalten.
+  const [manualLocation, setManualLocation] = useState<Coordinates | null>(readManualLocation)
+
+  // Verhindert das Scrollen der Seite, solange die große Karte geöffnet ist.
+  useEffect(() => {
+    if (!isMapExpanded) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isMapExpanded])
 
   // Mit Escape kann die vergrößerte Karte geschlossen werden.
   useEffect(() => {
@@ -60,8 +84,8 @@ function App() {
     }
   }, [isMapExpanded])
 
-  // Verwendet den ermittelten Standort, falls einer vorhanden ist.
-  const activeLocation: Coordinates = detectedLocation ?? testLocation
+  // Manuelle Position hat Vorrang vor GPS und dem Teststandort.
+  const activeLocation: Coordinates = manualLocation ?? detectedLocation ?? testLocation
 
   // Berechnet die Qibla-Richtung für den aktuell verwendeten Standort.
   const qiblaBearing = calculateQiblaBearing(activeLocation)
@@ -72,6 +96,25 @@ function App() {
 
     applyTheme(nextTheme)
     setTheme(nextTheme)
+  }
+
+  // Übernimmt den gewählten Kartenstandort sofort.
+  function handleManualLocationChange(location: Coordinates) {
+    // Normalisiert den Längengrad auf den üblichen Bereich von -180 bis 180 Grad.
+    const normalizedLocation: Coordinates = {
+      latitude: location.latitude,
+      longitude: ((((location.longitude + 180) % 360) + 360) % 360) - 180,
+    }
+
+    // Übernimmt und speichert den manuell ausgewählten Standort.
+    setManualLocation(normalizedLocation)
+    saveManualLocation(normalizedLocation)
+
+    // Eine frühere GPS-Messung ist jetzt nicht mehr aktiv.
+    setDetectedLocation(null)
+    clearSessionLocation()
+
+    setLocationError(null)
   }
 
   // Wird ausgeführt, wenn der Benutzer den Standort-Button anklickt.
@@ -87,6 +130,15 @@ function App() {
 
       // Speichert den ermittelten Standort im React State.
       setDetectedLocation(location)
+
+      // Merkt sich den Standort für das Neuladen innerhalb der Sitzung.
+      saveSessionLocation(location)
+
+      // Dieser Standort stammt aus einer neuen GPS-Messung.
+      setGpsFromStorage(false)
+      // GPS ersetzt eine zuvor manuell gewählte Position.
+      setManualLocation(null)
+      clearManualLocation()
     } catch (error) {
       // Zeigt den technischen Fehler in der Entwicklerkonsole.
       console.error('Standortermittlung fehlgeschlagen:', error)
@@ -155,12 +207,16 @@ function App() {
         {/* Standortbereich: Hier kommt später die Adresssuche hinzu. */}
         <section className="qm-card qm-location-card">
           <h2 className="qm-section-caption">
-            {detectedLocation ? t('reportedLocation') : t('testLocation')}
+            {manualLocation
+              ? t('selectedLocation')
+              : detectedLocation
+                ? t(gpsFromStorage ? 'lastDetectedLocation' : 'reportedLocation')
+                : t('testLocation')}
           </h2>
 
           <p className="qm-coordinate">
             <bdi dir="ltr">
-              {activeLocation.latitude}°, {activeLocation.longitude}°
+              {activeLocation.latitude.toFixed(6)}°, {activeLocation.longitude.toFixed(6)}°
             </bdi>
           </p>
 
@@ -179,7 +235,7 @@ function App() {
             </p>
           )}
 
-          {detectedLocation && (
+          {!manualLocation && detectedLocation && (
             <p className="qm-detail">
               {t('locationAccuracy', {
                 meters: Math.round(detectedLocation.accuracy).toLocaleString(i18n.language),
@@ -187,7 +243,7 @@ function App() {
             </p>
           )}
 
-          {detectedLocation && detectedLocation.accuracy > 1000 && (
+          {!manualLocation && detectedLocation && detectedLocation.accuracy > 1000 && (
             <p className="qm-alert" role="alert">
               {t('lowAccuracyWarning')}
             </p>
@@ -217,18 +273,34 @@ function App() {
           <QiblaMapView
             location={activeLocation}
             theme={theme}
-            onMapTap={isMapExpanded ? () => setIsMapExpanded(false) : undefined}
+            isSelectingLocation={isMapExpanded}
+            followLocation={manualLocation === null}
+            onSelectLocation={handleManualLocationChange}
           />
 
-          {/* Im normalen Modus ermöglicht die transparente Fläche das Seitenscrollen. */}
-          {!isMapExpanded && (
+          {!isMapExpanded ? (
+            <>
+              {/* Auf Smartphones kann über der inaktiven Karte weitergescrollt werden. */}
+              <div className="qm-map-scroll-guard" aria-hidden="true" />
+
+              {/* Ein einziger Button startet die interaktive Kartenansicht. */}
+              <button
+                type="button"
+                className="qm-map-select-button"
+                onClick={() => setIsMapExpanded(true)}
+              >
+                {t('selectOnMap')}
+              </button>
+            </>
+          ) : (
             <button
               type="button"
-              className="qm-map-activation-surface"
-              aria-label={t('activateMap')}
-              onClick={() => setIsMapExpanded(true)}
+              className="qm-map-close-button"
+              onClick={() => setIsMapExpanded(false)}
+              aria-label={t('closeMap')}
+              title={t('closeMap')}
             >
-              <span className="qm-map-activation-hint">{t('activateMap')}</span>
+              ×
             </button>
           )}
         </div>
