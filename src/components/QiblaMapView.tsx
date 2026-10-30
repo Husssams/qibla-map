@@ -1,5 +1,5 @@
 // Importiert die Kartenkomponenten und den Standortmarker.
-import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet'
+import { MapContainer, CircleMarker } from 'react-leaflet'
 // Importiert unseren vorhandenen Typ für geografische Koordinaten.
 import type { Coordinates } from '../types/geo'
 
@@ -8,26 +8,41 @@ import 'leaflet/dist/leaflet.css'
 // Importiert unsere Komponente zur Aktualisierung des Kartenmittelpunkts.
 import MapCenterUpdater from './MapCenterUpdater'
 
+import MapBaseLayer from './MapBaseLayer'
+import type { Theme } from '../theme'
+
+import { useMapEvents } from 'react-leaflet'
+
 // Definiert die Eingabewerte unserer Kartenkomponente.
 type QiblaMapViewProps = {
   // Die geografische Position, die auf der Karte angezeigt wird.
   location: Coordinates
+  theme: Theme
+  onMapTap?: () => void
+}
+
+// Reagiert auf ein Antippen der interaktiven Leaflet-Karte.
+function MapTapHandler({ onTap }: { onTap: () => void }) {
+  useMapEvents({
+    click: onTap,
+  })
+
+  return null
 }
 
 // Definiert unsere neue React-Komponente.
 // Empfängt den Standort von der übergeordneten React-Komponente.
-export default function QiblaMapView({ location }: QiblaMapViewProps) {
+export default function QiblaMapView({ location, theme, onMapTap }: QiblaMapViewProps) {
   // Gibt die Benutzeroberfläche der Karte zurück.
   return (
     // Erstellt eine Karte mit dem übergebenen Standort als Mittelpunkt.
     <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">
-      {/* Lädt die Straßenkarte von OpenStreetMap. */}
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      {/* Zeigt die Straßenkarte im passenden Light- oder Dark-Mode an. */}
+      <MapBaseLayer theme={theme} />
       {/* Aktualisiert den Kartenmittelpunkt bei einem neuen Standort. */}
       <MapCenterUpdater location={location} />
+      {/* Ein Antippen schließt die vergrößerte Kartenansicht. */}
+      {onMapTap && <MapTapHandler onTap={onMapTap} />}
 
       {/* Markiert den übergebenen Teststandort auf der Karte. */}
       <CircleMarker
