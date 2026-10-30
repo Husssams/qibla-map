@@ -334,73 +334,137 @@ body {
   outline-offset: 2px;
 }
 
-/* Auf großen Bildschirmen bleibt die Karte immer direkt bedienbar. */
-.qm-map-activation-surface {
+/* Button direkt auf der Karte, auf allen Bildschirmgrößen. */
+.qm-map-select-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  z-index: 1101;
+  transform: translateX(-50%);
+  min-height: 48px;
+  max-width: calc(100% - 32px);
+  padding: 12px 20px;
+  border: 0;
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-primary);
+  color: var(--qm-primary-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--qm-shadow);
+}
+
+.qm-map-select-button:hover {
+  background: var(--qm-primary-hover);
+}
+
+/* X zum Schließen des Auswahlmodus. */
+.qm-map-close-button {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 1101;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--qm-shadow);
+}
+
+.qm-map-close-button:hover {
+  background: var(--qm-surface-alt);
+}
+
+.qm-map-select-button:focus-visible,
+.qm-map-close-button:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+/* Die Karte nutzt im Auswahlmodus fast den gesamten Bildschirm. */
+.qm-map-card--expanded {
+  position: fixed;
+  inset: 12px;
+  z-index: 3000;
+  transform: none;
+  border-radius: var(--qm-radius-lg);
+  box-shadow: var(--qm-shadow);
+}
+
+.qm-map-card--expanded .qibla-map {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Der Scrollschutz ist auf Desktop und Laptop nicht nötig. */
+.qm-map-scroll-guard {
   display: none;
 }
 
 @media (max-width: 640px) {
-  /* Die Karte vergrößert sich beim Aktivieren leicht. */
-  .qm-map-card {
-    transform: scale(1);
-    transform-origin: center;
-    transition:
-      transform 280ms ease,
-      box-shadow 280ms ease;
-  }
-
-  .qm-map-card--expanded {
-    transform: scale(1.035);
-    box-shadow: 0 18px 48px rgb(0 0 0 / 28%);
-  }
-
-  /* Unsichtbare Berührungsfläche im normalen Modus. */
-  .qm-map-activation-surface {
+  /* Die inaktive Karte fängt keine Fingerbewegungen zum Scrollen ab. */
+  .qm-map-scroll-guard {
     display: block;
     position: absolute;
     inset: 0;
     z-index: 1100;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-
-    /* Ein Finger darf die Webseite vertikal scrollen. */
     touch-action: pan-y;
   }
 
-  .qm-map-activation-surface:focus-visible {
-    outline: 3px solid var(--qm-primary);
-    outline-offset: -4px;
+  /* Auf Smartphones darf die geöffnete Karte den Bildschirm ausfüllen. */
+  .qm-map-card--expanded {
+    inset: 0;
+    transform: none;
+    border-radius: 0;
+  }
+
+  .qm-map-card--expanded .qibla-map {
+    height: 100%;
+    min-height: 0;
   }
 }
 
-/* Animationen deaktivieren, wenn der Benutzer weniger Bewegung bevorzugt. */
-@media (prefers-reduced-motion: reduce) {
-  .qm-map-card {
-    transition: none;
-  }
+/* Eigener Standortmarker für Light Mode und Dark Mode. */
+.qm-location-marker {
+  background: transparent;
+  border: 0;
 }
 
-/* Dezenter Hinweis zur Aktivierung der Karte auf Smartphones. */
-@media (max-width: 640px) {
-  .qm-map-activation-hint {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: max-content;
-    max-width: calc(100% - 24px);
-    padding: 9px 14px;
-    border-radius: 999px;
-    background: rgb(17 24 39 / 90%);
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-    text-align: center;
-    pointer-events: none;
-  }
+/* Violetter Pin mit weißem Mittelpunkt. */
+.qm-location-marker__pin {
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--qm-primary);
+  transform: rotate(-45deg);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
+}
+
+.qm-location-marker__pin::after {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+}
+
+/* Der Marker kann gezielt mit Maus oder Finger gegriffen werden. */
+.qm-map-card--expanded .qm-location-marker {
+  cursor: grab;
+}
+
+.qm-map-card--expanded .qm-location-marker:active {
+  cursor: grabbing;
 }
