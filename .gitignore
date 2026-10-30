@@ -33,3 +33,7 @@ dist-ssr
 
 # Allow an example file without real secrets.
 !.env.example
+
+# Lokale Cloudflare-Entwicklungsdaten und geheime Zugangsschlüssel
+.dev.vars*
+.wrangler/
