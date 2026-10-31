@@ -1,4 +1,6 @@
 import { validatePlaceSearchInput } from '../src/utils/placeSearchInput'
+// Macht unsere Zählerklasse für Cloudflare verfügbar.
+export { SearchBudget } from './searchBudget'
 
 // Wir importieren unsere bereits programmierte Funktion aus dem Frontend-Projekt.
 // Sie prüft zum Beispiel, ob der Suchtext mindestens 3 und höchstens 120 Zeichen hat.
@@ -33,7 +35,7 @@ export default {
   // request enthält die eingehende HTTP-Anfrage.
   // Request ist der TypeScript-Typ dieser Anfrage.
   // Response ist der Typ der Antwort, die unsere Methode zurückgeben muss.
-  fetch(request: Request): Response {
+  async fetch(request: Request, env: Env): Promise<Response> {
     // request.url enthält die vollständige aufgerufene Adresse.
     // new URL() zerlegt sie in einzelne Bestandteile.
     //
@@ -43,6 +45,22 @@ export default {
     // url.pathname = '/api/search'
     // url.searchParams.get('q') = 'Berlin'
     const url = new URL(request.url)
+
+    // Zeigt das aktuelle Suchbudget an, ohne einen Credit zu reservieren.
+    if (request.method === 'GET' && url.pathname === '/api/search/status') {
+      try {
+        // Alle Benutzer verwenden dieselbe Zählerinstanz namens "global".
+        const counter = env.SEARCH_BUDGET.getByName('global')
+
+        // Fragt den aktuellen Verbrauch beim Durable Object ab.
+        const status = await counter.getStatus()
+
+        return jsonResponse(status, 200)
+      } catch {
+        // Bei Speicherproblemen melden wir einen Dienstausfall.
+        return jsonResponse({ error: 'searchUnavailable' }, 503)
+      }
+    }
 
     // Prüft, ob jemand den Gesundheitscheck unseres Servers aufruft.
     // === bedeutet: Beide Werte müssen exakt gleich sein.

@@ -2,4 +2,18 @@
   "name": "qibla-map-search",
   "main": "worker/index.ts",
   "compatibility_date": "2026-10-30",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SEARCH_BUDGET",
+        "class_name": "SearchBudget",
+      },
+    ],
+  },
+  "exports": {
+    "SearchBudget": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+  },
 }
