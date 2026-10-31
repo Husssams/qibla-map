@@ -1,4 +1,5 @@
 import { validatePlaceSearchInput } from '../src/utils/placeSearchInput'
+import { searchGeoapify } from './geoapify'
 // Macht unsere Zählerklasse für Cloudflare verfügbar.
 export { SearchBudget } from './searchBudget'
 
@@ -110,13 +111,52 @@ export default {
       return jsonResponse({ error: result.reason }, 400)
     }
 
-    // Bis hierhin ist die Anfrage gültig.
-    //
-    // Wir haben aber noch keinen geschützten Geoapify-Zugriff
-    // und keinen gemeinsamen Tageszähler eingebaut.
-    //
-    // Deshalb führen wir absichtlich noch KEINE echte Suche aus.
-    // HTTP 503 bedeutet: Der Dienst ist momentan nicht verfügbar.
-    return jsonResponse({ error: 'searchNotReady' }, 503)
+    // Liest die von Cloudflare bereitgestellte IP-Adresse des Besuchers.
+    // Lokal kann diese Angabe fehlen, deshalb verwenden wir einen Ersatzwert.
+    const clientKey = request.headers.get('CF-Connecting-IP') ?? 'local'
+
+    // Prüft, ob von dieser Verbindung zu viele Suchanfragen kommen.
+    // await wartet auf die Antwort des Cloudflare Rate Limiters.
+    const { success } = await env.SEARCH_RATE_LIMIT.limit({
+      key: clientKey,
+    })
+
+    // Bei Überschreitung lehnen wir die Anfrage ab.
+    if (!success) {
+      // HTTP 429 bedeutet: Zu viele Anfragen.
+      return jsonResponse({ error: 'tooManyRequests' }, 429)
+    }
+
+    // Ohne API-Schlüssel darf keine externe Anfrage ausgeführt werden.
+    if (!env.GEOAPIFY_API_KEY) {
+      return jsonResponse({ error: 'searchUnavailable' }, 503)
+    }
+
+    // Holt unseren gemeinsamen Zähler für alle Benutzer.
+    try {
+      const counter = env.SEARCH_BUDGET.getByName('global')
+
+      // Reserviert einen Platz im Tagesbudget, bevor Geoapify aufgerufen wird.
+      const reserved = await counter.reserve()
+
+      // Bei ausgeschöpftem Budget bleibt die Suche gesperrt.
+      if (!reserved) {
+        return jsonResponse({ error: 'dailyLimitReached' }, 429)
+      }
+    } catch {
+      // Falls der gemeinsame Zähler ausfällt, erlauben wir keine Suche.
+      return jsonResponse({ error: 'searchUnavailable' }, 503)
+    }
+
+    try {
+      // Nur nach erfolgreicher Rate-Limit- und Budgetprüfung suchen.
+      const suggestions = await searchGeoapify(result.query, env.GEOAPIFY_API_KEY)
+
+      // Gibt ausschließlich die geprüften Ergebnisse zurück.
+      return jsonResponse({ suggestions }, 200)
+    } catch {
+      // Keine internen Fehlermeldungen oder API-Schlüssel an Benutzer senden.
+      return jsonResponse({ error: 'searchUnavailable' }, 502)
+    }
   },
 }
