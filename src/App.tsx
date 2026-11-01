@@ -250,13 +250,20 @@ function App() {
           )}
         </section>
 
-        {/* Ergebnisbereich für die berechnete Qibla-Richtung. */}
+        {/* Ergebnisbereich mit Qibla-Richtung und Kaaba-Koordinaten. */}
         <section className="qm-card qm-result-card">
           <h2 className="qm-section-caption">{t('qiblaDirection')}</h2>
 
-          <p className="qm-bearing">
-            <bdi dir="ltr">{qiblaBearing.toFixed(1)}°</bdi>
-          </p>
+          {/* Eine fehlende Qibla-Richtung wird als Hinweis statt als Absturz behandelt. */}
+          {qiblaBearing === null ? (
+            <p className="qm-detail" role="status">
+              {t('qiblaTooClose')}
+            </p>
+          ) : (
+            <p className="qm-bearing">
+              <bdi dir="ltr">{qiblaBearing.toFixed(1)}°</bdi>
+            </p>
+          )}
 
           <div className="qm-result-divider" />
 

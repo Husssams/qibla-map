@@ -16,6 +16,7 @@
   "locating": "Standort wird ermittelt ...",
   "locationAccuracy": "Standortgenauigkeit: ±{{meters}} m",
   "lowAccuracyWarning": "Dieser Standort kann ungenau sein, besonders auf Computern ohne GPS. Für eine genauere Position kannst du direkt einen Standort auf der Karte auswählen.",
+  "qiblaTooClose": "Du bist zu nah an der Kaaba, um eine zuverlässige Qibla-Richtung anzuzeigen.",
   "locationErrors": {
     "unsupported": "Standortermittlung wird nicht unterstützt.",
     "permissionDenied": "Standortzugriff wurde verweigert.",
