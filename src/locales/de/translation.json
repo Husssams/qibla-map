@@ -16,6 +16,7 @@
   "locating": "Standort wird ermittelt ...",
   "locationAccuracy": "Standortgenauigkeit: ±{{meters}} m",
   "lowAccuracyWarning": "Dieser Standort kann ungenau sein, besonders auf Computern ohne GPS. Für eine genauere Position kannst du direkt einen Standort auf der Karte auswählen.",
+  "qiblaTooClose": "Du bist zu nah an der Kaaba, um eine zuverlässige Qibla-Richtung anzuzeigen.",
   "locationErrors": {
     "unsupported": "Standortermittlung wird nicht unterstützt.",
     "permissionDenied": "Standortzugriff wurde verweigert.",
@@ -23,5 +24,14 @@
     "timeout": "Die Standortermittlung hat zu lange gedauert.",
     "unknown": "Ein unbekannter Standortfehler ist aufgetreten.",
     "unexpected": "Ein unbekannter Fehler ist aufgetreten."
+  },
+  "placeSearch": {
+    "label": "Ort suchen",
+    "placeholder": "Ort oder Adresse",
+    "loading": "Suche läuft ...",
+    "noResults": "Keine passenden Orte gefunden.",
+    "dailyLimitReached": "Das tägliche Suchbudget ist aufgebraucht. Bitte später erneut versuchen.",
+    "tooManyRequests": "Zu viele Suchanfragen. Bitte kurz warten.",
+    "searchUnavailable": "Die Suche ist momentan nicht verfügbar."
   }
 }

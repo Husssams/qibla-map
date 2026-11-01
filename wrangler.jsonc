@@ -1,0 +1,32 @@
+{
+  "name": "qibla-map-search",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-30",
+  "secrets": {
+    "required": ["GEOAPIFY_API_KEY"],
+  },
+  "ratelimits": [
+    {
+      "name": "SEARCH_RATE_LIMIT",
+      "namespace_id": "15015",
+      "simple": {
+        "limit": 20,
+        "period": 60,
+      },
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SEARCH_BUDGET",
+        "class_name": "SearchBudget",
+      },
+    ],
+  },
+  "exports": {
+    "SearchBudget": {
+      "type": "durable-object",
+      "storage": "sqlite",
+    },
+  },
+}

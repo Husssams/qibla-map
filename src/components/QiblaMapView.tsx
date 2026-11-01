@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react'
 import { divIcon, type Marker as LeafletMarker } from 'leaflet'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
@@ -5,21 +6,21 @@ import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import type { Coordinates } from '../types/geo'
 import type { Theme } from '../theme'
 
-import MapCenterUpdater from './MapCenterUpdater'
 import MapBaseLayer from './MapBaseLayer'
+import MapCenterUpdater from './MapCenterUpdater'
 
 import 'leaflet/dist/leaflet.css'
 
-// Definiert die Eingabewerte unserer Kartenkomponente.
 type QiblaMapViewProps = {
   location: Coordinates
   theme: Theme
   isSelectingLocation: boolean
   followLocation: boolean
+  focusTarget?: Coordinates | null
   onSelectLocation: (location: Coordinates) => void
 }
 
-// Definiert einen eigenen Standortmarker, unabhängig von Leaflet-Bilddateien.
+// Eigener Standortmarker, unabhängig von den Standardbildern von Leaflet.
 const locationPinIcon = divIcon({
   className: 'qm-location-marker',
   html: '<span class="qm-location-marker__pin"></span>',
@@ -27,7 +28,7 @@ const locationPinIcon = divIcon({
   iconAnchor: [20, 38],
 })
 
-// Aktualisiert Leaflet, wenn sich der Kartencontainer vergrößert.
+// Passt die Leaflet-Karte an, wenn ihr Container vergrößert oder verkleinert wird.
 function MapResizeHandler() {
   const map = useMap()
 
@@ -46,7 +47,8 @@ function MapResizeHandler() {
   return null
 }
 
-// Reagiert auf einen kurzen Klick oder Fingertipp auf die Karte.
+// Ermöglicht die Standortauswahl durch einen Kartenklick.
+// Dieser Handler wird nur im geöffneten Auswahlmodus eingebunden.
 function MapLocationClickHandler({
   onSelectLocation,
 }: {
@@ -54,7 +56,6 @@ function MapLocationClickHandler({
 }) {
   useMapEvents({
     click(event) {
-      // Nur ein Kartenklick setzt einen Standort, nicht das Verschieben der Karte.
       onSelectLocation({
         latitude: event.latlng.lat,
         longitude: event.latlng.lng,
@@ -65,31 +66,29 @@ function MapLocationClickHandler({
   return null
 }
 
-// Zeigt die Karte und den verschiebbaren Standortmarker an.
+// Zeigt die Karte, steuert die Standortauswahl und aktualisiert den Marker.
 export default function QiblaMapView({
   location,
   theme,
   isSelectingLocation,
   followLocation,
+  focusTarget = null,
   onSelectLocation,
 }: QiblaMapViewProps) {
   const markerRef = useRef<LeafletMarker | null>(null)
 
   return (
     <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">
-      {/* Korrigiert die Kartengröße nach dem Öffnen und Schließen. */}
       <MapResizeHandler />
 
-      {/* Zeigt die Karte im ausgewählten Design an. */}
       <MapBaseLayer theme={theme} />
 
-      {/* Zentriert nur dann neu, wenn die Position von außen vorgegeben wird. */}
-      <MapCenterUpdater location={location} enabled={followLocation} />
+      {/* GPS-Zentrierung und gezielte Kartenbewegungen werden getrennt gesteuert. */}
+      <MapCenterUpdater location={location} enabled={followLocation} focusTarget={focusTarget} />
 
-      {/* Ein Kartenklick wählt nur im geöffneten Auswahlmodus einen Standort. */}
       {isSelectingLocation && <MapLocationClickHandler onSelectLocation={onSelectLocation} />}
 
-      {/* Der Marker bleibt geografisch verankert und ist im Auswahlmodus verschiebbar. */}
+      {/* Der Marker ist nur im Auswahlmodus verschiebbar. */}
       <Marker
         position={[location.latitude, location.longitude]}
         icon={locationPinIcon}
@@ -99,7 +98,7 @@ export default function QiblaMapView({
         ref={markerRef}
         eventHandlers={{
           dragend() {
-            // Erst beim Loslassen übernehmen wir die neue Position.
+            // Die neue Position wird erst nach dem Loslassen übernommen.
             const position = markerRef.current?.getLatLng()
 
             if (!position) return

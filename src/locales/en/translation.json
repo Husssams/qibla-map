@@ -16,6 +16,7 @@
   "locating": "Detecting location...",
   "locationAccuracy": "Location accuracy: ±{{meters}} m",
   "lowAccuracyWarning": "This location may be inaccurate, especially on computers without GPS. For a more precise position, choose a location directly on the map.",
+  "qiblaTooClose": "You are too close to the Kaaba to display a reliable Qibla direction.",
   "locationErrors": {
     "unsupported": "Location detection is not supported by your browser.",
     "permissionDenied": "Location access was denied.",
@@ -23,5 +24,14 @@
     "timeout": "Location detection took too long.",
     "unknown": "An unknown location error occurred.",
     "unexpected": "An unexpected error occurred."
+  },
+  "placeSearch": {
+    "label": "Search location",
+    "placeholder": "Place or address",
+    "loading": "Searching ...",
+    "noResults": "No matching places found.",
+    "dailyLimitReached": "The daily search budget is exhausted. Please try again later.",
+    "tooManyRequests": "Too many search requests. Please wait a moment.",
+    "searchUnavailable": "Search is temporarily unavailable."
   }
 }

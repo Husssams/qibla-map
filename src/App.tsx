@@ -1,61 +1,66 @@
-// Importiert die CSS-Datei für das Design.
-import './App.css'
-// Importiert unseren selbst definierten Datentyp.
-import type { Coordinates } from './types/geo'
-// Importiert die geografischen Koordinaten der Kaaba.
-import { KAABA_COORDINATES } from './constants/kaaba'
-// Importiert unsere Funktion zur Berechnung der Qibla-Richtung.
-import { calculateQiblaBearing } from './utils/qiblaBearing'
-// Importiert unsere neue Kartenkomponente.
-import QiblaMapView from './components/QiblaMapView'
-import { readManualLocation, saveManualLocation, clearManualLocation } from './utils/manualLocation'
-import {
-  readSessionLocation,
-  saveSessionLocation,
-  clearSessionLocation,
-} from './utils/detectedLocationSession'
-// Importiert unsere Funktion zur Standortermittlung.
-import { getUserLocation, type UserLocation } from './utils/getUserLocation'
-// Importiert den React Hook zum Speichern von Zustandswerten.
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import QiblaMapView from './components/QiblaMapView'
+import { PlaceSearch } from './components/PlaceSearch'
+import { KAABA_COORDINATES } from './constants/kaaba'
 import { applyTheme, initialTheme, type Theme } from './theme'
+import type { Coordinates } from './types/geo'
+import {
+  clearSessionLocation,
+  readSessionLocation,
+  saveSessionLocation,
+} from './utils/detectedLocationSession'
+import { getUserLocation, type UserLocation } from './utils/getUserLocation'
+import { clearManualLocation, readManualLocation, saveManualLocation } from './utils/manualLocation'
+import { calculateQiblaBearing } from './utils/qiblaBearing'
 
-// Erstellt einen festen Teststandort.
+import './App.css'
+
+// Fallback, solange weder ein manueller noch ein GPS-Standort vorliegt.
 const testLocation: Coordinates = {
-  // Breitengrad des Teststandorts.
   latitude: 33.439073,
-
-  // Längengrad des Teststandorts.
   longitude: 36.078122,
 }
 
-// Definiert unsere Hauptkomponente.
 function App() {
   const { t, i18n } = useTranslation()
-  // React merkt sich, welches Theme gerade aktiv ist.
-  const [theme, setTheme] = useState<Theme>(initialTheme)
 
+  // Suchtexte stammen aus dem bestehenden i18next-Übersetzungssystem.
+  const placeSearchTexts = {
+    label: t('placeSearch.label'),
+    placeholder: t('placeSearch.placeholder'),
+    loading: t('placeSearch.loading'),
+    noResults: t('placeSearch.noResults'),
+    dailyLimitReached: t('placeSearch.dailyLimitReached'),
+    tooManyRequests: t('placeSearch.tooManyRequests'),
+    searchUnavailable: t('placeSearch.searchUnavailable'),
+  }
+
+  const [theme, setTheme] = useState<Theme>(initialTheme)
   const themeButtonLabel = theme === 'light' ? t('switchToDark') : t('switchToLight')
-  // Lädt einen GPS-Standort aus der aktuellen Browsersitzung, falls vorhanden.
+
+  // GPS-Daten werden nur für die aktuelle Browsersitzung gespeichert.
   const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(readSessionLocation)
 
-  // Unterscheidet einen wiederhergestellten GPS-Standort von einer neuen Messung.
+  // Unterscheidet wiederhergestellte GPS-Daten von einer neuen Messung.
   const [gpsFromStorage, setGpsFromStorage] = useState(true)
 
-  // Speichert eine Fehlermeldung, falls die Standortermittlung fehlschlägt.
   const [locationError, setLocationError] = useState<string | null>(null)
-
-  // Speichert, ob gerade eine Standortermittlung läuft.
   const [isLocating, setIsLocating] = useState(false)
-
-  // Steuert die interaktive Kartenansicht auf Smartphones.
   const [isMapExpanded, setIsMapExpanded] = useState(false)
 
-  // Manuell gewählte Koordinaten bleiben nach einem Neuladen erhalten.
+  // Ein ausdrücklicher Auftrag, die Karte auf einen Ort zu zentrieren.
+  const [focusTarget, setFocusTarget] = useState<Coordinates | null>(null)
+
+  // Manuell gewählte Standorte bleiben nach einem Seitenneustart erhalten.
   const [manualLocation, setManualLocation] = useState<Coordinates | null>(readManualLocation)
 
-  // Verhindert das Scrollen der Seite, solange die große Karte geöffnet ist.
+  // Manuelle Auswahl hat Vorrang vor GPS und dem Teststandort.
+  const activeLocation: Coordinates = manualLocation ?? detectedLocation ?? testLocation
+  const qiblaBearing = calculateQiblaBearing(activeLocation)
+
+  // Sperrt das Scrollen der Hintergrundseite während der vergrößerten Kartenansicht.
   useEffect(() => {
     if (!isMapExpanded) return
 
@@ -67,14 +72,18 @@ function App() {
     }
   }, [isMapExpanded])
 
-  // Mit Escape kann die vergrößerte Karte geschlossen werden.
+  // Escape schließt die große Karte und zentriert sie auf den aktuellen Marker.
   useEffect(() => {
     if (!isMapExpanded) return
 
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsMapExpanded(false)
-      }
+      if (event.key !== 'Escape') return
+
+      setIsMapExpanded(false)
+      setFocusTarget({
+        latitude: activeLocation.latitude,
+        longitude: activeLocation.longitude,
+      })
     }
 
     window.addEventListener('keydown', handleEscape)
@@ -82,15 +91,8 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleEscape)
     }
-  }, [isMapExpanded])
+  }, [isMapExpanded, activeLocation.latitude, activeLocation.longitude])
 
-  // Manuelle Position hat Vorrang vor GPS und dem Teststandort.
-  const activeLocation: Coordinates = manualLocation ?? detectedLocation ?? testLocation
-
-  // Berechnet die Qibla-Richtung für den aktuell verwendeten Standort.
-  const qiblaBearing = calculateQiblaBearing(activeLocation)
-
-  // Wir wechseln zwischen dem hellen und dunklen Design.
   function handleThemeToggle() {
     const nextTheme: Theme = theme === 'light' ? 'dark' : 'light'
 
@@ -98,69 +100,64 @@ function App() {
     setTheme(nextTheme)
   }
 
-  // Übernimmt den gewählten Kartenstandort sofort.
+  // Übernimmt einen manuell ausgewählten Standort aus der Karte oder Ortssuche.
   function handleManualLocationChange(location: Coordinates) {
-    // Normalisiert den Längengrad auf den üblichen Bereich von -180 bis 180 Grad.
+    // Normalisiert den Längengrad auf den Bereich von -180 bis 180 Grad.
     const normalizedLocation: Coordinates = {
       latitude: location.latitude,
       longitude: ((((location.longitude + 180) % 360) + 360) % 360) - 180,
     }
 
-    // Übernimmt und speichert den manuell ausgewählten Standort.
     setManualLocation(normalizedLocation)
     saveManualLocation(normalizedLocation)
 
-    // Eine frühere GPS-Messung ist jetzt nicht mehr aktiv.
+    // Eine manuelle Auswahl ersetzt den zuvor aktiven GPS-Standort.
     setDetectedLocation(null)
     clearSessionLocation()
 
     setLocationError(null)
   }
 
-  // Wird ausgeführt, wenn der Benutzer den Standort-Button anklickt.
+  // Beim Schließen der großen Karte wird der Marker wieder zentriert.
+  function handleCloseExpandedMap() {
+    setIsMapExpanded(false)
+
+    setFocusTarget({
+      latitude: activeLocation.latitude,
+      longitude: activeLocation.longitude,
+    })
+  }
+
   async function handleDetectLocation() {
-    // Entfernt eine alte Fehlermeldung vor einer neuen Standortanfrage.
     setLocationError(null)
-    // Aktiviert den Ladezustand.
     setIsLocating(true)
-    // Versucht, den Standort des Benutzers zu ermitteln.
+
     try {
-      // Wartet auf die Antwort der Geolocation API.
       const location = await getUserLocation()
 
-      // Speichert den ermittelten Standort im React State.
       setDetectedLocation(location)
-
-      // Merkt sich den Standort für das Neuladen innerhalb der Sitzung.
       saveSessionLocation(location)
-
-      // Dieser Standort stammt aus einer neuen GPS-Messung.
       setGpsFromStorage(false)
-      // GPS ersetzt eine zuvor manuell gewählte Position.
+
+      // Eine neue GPS-Messung ersetzt einen zuvor manuell gewählten Standort.
       setManualLocation(null)
       clearManualLocation()
     } catch (error) {
-      // Zeigt den technischen Fehler in der Entwicklerkonsole.
       console.error('Standortermittlung fehlgeschlagen:', error)
 
-      // Übernimmt die passende Fehlermeldung aus getUserLocation.ts.
       if (error instanceof Error) {
         setLocationError(error.message)
       } else {
-        // Behandelt den Fall, dass kein normales Error-Objekt vorliegt.
         setLocationError('locationErrors.unexpected')
       }
     } finally {
-      // Wird nach Erfolg oder Fehler ausgeführt.
-      // Beendet den Ladezustand.
       setIsLocating(false)
     }
   }
 
-  // Gibt unsere neue responsive Benutzeroberfläche zurück.
   return (
     <main className="qm-page">
-      {/* Kopfbereich mit Logo, Sprachauswahl und Theme-Button. */}
+      {/* Kopfbereich mit Logo, Spracheinstellung und Theme-Umschaltung. */}
       <header className="qm-header">
         <div className="qm-brand">
           <span className="qm-brand-icon" aria-hidden="true">
@@ -202,10 +199,25 @@ function App() {
         </div>
       </header>
 
-      {/* Die Seitenleiste und die Karte bilden unser Hauptlayout. */}
       <div className="qm-layout">
-        {/* Standortbereich: Hier kommt später die Adresssuche hinzu. */}
+        {/* Standortbereich mit Ortssuche, Koordinaten und GPS-Ermittlung. */}
         <section className="qm-card qm-location-card">
+          <PlaceSearch
+            texts={placeSearchTexts}
+            onSelect={(place) => {
+              // Suchauswahl aktualisiert den Standort und zentriert die Karte.
+              handleManualLocationChange({
+                latitude: place.latitude,
+                longitude: place.longitude,
+              })
+
+              setFocusTarget({
+                latitude: place.latitude,
+                longitude: place.longitude,
+              })
+            }}
+          />
+
           <h2 className="qm-section-caption">
             {manualLocation
               ? t('selectedLocation')
@@ -250,13 +262,20 @@ function App() {
           )}
         </section>
 
-        {/* Ergebnisbereich für die berechnete Qibla-Richtung. */}
+        {/* Ergebnisbereich mit Qibla-Richtung und Kaaba-Koordinaten. */}
         <section className="qm-card qm-result-card">
           <h2 className="qm-section-caption">{t('qiblaDirection')}</h2>
 
-          <p className="qm-bearing">
-            <bdi dir="ltr">{qiblaBearing.toFixed(1)}°</bdi>
-          </p>
+          {/* Eine fehlende Qibla-Richtung wird als Hinweis statt als Absturz behandelt. */}
+          {qiblaBearing === null ? (
+            <p className="qm-detail" role="status">
+              {t('qiblaTooClose')}
+            </p>
+          ) : (
+            <p className="qm-bearing">
+              <bdi dir="ltr">{qiblaBearing.toFixed(1)}°</bdi>
+            </p>
+          )}
 
           <div className="qm-result-divider" />
 
@@ -268,22 +287,22 @@ function App() {
           </div>
         </section>
 
-        {/* Die Karte bleibt unabhängig von der Sprache geografisch ausgerichtet. */}
+        {/* Kartenbereich mit normalem Anzeigemodus und vergrößertem Auswahlmodus. */}
         <div className={`qm-map-card${isMapExpanded ? ' qm-map-card--expanded' : ''}`}>
           <QiblaMapView
             location={activeLocation}
             theme={theme}
             isSelectingLocation={isMapExpanded}
             followLocation={manualLocation === null}
+            focusTarget={focusTarget}
             onSelectLocation={handleManualLocationChange}
           />
 
           {!isMapExpanded ? (
             <>
-              {/* Auf Smartphones kann über der inaktiven Karte weitergescrollt werden. */}
+              {/* Erlaubt auf Mobilgeräten das Scrollen über die inaktive Karte. */}
               <div className="qm-map-scroll-guard" aria-hidden="true" />
 
-              {/* Ein einziger Button startet die interaktive Kartenansicht. */}
               <button
                 type="button"
                 className="qm-map-select-button"
@@ -296,7 +315,7 @@ function App() {
             <button
               type="button"
               className="qm-map-close-button"
-              onClick={() => setIsMapExpanded(false)}
+              onClick={handleCloseExpandedMap}
               aria-label={t('closeMap')}
               title={t('closeMap')}
             >
@@ -309,5 +328,4 @@ function App() {
   )
 }
 
-// Macht die Komponente für andere Dateien verfügbar.
 export default App
