@@ -1,3 +1,5 @@
+import { rankPlaceSuggestions, type RankablePlace } from './placeSearchRanking'
+
 // Legt fest, welche Informationen ein Suchvorschlag enthält.
 export type PlaceSuggestion = {
   label: string // Name oder vollständige Adresse
@@ -15,7 +17,20 @@ export async function searchGeoapify(query: string, apiKey: string): Promise<Pla
   // searchParams kodiert auch arabische Zeichen und Sonderzeichen korrekt.
   url.searchParams.set('text', query)
   url.searchParams.set('format', 'json')
-  url.searchParams.set('limit', '5')
+  // Fordert zehn Kandidaten an, damit wir die besten fünf auswählen können.
+  url.searchParams.set('limit', '10')
+  // SCHRITT 1: Prüft, ob der Suchtext arabische Schriftzeichen enthält.
+  // \p{Script=Arabic} erkennt Zeichen aus dem arabischen Schriftsystem.
+  // Das u aktiviert die Unicode-Unterstützung des regulären Ausdrucks.
+  // .test(query) liefert true, sobald ein passendes Zeichen gefunden wird.
+  const containsArabic = /\p{Script=Arabic}/u.test(query)
+
+  // SCHRITT 2: Fordert bei arabischer Schrift arabische Ergebnisnamen an.
+  // Beispiel: "Citadel of Aleppo" kann dadurch als "قلعة حلب" erscheinen.
+  // Andere Suchtexte behalten vorerst Geoapifys Standardsprache.
+  if (containsArabic) {
+    url.searchParams.set('lang', 'ar')
+  }
   url.searchParams.set('apiKey', apiKey)
 
   // fetch sendet die HTTP-Anfrage. await wartet auf die Antwort.
@@ -44,8 +59,8 @@ export async function searchGeoapify(query: string, apiKey: string): Promise<Pla
     throw new Error('Invalid Geoapify response')
   }
 
-  // Hier sammeln wir ausschließlich gültige Suchergebnisse.
-  const suggestions: PlaceSuggestion[] = []
+  // Speichert vorübergehend auch Geoapifys Bewertungsinformationen.
+  const suggestions: RankablePlace[] = []
 
   // Durchläuft jedes Ergebnis, das Geoapify zurückgegeben hat.
   for (const item of data.results) {
@@ -73,18 +88,33 @@ export async function searchGeoapify(query: string, apiKey: string): Promise<Pla
       continue
     }
 
-    // Übernimmt den gültigen Treffer in unsere eigene Ergebnisliste.
-    // trim() entfernt äußere Leerzeichen, slice() begrenzt die Textlänge.
+    // Liest die optionalen Bewertungsinformationen von Geoapify.
+    const rank =
+      typeof place.rank === 'object' && place.rank !== null
+        ? (place.rank as Record<string, unknown>)
+        : undefined
+
     suggestions.push({
       label: place.formatted.trim().slice(0, 200),
       latitude: place.lat,
       longitude: place.lon,
-    })
 
-    // break beendet die Schleife, sobald wir fünf Treffer gesammelt haben.
-    if (suggestions.length === 5) break
+      // Zusätzliche Eigenschaften nutzen wir nur für die Sortierung.
+      name: typeof place.name === 'string' ? place.name : undefined,
+      confidence: typeof rank?.confidence === 'number' ? rank.confidence : undefined,
+      importance: typeof rank?.importance === 'number' ? rank.importance : undefined,
+      popularity: typeof rank?.popularity === 'number' ? rank.popularity : undefined,
+    })
   }
 
-  // Gibt die geprüften Suchvorschläge an unseren Worker zurück.
-  return suggestions
+  // SCHRITT 1: Sortiert alle gültigen Kandidaten nach Relevanz.
+  // SCHRITT 2: Behält nur die fünf besten Treffer.
+  // SCHRITT 3: Gibt nur Ortsname und Koordinaten an das Frontend zurück.
+  return rankPlaceSuggestions(query, suggestions)
+    .slice(0, 5)
+    .map(({ label, latitude, longitude }) => ({
+      label,
+      latitude,
+      longitude,
+    }))
 }
