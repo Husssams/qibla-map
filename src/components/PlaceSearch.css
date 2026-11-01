@@ -1,0 +1,130 @@
+
+/* Suchbereich innerhalb der Standortkarte. */
+.place-search {
+  width: 100%;
+  margin-bottom: 0.875rem;
+}
+
+/* Beschriftung oberhalb des Suchfelds. */
+.place-search__label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Gemeinsamer Container für Eingabefeld und Dropdown. */
+.place-search__combobox {
+  position: relative;
+  width: 100%;
+}
+
+/* Suchfeld mit Theme-Farben und Unterstützung für LTR und RTL. */
+.place-search__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding-block: 0.8rem;
+  padding-inline: 0.95rem 2.8rem;
+
+  text-align: start;
+  border: 1px solid var(--qm-border);
+  border-radius: 14px;
+
+  background: color-mix(in srgb, var(--qm-bg) 90%, var(--qm-text) 10%);
+  color: var(--qm-text);
+  font: inherit;
+}
+
+/* Verbindet das Suchfeld optisch mit geöffneten Vorschlägen. */
+.place-search__input--open {
+  border-radius: 14px 14px 0 0;
+}
+
+/* Lesbarer Platzhalter im Light Mode und Dark Mode. */
+.place-search__input::placeholder {
+  color: var(--qm-text);
+  opacity: 0.7;
+}
+
+/* Sichtbare Fokusmarkierung für die Tastaturbedienung. */
+.place-search__input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--qm-text) 50%, transparent);
+  outline-offset: 2px;
+}
+
+/* Dropdown direkt unter dem Suchfeld, mit begrenzter Höhe. */
+.place-search__suggestions {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+
+  border: 1px solid var(--qm-border);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+
+  background: color-mix(in srgb, var(--qm-bg) 88%, var(--qm-text) 12%);
+  color: var(--qm-text);
+  box-shadow: var(--qm-shadow);
+
+  max-height: min(320px, 50dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--qm-border) transparent;
+}
+
+/* Klickbarer Suchvorschlag mit Standorticon und Ortsnamen. */
+.place-search__suggestion {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Hervorhebung bei Maus, Tastaturfokus und Pfeiltastenauswahl. */
+.place-search__suggestion:hover,
+.place-search__suggestion:focus-visible,
+.place-search__suggestion[data-active='true'] {
+  background: color-mix(in srgb, var(--qm-text) 12%, transparent);
+  outline: none;
+}
+
+/* Trennlinie zwischen benachbarten Suchergebnissen. */
+.place-search__suggestions li + li .place-search__suggestion {
+  border-top: 1px solid var(--qm-border);
+}
+
+/* Dezentes Standorticon, das nicht zusammengedrückt werden soll. */
+.place-search__suggestion-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.65;
+}
+
+/* Ortsname mit automatischer Schreibrichtung und Zeilenumbruch. */
+.place-search__suggestion-text {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+  line-height: 1.25;
+  word-break: break-word;
+}
