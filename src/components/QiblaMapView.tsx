@@ -1,5 +1,4 @@
-
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { divIcon, type Marker as LeafletMarker } from 'leaflet'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 
@@ -8,11 +7,13 @@ import type { Theme } from '../theme'
 
 import MapBaseLayer from './MapBaseLayer'
 import MapCenterUpdater from './MapCenterUpdater'
+import { createQiblaArrowHtml } from '../utils/qiblaArrow'
 
 import 'leaflet/dist/leaflet.css'
 
 type QiblaMapViewProps = {
   location: Coordinates
+  qiblaBearing: number | null
   theme: Theme
   isSelectingLocation: boolean
   followLocation: boolean
@@ -20,13 +21,15 @@ type QiblaMapViewProps = {
   onSelectLocation: (location: Coordinates) => void
 }
 
-// Eigener Standortmarker, unabhängig von den Standardbildern von Leaflet.
-const locationPinIcon = divIcon({
-  className: 'qm-location-marker',
-  html: '<span class="qm-location-marker__pin"></span>',
-  iconSize: [40, 42],
-  iconAnchor: [20, 38],
-})
+// Leaflet positioniert den Marker, während das innere Pfeilsymbol unabhängig rotiert.
+function createLocationPinIcon(qiblaBearing: number | null) {
+  return divIcon({
+    className: 'qm-location-marker',
+    html: `${createQiblaArrowHtml(qiblaBearing)}<span class="qm-location-marker__pin"></span>`,
+    iconSize: [40, 42],
+    iconAnchor: [20, 38],
+  })
+}
 
 // Passt die Leaflet-Karte an, wenn ihr Container vergrößert oder verkleinert wird.
 function MapResizeHandler() {
@@ -69,6 +72,7 @@ function MapLocationClickHandler({
 // Zeigt die Karte, steuert die Standortauswahl und aktualisiert den Marker.
 export default function QiblaMapView({
   location,
+  qiblaBearing,
   theme,
   isSelectingLocation,
   followLocation,
@@ -76,6 +80,7 @@ export default function QiblaMapView({
   onSelectLocation,
 }: QiblaMapViewProps) {
   const markerRef = useRef<LeafletMarker | null>(null)
+  const locationPinIcon = useMemo(() => createLocationPinIcon(qiblaBearing), [qiblaBearing])
 
   return (
     <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">

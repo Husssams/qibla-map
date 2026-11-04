@@ -437,9 +437,25 @@ body {
   border: 0;
 }
 
+/* Der Pfeil dreht sich um den Standortanker und bleibt hinter dem Pin bedienbar. */
+.qm-location-marker__arrow {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  z-index: 0;
+  width: 28px;
+  height: 82px;
+  background: var(--qm-primary);
+  clip-path: polygon(50% 0, 100% 38%, 68% 38%, 68% 100%, 32% 100%, 32% 38%, 0 38%);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 8px rgb(0 0 0 / 35%));
+}
+
 /* Violetter Pin mit weißem Mittelpunkt. */
 .qm-location-marker__pin {
   position: absolute;
+  z-index: 1;
   top: 2px;
   left: 5px;
   box-sizing: border-box;
