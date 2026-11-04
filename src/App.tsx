@@ -291,6 +291,7 @@ function App() {
         <div className={`qm-map-card${isMapExpanded ? ' qm-map-card--expanded' : ''}`}>
           <QiblaMapView
             location={activeLocation}
+            qiblaBearing={qiblaBearing}
             theme={theme}
             isSelectingLocation={isMapExpanded}
             followLocation={manualLocation === null}
