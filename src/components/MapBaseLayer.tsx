@@ -16,6 +16,8 @@ export default function MapBaseLayer({ theme }: MapBaseLayerProps) {
       url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       maxZoom={19}
+      // Verhindert, dass OSM-Kartenbilder wegen eines fehlenden Referer-Headers blockiert werden.
+      referrerPolicy="strict-origin-when-cross-origin"
     />
   )
 }
