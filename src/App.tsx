@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import QiblaMapView from './components/QiblaMapView'
@@ -49,6 +49,13 @@ function App() {
   const [locationError, setLocationError] = useState<string | null>(null)
   const [isLocating, setIsLocating] = useState(false)
   const [isMapExpanded, setIsMapExpanded] = useState(false)
+  // Die geodätische Linie ist optional und beim ersten Laden ausgeschaltet.
+  // Die Einstellung bleibt unabhängig von GPS, Standortsuche und Kartengröße.
+  const [isQiblaPathVisible, setIsQiblaPathVisible] = useState(false)
+
+  // Über die Referenz öffnen und schließen wir den nativen Dialog.
+  // Ein zusätzlicher React-State ist dafür nicht erforderlich.
+  const qiblaPathDialogRef = useRef<HTMLDialogElement | null>(null)
 
   // Ein ausdrücklicher Auftrag, die Karte auf einen Ort zu zentrieren.
   const [focusTarget, setFocusTarget] = useState<Coordinates | null>(null)
@@ -78,6 +85,10 @@ function App() {
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key !== 'Escape') return
+
+      // Das Info-Fenster hat Vorrang: Escape soll zunächst nur den Dialog schließen,
+      // nicht gleichzeitig die vergrößerte Kartenansicht verlassen.
+      if (qiblaPathDialogRef.current?.open) return
 
       setIsMapExpanded(false)
       setFocusTarget({
@@ -292,6 +303,7 @@ function App() {
           <QiblaMapView
             location={activeLocation}
             qiblaBearing={qiblaBearing}
+            isQiblaPathVisible={isQiblaPathVisible}
             theme={theme}
             isSelectingLocation={isMapExpanded}
             followLocation={manualLocation === null}
@@ -299,20 +311,12 @@ function App() {
             onSelectLocation={handleManualLocationChange}
           />
 
-          {!isMapExpanded ? (
-            <>
-              {/* Erlaubt auf Mobilgeräten das Scrollen über die inaktive Karte. */}
-              <div className="qm-map-scroll-guard" aria-hidden="true" />
+          {/* Auf Smartphones verhindert der Scrollschutz versehentliche Kartenbewegungen.
+      Die Bedienelemente liegen mit ihrem höheren z-index darüber. */}
+          {!isMapExpanded && <div className="qm-map-scroll-guard" aria-hidden="true" />}
 
-              <button
-                type="button"
-                className="qm-map-select-button"
-                onClick={() => setIsMapExpanded(true)}
-              >
-                {t('selectOnMap')}
-              </button>
-            </>
-          ) : (
+          {/* Die vergrößerte Karte kann unabhängig vom Info-Dialog geschlossen werden. */}
+          {isMapExpanded && (
             <button
               type="button"
               className="qm-map-close-button"
@@ -323,6 +327,85 @@ function App() {
               ×
             </button>
           )}
+
+          {/* Alle Kartenbedienelemente verwenden den bestehenden React-State.
+      Die Einstellung bleibt beim Vergrößern der Karte erhalten. */}
+          <div className="qm-map-controls">
+            <div className="qm-map-control-actions">
+              <label className="qm-qibla-path-label">
+                <input
+                  type="checkbox"
+                  checked={isQiblaPathVisible}
+                  onChange={(event) => setIsQiblaPathVisible(event.target.checked)}
+                />
+                <span>{t('showQiblaPath')}</span>
+              </label>
+
+              {/* Der Info-Button erscheint nur bei sichtbarer und definierter Linie.
+          Die längere Erklärung soll nicht dauerhaft Kartenfläche verdecken. */}
+              {isQiblaPathVisible && qiblaBearing !== null && (
+                <button
+                  type="button"
+                  className="qm-map-info-button"
+                  aria-haspopup="dialog"
+                  aria-controls="qm-qibla-path-dialog"
+                  onClick={() => qiblaPathDialogRef.current?.showModal()}
+                >
+                  <span aria-hidden="true">ⓘ</span>
+                  <span>{t('qiblaPathInfoButton')}</span>
+                </button>
+              )}
+
+              {/* Die Standortauswahl ist in der vergrößerten Karte bereits aktiv.
+          Deshalb wird der zusätzliche Auswahlbutton dort ausgeblendet. */}
+              {!isMapExpanded && (
+                <button
+                  type="button"
+                  className="qm-map-select-button"
+                  onClick={() => setIsMapExpanded(true)}
+                >
+                  {t('selectOnMap')}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Der native Dialog erscheint über der Karte statt als dauerhafter Hinweis.
+      Escape und die Fokusverwaltung übernimmt weitgehend der Browser. */}
+          <dialog
+            id="qm-qibla-path-dialog"
+            ref={qiblaPathDialogRef}
+            className="qm-qibla-path-dialog"
+            aria-labelledby="qm-qibla-path-dialog-title"
+            dir={i18n.dir()}
+            onClick={(event) => {
+              // Ein Klick auf die abgedunkelte Fläche schließt den Dialog.
+              // Klicks innerhalb des eigentlichen Inhalts bleiben ohne Wirkung.
+              if (event.target === event.currentTarget) {
+                event.currentTarget.close()
+              }
+            }}
+          >
+            <div className="qm-qibla-path-dialog-content">
+              <button
+                type="button"
+                className="qm-qibla-path-dialog-close"
+                onClick={() => qiblaPathDialogRef.current?.close()}
+                aria-label={t('qiblaPathInfoClose')}
+              >
+                ×
+              </button>
+
+              {/* Das Symbol unterstreicht den Bezug zur Erdoberfläche. */}
+              <span className="qm-qibla-path-dialog-icon" aria-hidden="true">
+                🌍
+              </span>
+
+              <h2 id="qm-qibla-path-dialog-title">{t('qiblaPathInfoTitle')}</h2>
+
+              <p>{t('qiblaPathExplanation')}</p>
+            </div>
+          </dialog>
         </div>
       </div>
     </main>

@@ -1,8 +1,9 @@
-
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 
 import type { Coordinates } from '../types/geo'
+
+import { getQiblaMapBounds } from '../utils/qiblaMapBounds'
 
 type MapCenterUpdaterProps = {
   location: Coordinates
@@ -17,6 +18,13 @@ export default function MapCenterUpdater({
   focusTarget = null,
 }: MapCenterUpdaterProps) {
   const map = useMap()
+
+  // Die erlaubten Weltkartengrenzen hängen vom geodätischen Weg zur Kaaba ab.
+  // Bei einem Standortwechsel muss Leaflet die passende Weltkartenkopie verwenden,
+  // damit beispielsweise der Pfad von Hawaii über die Datumsgrenze sichtbar bleibt.
+  useEffect(() => {
+    map.setMaxBounds(getQiblaMapBounds(location))
+  }, [map, location])
 
   // GPS-Zentrierung: Bei manueller Standortwahl bleibt die Karte frei beweglich.
   useEffect(() => {
