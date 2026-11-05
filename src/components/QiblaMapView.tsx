@@ -5,8 +5,10 @@ import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import type { Coordinates } from '../types/geo'
 import type { Theme } from '../theme'
 
+import { getQiblaMapBounds } from '../utils/qiblaMapBounds'
 import MapBaseLayer from './MapBaseLayer'
 import MapCenterUpdater from './MapCenterUpdater'
+import QiblaPathLayer from './QiblaPathLayer'
 import { createQiblaArrowHtml } from '../utils/qiblaArrow'
 
 import 'leaflet/dist/leaflet.css'
@@ -14,6 +16,7 @@ import 'leaflet/dist/leaflet.css'
 type QiblaMapViewProps = {
   location: Coordinates
   qiblaBearing: number | null
+  isQiblaPathVisible: boolean
   theme: Theme
   isSelectingLocation: boolean
   followLocation: boolean
@@ -73,6 +76,7 @@ function MapLocationClickHandler({
 export default function QiblaMapView({
   location,
   qiblaBearing,
+  isQiblaPathVisible,
   theme,
   isSelectingLocation,
   followLocation,
@@ -82,14 +86,27 @@ export default function QiblaMapView({
   const markerRef = useRef<LeafletMarker | null>(null)
   const locationPinIcon = useMemo(() => createLocationPinIcon(qiblaBearing), [qiblaBearing])
 
+  // Beim ersten Laden erhält Leaflet die passende Weltkartenkopie.
+  // Spätere Standortwechsel aktualisiert MapCenterUpdater über setMaxBounds().
   return (
-    <MapContainer center={[location.latitude, location.longitude]} zoom={16} className="qibla-map">
+    // Verhindert zu starkes Herauszoomen, bei dem mehrere Weltkarten nebeneinander erscheinen.
+    <MapContainer
+      center={[location.latitude, location.longitude]}
+      zoom={16}
+      minZoom={3}
+      maxBounds={getQiblaMapBounds(location)}
+      maxBoundsViscosity={1.0}
+      className="qibla-map"
+    >
       <MapResizeHandler />
 
       <MapBaseLayer theme={theme} />
 
       {/* GPS-Zentrierung und gezielte Kartenbewegungen werden getrennt gesteuert. */}
       <MapCenterUpdater location={location} enabled={followLocation} focusTarget={focusTarget} />
+
+      {/* Der optionale Pfad wird nur bei aktivierter Checkbox berechnet und gezeichnet. Beim Ausschalten entfernt React die Polyline vollständig aus der Karte. */}
+      {isQiblaPathVisible && <QiblaPathLayer location={location} />}
 
       {isSelectingLocation && <MapLocationClickHandler onSelectLocation={onSelectLocation} />}
 

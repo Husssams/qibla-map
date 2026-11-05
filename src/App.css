@@ -334,15 +334,77 @@ body {
   outline-offset: 2px;
 }
 
-/* Button direkt auf der Karte, auf allen Bildschirmgrößen. */
-.qm-map-select-button {
+/* Die Bedienelemente liegen am unteren Kartenrand und über dem mobilen Scrollschutz. */
+.qm-map-controls {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
   z-index: 1101;
-  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  /* Nur die eigentlichen Bedienelemente sollen Karteninteraktionen abfangen. */
+  pointer-events: none;
+}
+
+/* Auf breiten Karten stehen Checkbox und Auswahlbutton nebeneinander.
+   Bei wenig Platz dürfen sie umbrechen, ohne aus der Karte herauszuragen. */
+.qm-map-control-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+  pointer-events: auto;
+}
+
+/* Die Checkbox erhält dieselben Oberflächenfarben wie die restliche Anwendung. */
+.qm-qibla-path-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   min-height: 48px;
-  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  box-shadow: var(--qm-shadow);
+}
+
+/* Eine größere Checkbox ist auf Touchscreens leichter zu bedienen.
+   Die Akzentfarbe passt automatisch zum bestehenden Theme. */
+.qm-qibla-path-label input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: var(--qm-primary);
+  cursor: pointer;
+}
+
+/* Tastaturnutzer sollen erkennen können, welches Element fokussiert ist. */
+.qm-qibla-path-label input:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+/* Der Auswahlbutton wird jetzt durch den gemeinsamen Flexbox-Container positioniert.
+   So kann die Checkbox neben ihm stehen, ohne dass sich beide überlagern. */
+.qm-map-select-button {
+  min-height: 48px;
+  max-width: 100%;
   padding: 12px 20px;
   border: 0;
   border-radius: var(--qm-radius-sm);
@@ -483,4 +545,166 @@ body {
 
 .qm-map-card--expanded .qm-location-marker:active {
   cursor: grabbing;
+}
+
+/* Auf schmalen Displays nutzen die Kartenbedienelemente fast die gesamte Breite.
+   Flexbox ordnet Checkbox und Button bei Bedarf automatisch untereinander an. */
+@media (max-width: 640px) {
+  .qm-map-controls {
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+  }
+
+  .qm-map-control-actions {
+    width: 100%;
+  }
+}
+
+/* Der Info-Button verwendet dieselben Oberflächenfarben wie die Karten-Checkbox.
+   Dadurch bleiben beide Bedienelemente im Light Mode und Dark Mode gut erkennbar. */
+.qm-map-info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 48px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--qm-shadow);
+}
+
+.qm-map-info-button:hover {
+  background: var(--qm-surface-alt);
+}
+
+.qm-map-info-button:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+/* Der native modale Dialog wird vom Browser in einer eigenen Ebene dargestellt.
+   So funktioniert er auch über der vergrößerten Leaflet-Karte. */
+.qm-qibla-path-dialog {
+  box-sizing: border-box;
+  width: min(520px, calc(100% - 32px));
+  max-width: 520px;
+  max-height: 80svh;
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-lg);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 35%);
+}
+
+/* Die abgedunkelte Fläche lenkt den Blick auf die Erklärung.
+   Die Karte bleibt sichtbar, ist während des geöffneten Dialogs aber nicht bedienbar. */
+.qm-qibla-path-dialog::backdrop {
+  background: rgb(0 0 0 / 55%);
+  backdrop-filter: blur(3px);
+}
+
+/* Innenabstände und Leserichtung werden vom Dialoginhalt übernommen.
+   Die logischen CSS-Eigenschaften funktionieren auch bei arabischem RTL-Text. */
+.qm-qibla-path-dialog-content {
+  position: relative;
+  padding: 32px;
+  text-align: start;
+}
+
+.qm-qibla-path-dialog-icon {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 36px;
+}
+
+.qm-qibla-path-dialog-content h2 {
+  margin: 0 36px 16px 0;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.qm-qibla-path-dialog[dir='rtl'] h2 {
+  margin: 0 0 16px 36px;
+}
+
+.qm-qibla-path-dialog-content p {
+  margin: 0;
+  color: var(--qm-text-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Die Schließen-Schaltfläche bleibt auch bei langen Überschriften erreichbar.
+   inset-inline-end berücksichtigt automatisch die arabische Schreibrichtung. */
+.qm-qibla-path-dialog-close {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface-alt);
+  color: var(--qm-text);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.qm-qibla-path-dialog-close:hover {
+  background: var(--qm-surface);
+}
+
+.qm-qibla-path-dialog-close:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+/* Die Erklärung erscheint mit einer kurzen, dezenten Bewegung. */
+.qm-qibla-path-dialog[open] {
+  animation: qm-path-dialog-enter 220ms ease-out;
+}
+
+@keyframes qm-path-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Weniger Innenabstand verhindert Platzprobleme auf kleinen Smartphones. */
+@media (max-width: 640px) {
+  .qm-qibla-path-dialog-content {
+    padding: 24px;
+  }
+
+  .qm-qibla-path-dialog-content h2 {
+    font-size: 20px;
+  }
+}
+
+/* Nutzer mit reduzierter Bewegung erhalten den Dialog ohne Animation. */
+@media (prefers-reduced-motion: reduce) {
+  .qm-qibla-path-dialog[open] {
+    animation: none;
+  }
 }

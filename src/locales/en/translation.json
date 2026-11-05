@@ -17,6 +17,12 @@
   "locationAccuracy": "Location accuracy: ±{{meters}} m",
   "lowAccuracyWarning": "This location may be inaccurate, especially on computers without GPS. For a more precise position, choose a location directly on the map.",
   "qiblaTooClose": "You are too close to the Kaaba to display a reliable Qibla direction.",
+  "showQiblaPath": "Show Qibla path",
+  "qiblaPathInfoButton": "About this path",
+  "qiblaPathInfoTitle": "How is the Qibla path calculated?",
+  "qiblaPathExplanation": "This line shows the shortest path from your selected location to the Kaaba, calculated using the WGS84 model of the Earth. On a flat map, the path may appear curved, especially over long distances. Over shorter distances, it may look almost straight. The Qibla arrow shows the direction to follow at your location.",
+  "qiblaPathInfoClose": "Close information",
+
   "locationErrors": {
     "unsupported": "Location detection is not supported by your browser.",
     "permissionDenied": "Location access was denied.",

@@ -1,0 +1,54 @@
+import type { LatLngBoundsExpression } from 'leaflet'
+
+import type { Coordinates } from '../types/geo'
+import { calculateQiblaPath } from './qiblaPath'
+
+// Web Mercator kann die Pole nicht vollständig darstellen.
+// Diese Grenze entspricht dem maximal darstellbaren Breitengrad.
+const MERCATOR_LATITUDE_LIMIT = 85.05112878
+
+// Wählt einen zusammenhängenden Weltkartenausschnitt, der den WGS84-Pfad enthält.
+// So bleibt die Qibla-Linie auch beim Überqueren der Datumsgrenze sichtbar.
+export function getQiblaMapBounds(location: Coordinates): LatLngBoundsExpression {
+  const path = calculateQiblaPath(location)
+
+  // Direkt an der Kaaba existiert kein Pfad.
+  // Dort verwenden wir weiterhin die normale Weltansicht.
+  if (path.length === 0) {
+    return [
+      [-MERCATOR_LATITUDE_LIMIT, -180],
+      [MERCATOR_LATITUDE_LIMIT, 180],
+    ]
+  }
+
+  // LONG_UNROLL liefert kontinuierliche Längengrade.
+  // Deshalb können Werte unter -180° oder über 180° korrekt sein.
+  const longitudes = path.map((point) => point.longitude)
+  const westernmostLongitude = Math.min(...longitudes)
+  const easternmostLongitude = Math.max(...longitudes)
+
+  let westernBoundary: number
+
+  if (westernmostLongitude >= -180 && easternmostLongitude <= 180) {
+    // Normale Weltansicht, beispielsweise für New York oder Deutschland.
+    westernBoundary = -180
+  } else if (westernmostLongitude >= -360 && easternmostLongitude <= 0) {
+    // Verschobene Weltansicht für Hawaii:
+    // Die Kaaba liegt links und Hawaii rechts auf derselben Karte.
+    westernBoundary = -360
+  } else if (westernmostLongitude >= 0 && easternmostLongitude <= 360) {
+    // Entsprechende Weltansicht für einen ostwärts fortgeführten Pfad.
+    westernBoundary = 0
+  } else {
+    // Sonderfälle erhalten ein 360° breites Fenster um den gesamten Pfad.
+    // Dadurch bleiben auch ungewöhnliche Geodäten zusammenhängend sichtbar.
+    westernBoundary = (westernmostLongitude + easternmostLongitude) / 2 - 180
+  }
+
+  // Die horizontale Begrenzung umfasst eine vollständige Weltkartenbreite.
+  // Vertikal verhindern die Mercator-Grenzen leere Flächen außerhalb der Karte.
+  return [
+    [-MERCATOR_LATITUDE_LIMIT, westernBoundary],
+    [MERCATOR_LATITUDE_LIMIT, westernBoundary + 360],
+  ]
+}
