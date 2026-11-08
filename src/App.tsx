@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import QiblaMapView from './components/QiblaMapView'
-import { PlaceSearch } from './components/PlaceSearch'
+import QiblaMapView from './components/map/QiblaMapView'
+import { PlaceSearch } from './components/search/PlaceSearch'
 import { KAABA_COORDINATES } from './constants/kaaba'
 import { applyTheme, initialTheme, type Theme } from './theme'
 import type { Coordinates } from './types/geo'
@@ -10,10 +10,10 @@ import {
   clearSessionLocation,
   readSessionLocation,
   saveSessionLocation,
-} from './utils/detectedLocationSession'
-import { getUserLocation, type UserLocation } from './utils/getUserLocation'
-import { clearManualLocation, readManualLocation, saveManualLocation } from './utils/manualLocation'
-import { calculateQiblaBearing } from './utils/qiblaBearing'
+} from './utils/location/detectedLocationSession'
+import { getUserLocation, type UserLocation } from './utils/location/getUserLocation'
+import { clearManualLocation, readManualLocation, saveManualLocation } from './utils/location/manualLocation'
+import { calculateQiblaBearing } from './utils/qibla/qiblaBearing'
 
 import './App.css'
 

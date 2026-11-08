@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 
-import type { Coordinates } from '../types/geo'
+import type { Coordinates } from '../../types/geo'
 
-import { getQiblaMapBounds } from '../utils/qiblaMapBounds'
+import { getQiblaMapBounds } from '../../utils/qibla/qiblaMapBounds'
 
 type MapCenterUpdaterProps = {
   location: Coordinates

@@ -1,5 +1,5 @@
 // Importiert unseren vorhandenen Koordinatentyp.
-import type { Coordinates } from '../types/geo'
+import type { Coordinates } from '../../types/geo'
 
 // Kombiniert die Koordinaten mit der geschätzten Standortgenauigkeit.
 export type UserLocation = Coordinates & {

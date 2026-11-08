@@ -2,14 +2,14 @@ import { useEffect, useMemo, useRef } from 'react'
 import { divIcon, type Marker as LeafletMarker } from 'leaflet'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 
-import type { Coordinates } from '../types/geo'
-import type { Theme } from '../theme'
+import type { Coordinates } from '../../types/geo'
+import type { Theme } from '../../theme'
 
-import { getQiblaMapBounds } from '../utils/qiblaMapBounds'
+import { getQiblaMapBounds } from '../../utils/qibla/qiblaMapBounds'
 import MapBaseLayer from './MapBaseLayer'
 import MapCenterUpdater from './MapCenterUpdater'
 import QiblaPathLayer from './QiblaPathLayer'
-import { createQiblaArrowHtml } from '../utils/qiblaArrow'
+import { createQiblaArrowHtml } from '../../utils/qibla/qiblaArrow'
 
 import 'leaflet/dist/leaflet.css'
 

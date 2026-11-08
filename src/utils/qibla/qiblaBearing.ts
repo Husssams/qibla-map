@@ -2,10 +2,10 @@
 import { Geodesic } from 'geographiclib-geodesic'
 
 // Importiert die Koordinaten der Kaaba.
-import { KAABA_COORDINATES } from '../constants/kaaba'
+import { KAABA_COORDINATES } from '../../constants/kaaba'
 
 // Importiert unseren Datentyp für Koordinaten.
-import type { Coordinates } from '../types/geo'
+import type { Coordinates } from '../../types/geo'
 
 // null bedeutet: Für diesen Standort ist keine zuverlässige Richtung definiert.
 export function calculateQiblaBearing(location: Coordinates): number | null {

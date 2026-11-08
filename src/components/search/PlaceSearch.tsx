@@ -2,8 +2,8 @@
 import { useEffect, useId, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { searchPlaces, type PlaceSearchError, type PlaceSuggestion } from '../utils/placeSearchApi'
-import { validatePlaceSearchInput } from '../utils/placeSearchInput'
+import { searchPlaces, type PlaceSearchError, type PlaceSuggestion } from '../../utils/search/placeSearchApi'
+import { validatePlaceSearchInput } from '../../utils/search/placeSearchInput'
 
 import './PlaceSearch.css'
 

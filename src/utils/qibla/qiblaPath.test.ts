@@ -2,8 +2,8 @@
 import { describe, expect, it } from 'vitest'
 import { Geodesic } from 'geographiclib-geodesic'
 
-import { KAABA_COORDINATES } from '../constants/kaaba'
-import type { Coordinates } from '../types/geo'
+import { KAABA_COORDINATES } from '../../constants/kaaba'
+import type { Coordinates } from '../../types/geo'
 import { calculateQiblaPath } from './qiblaPath'
 
 // New York ist ein wichtiger Testfall, weil der kürzeste Weg zur Kaaba

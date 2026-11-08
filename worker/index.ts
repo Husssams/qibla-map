@@ -1,7 +1,7 @@
-import { validatePlaceSearchInput } from '../src/utils/placeSearchInput'
-import { searchGeoapify } from './geoapify'
+import { validatePlaceSearchInput } from '../src/utils/search/placeSearchInput'
+import { searchGeoapify } from './search/geoapify'
 // Macht unsere Zählerklasse für Cloudflare verfügbar.
-export { SearchBudget } from './searchBudget'
+export { SearchBudget } from './budget/searchBudget'
 
 // Wir importieren unsere bereits programmierte Funktion aus dem Frontend-Projekt.
 // Sie prüft zum Beispiel, ob der Suchtext mindestens 3 und höchstens 120 Zeichen hat.

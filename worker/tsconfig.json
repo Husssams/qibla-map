@@ -9,5 +9,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["./**/*.ts", "../src/utils/placeSearchInput.ts", "../worker-configuration.d.ts"]
+  "include": ["./**/*.ts", "../src/utils/search/placeSearchInput.ts", "../worker-configuration.d.ts"]
 }
