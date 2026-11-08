@@ -69,6 +69,11 @@ export default function NavigationMenu() {
             {t('navigation.map')}
           </NavLink>
 
+          {/* Die Hilfeseite ist bereits verfügbar. */}
+          <NavLink to="/help" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.help')}
+          </NavLink>
+
           {/* Noch nicht implementierte Seiten sind keine Links. */}
           {plannedPages.map((page) => (
             <div className="qm-nav__planned" key={page}>

@@ -50,6 +50,16 @@
     "privacy": "Datenschutz",
     "imprint": "Impressum",
     "settings": "Einstellungen und Hilfe",
-    "comingSoon": "Demnächst"
+    "comingSoon": "Demnächst",
+    "help": "Hilfe"
+  },
+  "helpPage": {
+    "title": "So verwendest du QiblaMap",
+    "intro": "Mit diesen Funktionen findest du deine Gebetsrichtung:",
+    "search": "Suche nach einer Stadt oder Adresse, um einen Standort auszuwählen.",
+    "gps": "Verwende die Standortermittlung, um deine aktuelle Position abzufragen.",
+    "map": "Wähle einen Standort direkt auf der Karte aus.",
+    "path": "Aktiviere die Qibla-Linie, um den Weg zur Kaaba darzustellen.",
+    "backToMap": "Zurück zur Karte"
   }
 }
