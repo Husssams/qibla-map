@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { KAABA_COORDINATES } from '../constants/kaaba'
-import type { Coordinates } from '../types/geo'
+import { KAABA_COORDINATES } from '../../constants/kaaba'
+import type { Coordinates } from '../../types/geo'
 import { getQiblaMapBounds } from './qiblaMapBounds'
 import { calculateQiblaPath } from './qiblaPath'
 

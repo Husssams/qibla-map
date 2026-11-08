@@ -1,5 +1,5 @@
 import { TileLayer } from 'react-leaflet'
-import type { Theme } from '../theme'
+import type { Theme } from '../../theme'
 
 type MapBaseLayerProps = {
   theme: Theme

@@ -1,8 +1,8 @@
 
 import { Geodesic } from 'geographiclib-geodesic'
 
-import { KAABA_COORDINATES } from '../constants/kaaba'
-import type { Coordinates } from '../types/geo'
+import { KAABA_COORDINATES } from '../../constants/kaaba'
+import type { Coordinates } from '../../types/geo'
 import { calculateQiblaBearing } from './qiblaBearing'
 
 // Eine geodätische Strecke wird durch Zwischenpunkte als Kurve auf der Karte sichtbar.

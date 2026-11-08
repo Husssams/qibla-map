@@ -1,4 +1,4 @@
-import type { Coordinates } from '../types/geo'
+import type { Coordinates } from '../../types/geo'
 
 // Unter diesem Schlüssel merken wir uns den manuell gewählten Standort.
 const STORAGE_KEY = 'qibla-map-manual-location'

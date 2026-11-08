@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import type { LatLngTuple, PathOptions } from 'leaflet'
 import { Polyline } from 'react-leaflet'
 
-import type { Coordinates } from '../types/geo'
-import { calculateQiblaPath } from '../utils/qiblaPath'
+import type { Coordinates } from '../../types/geo'
+import { calculateQiblaPath } from '../../utils/qibla/qiblaPath'
 
 type QiblaPathLayerProps = {
   location: Coordinates

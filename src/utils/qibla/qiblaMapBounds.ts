@@ -1,6 +1,6 @@
 import type { LatLngBoundsExpression } from 'leaflet'
 
-import type { Coordinates } from '../types/geo'
+import type { Coordinates } from '../../types/geo'
 import { calculateQiblaPath } from './qiblaPath'
 
 // Web Mercator kann die Pole nicht vollständig darstellen.

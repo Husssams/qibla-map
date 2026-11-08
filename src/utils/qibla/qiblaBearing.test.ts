@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
 import { calculateQiblaBearing } from './qiblaBearing'
 
 // Importiert die gespeicherten Koordinaten der Kaaba.
-import { KAABA_COORDINATES } from '../constants/kaaba'
+import { KAABA_COORDINATES } from '../../constants/kaaba'
 
 // Gruppiert die Tests unserer Berechnungsfunktion.
 describe('calculateQiblaBearing', () => {
