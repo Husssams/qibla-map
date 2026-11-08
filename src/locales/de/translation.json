@@ -38,5 +38,18 @@
     "dailyLimitReached": "Das tägliche Suchbudget ist aufgebraucht. Bitte später erneut versuchen.",
     "tooManyRequests": "Zu viele Suchanfragen. Bitte kurz warten.",
     "searchUnavailable": "Die Suche ist momentan nicht verfügbar."
+  },
+  "navigation": {
+    "title": "Navigation",
+    "open": "Menü öffnen",
+    "close": "Menü schließen",
+    "map": "Karte",
+    "compass": "Live-Kompass",
+    "arCamera": "AR-Kamera",
+    "about": "Über QiblaMap",
+    "privacy": "Datenschutz",
+    "imprint": "Impressum",
+    "settings": "Einstellungen und Hilfe",
+    "comingSoon": "Demnächst"
   }
 }

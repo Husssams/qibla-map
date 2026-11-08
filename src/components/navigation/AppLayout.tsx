@@ -6,6 +6,8 @@ import { applyTheme, initialTheme, type Theme } from '../../theme'
 
 import '../../App.css'
 
+import NavigationMenu from './NavigationMenu'
+
 function AppLayout() {
   const { t, i18n } = useTranslation()
 
@@ -25,6 +27,10 @@ function AppLayout() {
   return (
     <main className="qm-page">
       <header className="qm-header">
+        {/* Die Navigation gehört zum gemeinsamen Layout.
+      Dadurch ist sie später auf allen Seiten verfügbar. */}
+        <NavigationMenu />
+
         <div className="qm-brand">
           <span className="qm-brand-icon" aria-hidden="true">
             ✦
