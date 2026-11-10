@@ -7,6 +7,7 @@ import { applyTheme, initialTheme, type Theme } from '../../theme'
 import '../../App.css'
 
 import NavigationMenu from './NavigationMenu'
+import type { MapViewport } from '../../types/mapViewport'
 
 function AppLayout() {
   const { t, i18n } = useTranslation()
@@ -18,6 +19,9 @@ function AppLayout() {
   // Die Einstellung der Qibla-Linie bleibt beim Seitenwechsel erhalten.
   // Sie gehört deshalb zum gemeinsamen Layout statt zur MapPage.
   const [isQiblaPathVisible, setIsQiblaPathVisible] = useState(false)
+  // Speichert den zuletzt sichtbaren Kartenausschnitt während der Navigation.
+  // null bedeutet: Die Karte wurde noch nicht manuell verändert.
+  const [mapViewport, setMapViewport] = useState<MapViewport | null>(null)
 
   const themeButtonLabel = theme === 'light' ? t('switchToDark') : t('switchToLight')
 
@@ -78,7 +82,15 @@ function AppLayout() {
       {/* Outlet zeigt die aktuell ausgewählte Seite.
           Das Layout selbst bleibt beim Navigieren erhalten.
           Über context erhält die Kartenseite das gemeinsame Theme. */}
-      <Outlet context={{ theme, isQiblaPathVisible, setIsQiblaPathVisible }} />
+      <Outlet
+        context={{
+          theme,
+          isQiblaPathVisible,
+          setIsQiblaPathVisible,
+          mapViewport,
+          setMapViewport,
+        }}
+      />
     </main>
   )
 }

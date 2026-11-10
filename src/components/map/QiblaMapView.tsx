@@ -3,6 +3,7 @@ import { divIcon, type Marker as LeafletMarker } from 'leaflet'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 
 import type { Coordinates } from '../../types/geo'
+import type { MapViewport } from '../../types/mapViewport'
 import type { Theme } from '../../theme'
 
 import { getQiblaMapBounds } from '../../utils/qibla/qiblaMapBounds'
@@ -15,6 +16,8 @@ import 'leaflet/dist/leaflet.css'
 
 type QiblaMapViewProps = {
   location: Coordinates
+  viewport: MapViewport | null
+  onViewportChange: (viewport: MapViewport) => void
   qiblaBearing: number | null
   isQiblaPathVisible: boolean
   theme: Theme
@@ -53,6 +56,39 @@ function MapResizeHandler() {
   return null
 }
 
+// Beobachtet Änderungen des Kartenmittelpunkts und der Zoomstufe.
+// Die Ereignisse werden erst nach einer abgeschlossenen Bewegung verarbeitet,
+// damit wir nicht bei jedem Animationsframe React-State aktualisieren.
+function MapViewportTracker({
+  onViewportChange,
+}: {
+  onViewportChange: (viewport: MapViewport) => void
+}) {
+  const map = useMap()
+
+  function reportViewport() {
+    const center = map.getCenter()
+
+    // Den Längengrad bewusst nicht normalisieren:
+    // Für Wege über die Datumsgrenze benötigen wir ggf. eine verschobene Weltkarte.
+    onViewportChange({
+      center: {
+        latitude: center.lat,
+        longitude: center.lng,
+      },
+      zoom: map.getZoom(),
+    })
+  }
+
+  // moveend erfasst Verschiebungen, zoomend erfasst Zoomänderungen.
+  useMapEvents({
+    moveend: reportViewport,
+    zoomend: reportViewport,
+  })
+
+  return null
+}
+
 // Ermöglicht die Standortauswahl durch einen Kartenklick.
 // Dieser Handler wird nur im geöffneten Auswahlmodus eingebunden.
 function MapLocationClickHandler({
@@ -75,6 +111,8 @@ function MapLocationClickHandler({
 // Zeigt die Karte, steuert die Standortauswahl und aktualisiert den Marker.
 export default function QiblaMapView({
   location,
+  viewport,
+  onViewportChange,
   qiblaBearing,
   isQiblaPathVisible,
   theme,
@@ -91,19 +129,28 @@ export default function QiblaMapView({
   return (
     // Verhindert zu starkes Herauszoomen, bei dem mehrere Weltkarten nebeneinander erscheinen.
     <MapContainer
-      center={[location.latitude, location.longitude]}
-      zoom={16}
+      center={[
+        viewport?.center.latitude ?? location.latitude,
+        viewport?.center.longitude ?? location.longitude,
+      ]}
+      zoom={viewport?.zoom ?? 16}
       minZoom={3}
       maxBounds={getQiblaMapBounds(location)}
       maxBoundsViscosity={1.0}
       className="qibla-map"
     >
       <MapResizeHandler />
+      <MapViewportTracker onViewportChange={onViewportChange} />
 
       <MapBaseLayer theme={theme} />
 
       {/* GPS-Zentrierung und gezielte Kartenbewegungen werden getrennt gesteuert. */}
-      <MapCenterUpdater location={location} enabled={followLocation} focusTarget={focusTarget} />
+      <MapCenterUpdater
+        location={location}
+        enabled={followLocation}
+        focusTarget={focusTarget}
+        hasRestoredViewport={viewport !== null}
+      />
 
       {/* Der optionale Pfad wird nur bei aktivierter Checkbox berechnet und gezeichnet. Beim Ausschalten entfernt React die Polyline vollständig aus der Karte. */}
       {isQiblaPathVisible && <QiblaPathLayer location={location} />}

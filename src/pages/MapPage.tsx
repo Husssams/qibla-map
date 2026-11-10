@@ -7,6 +7,7 @@ import { PlaceSearch } from '../components/search/PlaceSearch'
 import { KAABA_COORDINATES } from '../constants/kaaba'
 import type { Theme } from '../theme'
 import type { Coordinates } from '../types/geo'
+import type { MapViewport } from '../types/mapViewport'
 import {
   clearSessionLocation,
   readSessionLocation,
@@ -42,11 +43,14 @@ function MapPage() {
 
   // Theme und Qibla-Linie werden im gemeinsamen Layout verwaltet.
   // Beide Einstellungen bleiben beim Navigieren zwischen Seiten erhalten.
-  const { theme, isQiblaPathVisible, setIsQiblaPathVisible } = useOutletContext<{
-    theme: Theme
-    isQiblaPathVisible: boolean
-    setIsQiblaPathVisible: (visible: boolean) => void
-  }>()
+  const { theme, isQiblaPathVisible, setIsQiblaPathVisible, mapViewport, setMapViewport } =
+    useOutletContext<{
+      theme: Theme
+      isQiblaPathVisible: boolean
+      setIsQiblaPathVisible: (visible: boolean) => void
+      mapViewport: MapViewport | null
+      setMapViewport: (viewport: MapViewport) => void
+    }>()
 
   // GPS-Daten werden nur für die aktuelle Browsersitzung gespeichert.
   const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(readSessionLocation)
@@ -257,6 +261,8 @@ function MapPage() {
       <div className={`qm-map-card${isMapExpanded ? ' qm-map-card--expanded' : ''}`}>
         <QiblaMapView
           location={activeLocation}
+          viewport={mapViewport}
+          onViewportChange={setMapViewport}
           qiblaBearing={qiblaBearing}
           isQiblaPathVisible={isQiblaPathVisible}
           theme={theme}
