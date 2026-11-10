@@ -15,6 +15,10 @@ function AppLayout() {
   // Seitenwechsel nicht zurückgesetzt wird.
   const [theme, setTheme] = useState<Theme>(initialTheme)
 
+  // Die Einstellung der Qibla-Linie bleibt beim Seitenwechsel erhalten.
+  // Sie gehört deshalb zum gemeinsamen Layout statt zur MapPage.
+  const [isQiblaPathVisible, setIsQiblaPathVisible] = useState(false)
+
   const themeButtonLabel = theme === 'light' ? t('switchToDark') : t('switchToLight')
 
   function handleThemeToggle() {
@@ -74,7 +78,7 @@ function AppLayout() {
       {/* Outlet zeigt die aktuell ausgewählte Seite.
           Das Layout selbst bleibt beim Navigieren erhalten.
           Über context erhält die Kartenseite das gemeinsame Theme. */}
-      <Outlet context={{ theme }} />
+      <Outlet context={{ theme, isQiblaPathVisible, setIsQiblaPathVisible }} />
     </main>
   )
 }

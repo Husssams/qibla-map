@@ -40,9 +40,13 @@ function MapPage() {
     searchUnavailable: t('placeSearch.searchUnavailable'),
   }
 
-  // Das Theme wird im gemeinsamen Layout verwaltet.
-  // Dadurch bleibt es auch beim Navigieren zwischen Seiten erhalten.
-  const { theme } = useOutletContext<{ theme: Theme }>()
+  // Theme und Qibla-Linie werden im gemeinsamen Layout verwaltet.
+  // Beide Einstellungen bleiben beim Navigieren zwischen Seiten erhalten.
+  const { theme, isQiblaPathVisible, setIsQiblaPathVisible } = useOutletContext<{
+    theme: Theme
+    isQiblaPathVisible: boolean
+    setIsQiblaPathVisible: (visible: boolean) => void
+  }>()
 
   // GPS-Daten werden nur für die aktuelle Browsersitzung gespeichert.
   const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(readSessionLocation)
@@ -53,9 +57,6 @@ function MapPage() {
   const [locationError, setLocationError] = useState<string | null>(null)
   const [isLocating, setIsLocating] = useState(false)
   const [isMapExpanded, setIsMapExpanded] = useState(false)
-  // Die geodätische Linie ist optional und beim ersten Laden ausgeschaltet.
-  // Die Einstellung bleibt unabhängig von GPS, Standortsuche und Kartengröße.
-  const [isQiblaPathVisible, setIsQiblaPathVisible] = useState(false)
 
   // Über die Referenz öffnen und schließen wir den nativen Dialog.
   // Ein zusätzlicher React-State ist dafür nicht erforderlich.
