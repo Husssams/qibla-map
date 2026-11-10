@@ -62,5 +62,10 @@
     "map": "Choose a location directly on the map.",
     "path": "Enable Show Qibla path to visualize the route to the Kaaba.",
     "backToMap": "Back to map"
+  },
+  "notFoundPage": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "backToMap": "Back to map"
   }
 }

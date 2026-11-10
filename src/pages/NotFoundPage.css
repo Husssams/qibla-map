@@ -1,0 +1,43 @@
+/* Die Fehlerseite verwendet das bestehende QiblaMap-Design. */
+.qm-not-found {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 36px);
+  border: 1px solid var(--qm-border);
+  border-radius: 20px;
+  background: var(--qm-surface);
+  color: var(--qm-text);
+}
+
+.qm-not-found__code {
+  margin: 0;
+  color: var(--qm-primary);
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.qm-not-found h2 {
+  margin-block: 12px;
+}
+
+.qm-not-found p {
+  line-height: 1.7;
+}
+
+.qm-not-found__link {
+  display: inline-block;
+  margin-block-start: 16px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--qm-primary);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.qm-not-found__link:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
