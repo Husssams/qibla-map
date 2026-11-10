@@ -38,5 +38,33 @@
     "dailyLimitReached": "Das tägliche Suchbudget ist aufgebraucht. Bitte später erneut versuchen.",
     "tooManyRequests": "Zu viele Suchanfragen. Bitte kurz warten.",
     "searchUnavailable": "Die Suche ist momentan nicht verfügbar."
+  },
+  "navigation": {
+    "title": "Navigation",
+    "open": "Menü öffnen",
+    "close": "Menü schließen",
+    "map": "Karte",
+    "compass": "Live-Kompass",
+    "arCamera": "AR-Kamera",
+    "about": "Über QiblaMap",
+    "privacy": "Datenschutz",
+    "imprint": "Impressum",
+    "settings": "Einstellungen",
+    "comingSoon": "Demnächst",
+    "help": "Hilfe"
+  },
+  "helpPage": {
+    "title": "So verwendest du QiblaMap",
+    "intro": "Mit diesen Funktionen findest du deine Gebetsrichtung:",
+    "search": "Suche nach einer Stadt oder Adresse, um einen Standort auszuwählen.",
+    "gps": "Verwende die Standortermittlung, um deine aktuelle Position abzufragen.",
+    "map": "Wähle einen Standort direkt auf der Karte aus.",
+    "path": "Aktiviere die Qibla-Linie, um den Weg zur Kaaba darzustellen.",
+    "backToMap": "Zurück zur Karte"
+  },
+  "notFoundPage": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht.",
+    "backToMap": "Zurück zur Karte"
   }
 }
