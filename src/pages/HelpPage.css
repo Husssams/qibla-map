@@ -45,3 +45,37 @@
   outline: 3px solid var(--qm-text);
   outline-offset: 3px;
 }
+
+/* Die Qibla-Fragen erscheinen als einzelne aufklappbare Karten. */
+.qm-faq {
+  display: grid;
+  gap: 12px;
+  margin-block: 24px;
+}
+
+.qm-faq details {
+  border: 1px solid var(--qm-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.qm-faq details[open] {
+  border-color: var(--qm-primary);
+}
+
+/* Eine Frage kann per Maus und Tastatur geöffnet werden. */
+.qm-faq summary {
+  padding: 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.qm-faq summary:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: -3px;
+}
+
+.qm-faq details p {
+  margin: 0;
+  padding: 0 16px 16px;
+}
