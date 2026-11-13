@@ -1,6 +1,18 @@
 {
   "name": "qibla-map-search",
   "main": "worker/index.ts",
+  "assets": {
+    // Die fertige React-Webseite liegt nach npm run build in dist.
+    "directory": "./dist",
+
+    // Auch direkte Aufrufe wie /privacy und /imprint
+    // sollen unsere React-Anwendung öffnen.
+    "not_found_handling": "single-page-application",
+
+    // Suchanfragen sollen weiterhin vom bestehenden Worker
+    // und nicht von der React-Webseite beantwortet werden.
+    "run_worker_first": ["/api/*", "/health"],
+  },
   "compatibility_date": "2026-10-30",
   "secrets": {
     "required": ["GEOAPIFY_API_KEY"],

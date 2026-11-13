@@ -6,7 +6,7 @@ import './NavigationMenu.css'
 
 // Diese Seiten werden in späteren Issues implementiert.
 // Bis dahin erscheinen sie nur als geplante Funktionen.
-const plannedPages = ['compass', 'arCamera', 'about', 'privacy', 'imprint', 'settings'] as const
+const plannedPages = ['compass', 'arCamera', 'settings'] as const
 
 export default function NavigationMenu() {
   const { t } = useTranslation()
@@ -72,6 +72,19 @@ export default function NavigationMenu() {
           {/* Die Hilfeseite ist bereits verfügbar. */}
           <NavLink to="/help" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.help')}
+          </NavLink>
+          {/* Erklärungen über Qibla und Kaaba. */}
+          <NavLink to="/qibla-faq" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.qiblaFaq')}
+          </NavLink>
+
+          {/* Rechtliche Seiten sind über das Menü erreichbar. */}
+          <NavLink to="/privacy" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.privacy')}
+          </NavLink>
+
+          <NavLink to="/imprint" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.imprint')}
           </NavLink>
 
           {/* Noch nicht implementierte Seiten sind keine Links. */}
