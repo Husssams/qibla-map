@@ -43,14 +43,27 @@ function MapPage() {
 
   // Theme und Qibla-Linie werden im gemeinsamen Layout verwaltet.
   // Beide Einstellungen bleiben beim Navigieren zwischen Seiten erhalten.
-  const { theme, isQiblaPathVisible, setIsQiblaPathVisible, mapViewport, setMapViewport } =
-    useOutletContext<{
-      theme: Theme
-      isQiblaPathVisible: boolean
-      setIsQiblaPathVisible: (visible: boolean) => void
-      mapViewport: MapViewport | null
-      setMapViewport: (viewport: MapViewport) => void
-    }>()
+  const {
+    theme,
+    isQiblaPathVisible,
+    setIsQiblaPathVisible,
+    mapViewport,
+    setMapViewport,
+    isQiblaPathFitEnabled,
+    setIsQiblaPathFitEnabled,
+    preFitViewport,
+    setPreFitViewport,
+  } = useOutletContext<{
+    theme: Theme
+    isQiblaPathVisible: boolean
+    setIsQiblaPathVisible: (visible: boolean) => void
+    mapViewport: MapViewport | null
+    setMapViewport: (viewport: MapViewport) => void
+    isQiblaPathFitEnabled: boolean
+    setIsQiblaPathFitEnabled: (enabled: boolean) => void
+    preFitViewport: MapViewport | null
+    setPreFitViewport: (viewport: MapViewport | null) => void
+  }>()
 
   // GPS-Daten werden nur für die aktuelle Browsersitzung gespeichert.
   const [detectedLocation, setDetectedLocation] = useState<UserLocation | null>(readSessionLocation)
@@ -100,6 +113,14 @@ function MapPage() {
       if (qiblaPathDialogRef.current?.open) return
 
       setIsMapExpanded(false)
+
+      // Bei aktiver Pfadanpassung übernimmt der Fit-Controller.
+      // Wir dürfen nicht zusätzlich auf den Standort zentrieren.
+      if (isQiblaPathFitEnabled) {
+        setFocusTarget(null)
+        return
+      }
+
       setFocusTarget({
         latitude: activeLocation.latitude,
         longitude: activeLocation.longitude,
@@ -111,7 +132,22 @@ function MapPage() {
     return () => {
       window.removeEventListener('keydown', handleEscape)
     }
-  }, [isMapExpanded, activeLocation.latitude, activeLocation.longitude])
+  }, [isMapExpanded, activeLocation.latitude, activeLocation.longitude, isQiblaPathFitEnabled])
+
+  // Wenn während der automatischen Pfadanpassung ein neuer Standort
+  // gewählt wird, soll die Wiederherstellung auf diesen Standort zeigen.
+  // Die Zoomstufe vor dem Einschalten der Anpassung bleibt erhalten.
+  function updatePreFitViewportForLocation(nextLocation: Coordinates) {
+    if (!isQiblaPathFitEnabled) return
+
+    setPreFitViewport({
+      center: {
+        latitude: nextLocation.latitude,
+        longitude: nextLocation.longitude,
+      },
+      zoom: preFitViewport?.zoom ?? 16,
+    })
+  }
 
   // Übernimmt einen manuell ausgewählten Standort aus der Karte oder Ortssuche.
   function handleManualLocationChange(location: Coordinates) {
@@ -123,6 +159,7 @@ function MapPage() {
 
     setManualLocation(normalizedLocation)
     saveManualLocation(normalizedLocation)
+    updatePreFitViewportForLocation(normalizedLocation)
 
     // Eine manuelle Auswahl ersetzt den zuvor aktiven GPS-Standort.
     setDetectedLocation(null)
@@ -131,9 +168,16 @@ function MapPage() {
     setLocationError(null)
   }
 
-  // Beim Schließen der großen Karte wird der Marker wieder zentriert.
   function handleCloseExpandedMap() {
     setIsMapExpanded(false)
+
+    // Bei aktiver Pfadanpassung übernimmt der Fit-Controller
+    // die Kartenbewegung. Eine zusätzliche Zentrierung
+    // würde den vollständig angezeigten Pfad wieder verschieben.
+    if (isQiblaPathFitEnabled) {
+      setFocusTarget(null)
+      return
+    }
 
     setFocusTarget({
       latitude: activeLocation.latitude,
@@ -151,6 +195,9 @@ function MapPage() {
       setDetectedLocation(location)
       saveSessionLocation(location)
       setGpsFromStorage(false)
+      // Auch ein neu ermittelter GPS-Standort ersetzt die alte
+      // Wiederherstellungsposition während der Pfadanpassung.
+      updatePreFitViewportForLocation(location)
 
       // Eine neue GPS-Messung ersetzt einen zuvor manuell gewählten Standort.
       setManualLocation(null)
@@ -181,10 +228,14 @@ function MapPage() {
               longitude: place.longitude,
             })
 
-            setFocusTarget({
-              latitude: place.latitude,
-              longitude: place.longitude,
-            })
+            // Ohne Pfadanpassung zentriert die Suche wie bisher.
+            // Mit Pfadanpassung übernimmt der Fit-Controller.
+            if (!isQiblaPathFitEnabled) {
+              setFocusTarget({
+                latitude: place.latitude,
+                longitude: place.longitude,
+              })
+            }
           }}
         />
 
@@ -265,6 +316,8 @@ function MapPage() {
           onViewportChange={setMapViewport}
           qiblaBearing={qiblaBearing}
           isQiblaPathVisible={isQiblaPathVisible}
+          isQiblaPathFitEnabled={isQiblaPathFitEnabled}
+          preFitViewport={preFitViewport}
           theme={theme}
           isSelectingLocation={isMapExpanded}
           followLocation={manualLocation === null}
@@ -297,10 +350,52 @@ function MapPage() {
               <input
                 type="checkbox"
                 checked={isQiblaPathVisible}
-                onChange={(event) => setIsQiblaPathVisible(event.target.checked)}
+                onChange={(event) => {
+                  const isVisible = event.target.checked
+
+                  setIsQiblaPathVisible(isVisible)
+
+                  // Wird die Qibla-Linie ausgeschaltet, beenden wir
+                  // gleichzeitig die automatische Kartenanpassung.
+                  if (!isVisible) {
+                    setIsQiblaPathFitEnabled(false)
+                  }
+                }}
               />
               <span>{t('showQiblaPath')}</span>
             </label>
+
+            {/* Die automatische Kartenanpassung ist nur sinnvoll,
+    wenn ein gültiger Qibla-Pfad angezeigt werden kann. */}
+            {isQiblaPathVisible && qiblaBearing !== null && (
+              <label className="qm-qibla-path-label">
+                <input
+                  type="checkbox"
+                  checked={isQiblaPathFitEnabled}
+                  onChange={(event) => {
+                    const shouldFit = event.target.checked
+
+                    if (shouldFit) {
+                      setFocusTarget(null)
+                      // Wir merken uns die ursprüngliche Ansicht nur
+                      // beim Einschalten der automatischen Anpassung.
+                      setPreFitViewport(
+                        mapViewport ?? {
+                          center: {
+                            latitude: activeLocation.latitude,
+                            longitude: activeLocation.longitude,
+                          },
+                          zoom: 16,
+                        },
+                      )
+                    }
+
+                    setIsQiblaPathFitEnabled(shouldFit)
+                  }}
+                />
+                <span>{t('fitQiblaPath')}</span>
+              </label>
+            )}
 
             {/* Der Info-Button erscheint nur bei sichtbarer und definierter Linie.
           Die längere Erklärung soll nicht dauerhaft Kartenfläche verdecken. */}

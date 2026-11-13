@@ -52,3 +52,64 @@ export function getQiblaMapBounds(location: Coordinates): LatLngBoundsExpression
     [MERCATOR_LATITUDE_LIMIT, westernBoundary + 360],
   ]
 }
+
+// Berechnet den kleinsten rechteckigen Kartenausschnitt,
+// der den gesamten WGS84-Qibla-Pfad umfasst.
+//
+// Anders als getQiblaMapBounds() liefern wir hier keine ganze
+// Weltkartenbreite, sondern nur die Grenzen des tatsächlichen Pfads.
+export function getQiblaPathFitBounds(
+  location: Coordinates,
+): [[number, number], [number, number]] | null {
+  const path = calculateQiblaPath(location)
+
+  // Direkt an der Kaaba existiert kein sinnvoller Qibla-Pfad.
+  // Ohne mindestens zwei Punkte können wir keinen Pfad einpassen.
+  if (path.length < 2) return null
+
+  // Web Mercator kann Breitengrade nahe den Polen nicht darstellen.
+  // Deshalb begrenzen wir die Werte auf den darstellbaren Bereich.
+  const latitudes = path.map((point) =>
+    Math.max(-MERCATOR_LATITUDE_LIMIT, Math.min(MERCATOR_LATITUDE_LIMIT, point.latitude)),
+  )
+
+  // Die Längengrade bleiben unverändert.
+  // Das ist für Qibla-Pfade über die Datumsgrenze wichtig.
+  const longitudes = path.map((point) => point.longitude)
+
+  // Wir bestimmen die äußersten geografischen Punkte des Pfads.
+  const south = Math.min(...latitudes)
+  const north = Math.max(...latitudes)
+  const west = Math.min(...longitudes)
+  const east = Math.max(...longitudes)
+
+  // Leaflet erwartet zwei Eckpunkte:
+  // [Südwest-Ecke, Nordost-Ecke].
+  return [
+    [south, west],
+    [north, east],
+  ]
+}
+
+// Zwei Weltkartenbreiten, insgesamt 720 Grad Längengrad.
+// Dadurch passen sowohl normale Kartenansichten als auch
+// verschobene Weltkartenkopien für Wege über die Datumsgrenze.
+const MAP_WEST = -360
+const MAP_EAST = 360
+
+// Der normale Kartenmodus bleibt innerhalb des darstellbaren
+// Web-Mercator-Bereichs. Im Pfadmodus erlauben wir etwas
+// zusätzlichen Platz, damit Polarstrecken eingepasst werden können.
+const NORMAL_LATITUDE_LIMIT = 85.05112878
+const FIT_LATITUDE_LIMIT = 89.9
+
+// Liefert feste und endliche Grenzen für beide Kartenmodi.
+// Wir berechnen sie nicht mehr aus dem sichtbaren Ausschnitt.
+export function getMapInteractionBounds(fitEnabled: boolean): [[number, number], [number, number]] {
+  const latitudeLimit = fitEnabled ? FIT_LATITUDE_LIMIT : NORMAL_LATITUDE_LIMIT
+
+  return [
+    [-latitudeLimit, MAP_WEST],
+    [latitudeLimit, MAP_EAST],
+  ]
+}
