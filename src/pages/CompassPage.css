@@ -1,0 +1,59 @@
+/* Die Kompassscheibe bleibt auf kleinen Bildschirmen responsiv. */
+.qm-compass__dial {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  margin: 24px auto;
+}
+
+/* Äußerer Kreis mit einer dezenten Hintergrundfläche. */
+.qm-compass__ring {
+  fill: var(--qm-surface-alt);
+  stroke: var(--qm-border);
+  stroke-width: 5;
+}
+
+/* Der innere Ring dient als zusätzliche Orientierung. */
+.qm-compass__inner-ring {
+  fill: none;
+  stroke: var(--qm-text-muted);
+  stroke-opacity: 0.45;
+}
+
+/* Kleine Markierungen am Rand der Scheibe. */
+.qm-compass__tick {
+  stroke: var(--qm-text-muted);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Himmelsrichtungen innerhalb des Kompasses. */
+.qm-compass__direction {
+  fill: var(--qm-text);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* Norden wird hervorgehoben. */
+.qm-compass__north {
+  fill: var(--qm-primary);
+}
+
+/* Goldene Spitze der Qibla-Nadel. */
+.qm-compass__needle-front {
+  fill: #e5b65b;
+}
+
+/* Der hintere Teil bleibt zurückhaltend. */
+.qm-compass__needle-back {
+  fill: var(--qm-text-muted);
+}
+
+/* Der Mittelpunkt verbindet beide Teile der Nadel. */
+.qm-compass__needle-center {
+  fill: var(--qm-surface);
+  stroke: #e5b65b;
+  stroke-width: 3;
+}

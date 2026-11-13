@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router'
 
 import AppLayout from './components/navigation/AppLayout'
 import HelpPage from './pages/HelpPage'
+import CompassPage from './pages/CompassPage'
 import QiblaFaqPage from './pages/QiblaFaqPage'
 import ImprintPage from './pages/ImprintPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -15,6 +16,8 @@ function App() {
       <Route element={<AppLayout />}>
         {/* Die Karte bleibt unsere Hauptseite. */}
         <Route index element={<MapPage />} />
+        {/* Eigene Seite für den zukünftigen Live-Kompass. */}
+        <Route path="compass" element={<CompassPage />} />
 
         {/* Erste zusätzliche Seite mit eigenem URL-Pfad. */}
         <Route path="help" element={<HelpPage />} />
