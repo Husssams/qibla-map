@@ -22,6 +22,12 @@ function AppLayout() {
   // Speichert den zuletzt sichtbaren Kartenausschnitt während der Navigation.
   // null bedeutet: Die Karte wurde noch nicht manuell verändert.
   const [mapViewport, setMapViewport] = useState<MapViewport | null>(null)
+  // Steuert die automatische Darstellung des gesamten Qibla-Pfads.
+  const [isQiblaPathFitEnabled, setIsQiblaPathFitEnabled] = useState(false)
+
+  // Speichert die Kartenansicht vor der automatischen Anpassung.
+  // Beim Ausschalten können wir genau zu dieser Ansicht zurückkehren.
+  const [preFitViewport, setPreFitViewport] = useState<MapViewport | null>(null)
 
   const themeButtonLabel = theme === 'light' ? t('switchToDark') : t('switchToLight')
 
@@ -89,6 +95,10 @@ function AppLayout() {
           setIsQiblaPathVisible,
           mapViewport,
           setMapViewport,
+          isQiblaPathFitEnabled,
+          setIsQiblaPathFitEnabled,
+          preFitViewport,
+          setPreFitViewport,
         }}
       />
     </main>

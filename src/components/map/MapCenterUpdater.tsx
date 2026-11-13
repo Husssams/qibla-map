@@ -3,43 +3,43 @@ import { useMap } from 'react-leaflet'
 
 import type { Coordinates } from '../../types/geo'
 
-import { getQiblaMapBounds } from '../../utils/qibla/qiblaMapBounds'
+import { getMapInteractionBounds } from '../../utils/qibla/qiblaMapBounds'
 
 type MapCenterUpdaterProps = {
   location: Coordinates
   enabled: boolean
   focusTarget?: Coordinates | null
   hasRestoredViewport: boolean
+  fitEnabled: boolean
 }
 
-// Steuert die Karten-Zentrierung bei GPS-Ermittlung und gezielter Standortauswahl.
+// Steuert die normale GPS-Zentrierung und gezielte Standortwechsel.
+// Während der vollständigen Pfadanpassung übernimmt der Fit-Controller.
 export default function MapCenterUpdater({
   location,
   enabled,
   focusTarget = null,
   hasRestoredViewport,
+  fitEnabled,
 }: MapCenterUpdaterProps) {
   const map = useMap()
 
-  // Bei einer wiederhergestellten Karte gilt der ursprüngliche Standort
-  // bereits als berücksichtigt. Dadurch wird die Ansicht beim Einbinden
-  // nicht sofort wieder auf den Standort zentriert.
+  // Merkt sich den zuletzt berücksichtigten GPS-Standort.
   const lastFollowedLocationRef = useRef<Coordinates | null>(
     hasRestoredViewport ? { latitude: location.latitude, longitude: location.longitude } : null,
   )
 
-  // Erkennt, ob die automatische Zentrierung neu aktiviert wurde.
+  // Merkt sich, ob die GPS-Zentrierung zuvor aktiviert war.
   const wasFollowingRef = useRef(enabled)
 
-  // Die erlaubten Weltkartengrenzen hängen vom geodätischen Weg zur Kaaba ab.
-  // Bei einem Standortwechsel muss Leaflet die passende Weltkartenkopie verwenden,
-  // damit beispielsweise der Pfad von Hawaii über die Datumsgrenze sichtbar bleibt.
+  // In beiden Modi gibt es feste Grenzen.
+  // Der Pfadmodus erhält lediglich mehr Platz an den Polen.
   useEffect(() => {
-    map.setMaxBounds(getQiblaMapBounds(location))
-  }, [map, location])
+    map.setMaxBounds(getMapInteractionBounds(fitEnabled))
+  }, [map, fitEnabled])
 
-  // GPS-Zentrierung: Eine gespeicherte Ansicht wird beim erneuten Einbinden
-  // respektiert. Neue GPS-Positionen werden weiterhin automatisch zentriert.
+  // GPS-Zentrierung: Eine wiederhergestellte Kartenansicht bleibt erhalten,
+  // solange sich der Standort nicht verändert hat.
   useEffect(() => {
     const wasFollowing = wasFollowingRef.current
     wasFollowingRef.current = enabled
@@ -51,24 +51,28 @@ export default function MapCenterUpdater({
     const isSameLocation =
       lastLocation?.latitude === location.latitude && lastLocation?.longitude === location.longitude
 
-    // Keine erneute Zentrierung, wenn die aktuelle GPS-Position bereits
-    // berücksichtigt wurde und der Benutzer nur den Kartenausschnitt bewegt hat.
     if (wasFollowing && isSameLocation) return
 
-    map.setView([location.latitude, location.longitude], map.getZoom())
+    // Im normalen Modus mindestens Zoom 3 verwenden.
+    const zoom = Math.max(3, map.getZoom())
+
+    map.setView([location.latitude, location.longitude], zoom)
 
     lastFollowedLocationRef.current = {
       latitude: location.latitude,
       longitude: location.longitude,
     }
-  }, [map, enabled, location.latitude, location.longitude])
+  }, [map, enabled, location])
 
-  // Gezielte Zentrierung: Nach einer Suche oder beim Schließen der großen Karte.
-  // Ein neuer focusTarget-Auftrag startet die Animation unabhängig vom GPS-Modus.
+  // Gezielte Zentrierung nach einer Suche oder Standortauswahl.
   useEffect(() => {
     if (!focusTarget) return
 
-    map.flyTo([focusTarget.latitude, focusTarget.longitude], map.getZoom(), { duration: 0.8 })
+    const zoom = Math.max(3, map.getZoom())
+
+    map.flyTo([focusTarget.latitude, focusTarget.longitude], zoom, {
+      duration: 0.8,
+    })
   }, [map, focusTarget])
 
   return null

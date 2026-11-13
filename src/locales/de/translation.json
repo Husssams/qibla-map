@@ -18,6 +18,7 @@
   "lowAccuracyWarning": "Dieser Standort kann ungenau sein, besonders auf Computern ohne GPS. Für eine genauere Position kannst du direkt einen Standort auf der Karte auswählen.",
   "qiblaTooClose": "Du bist zu nah an der Kaaba, um eine zuverlässige Qibla-Richtung anzuzeigen.",
   "showQiblaPath": "Qibla-Linie anzeigen",
+  "fitQiblaPath": "Gesamten Qibla-Pfad anzeigen",
   "qiblaPathInfoButton": "Über diese Linie",
   "qiblaPathInfoTitle": "Wie wird die Qibla-Linie berechnet?",
   "qiblaPathExplanation": "Diese Linie zeigt den kürzesten Weg von deinem ausgewählten Standort zur Kaaba, berechnet anhand des WGS84-Erdmodells. Auf einer flachen Karte kann dieser Weg gekrümmt erscheinen, besonders bei großen Entfernungen. Bei kürzeren Entfernungen kann er nahezu gerade aussehen. Der Qibla-Pfeil zeigt die Richtung an deinem Standort.",

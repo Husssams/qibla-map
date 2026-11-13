@@ -6,10 +6,11 @@ import type { Coordinates } from '../../types/geo'
 import type { MapViewport } from '../../types/mapViewport'
 import type { Theme } from '../../theme'
 
-import { getQiblaMapBounds } from '../../utils/qibla/qiblaMapBounds'
+import { getMapInteractionBounds } from '../../utils/qibla/qiblaMapBounds'
 import MapBaseLayer from './MapBaseLayer'
 import MapCenterUpdater from './MapCenterUpdater'
 import QiblaPathLayer from './QiblaPathLayer'
+import QiblaPathFitController from './QiblaPathFitController'
 import { createQiblaArrowHtml } from '../../utils/qibla/qiblaArrow'
 
 import 'leaflet/dist/leaflet.css'
@@ -20,6 +21,8 @@ type QiblaMapViewProps = {
   onViewportChange: (viewport: MapViewport) => void
   qiblaBearing: number | null
   isQiblaPathVisible: boolean
+  isQiblaPathFitEnabled: boolean
+  preFitViewport: MapViewport | null
   theme: Theme
   isSelectingLocation: boolean
   followLocation: boolean
@@ -115,6 +118,8 @@ export default function QiblaMapView({
   onViewportChange,
   qiblaBearing,
   isQiblaPathVisible,
+  isQiblaPathFitEnabled,
+  preFitViewport,
   theme,
   isSelectingLocation,
   followLocation,
@@ -134,8 +139,8 @@ export default function QiblaMapView({
         viewport?.center.longitude ?? location.longitude,
       ]}
       zoom={viewport?.zoom ?? 16}
-      minZoom={3}
-      maxBounds={getQiblaMapBounds(location)}
+      minZoom={isQiblaPathFitEnabled ? 1 : 3}
+      maxBounds={getMapInteractionBounds(isQiblaPathFitEnabled && isQiblaPathVisible)}
       maxBoundsViscosity={1.0}
       className="qibla-map"
     >
@@ -147,9 +152,19 @@ export default function QiblaMapView({
       {/* GPS-Zentrierung und gezielte Kartenbewegungen werden getrennt gesteuert. */}
       <MapCenterUpdater
         location={location}
-        enabled={followLocation}
-        focusTarget={focusTarget}
+        enabled={followLocation && !isQiblaPathFitEnabled}
+        focusTarget={isQiblaPathFitEnabled ? null : focusTarget}
         hasRestoredViewport={viewport !== null}
+        fitEnabled={isQiblaPathFitEnabled && isQiblaPathVisible}
+      />
+
+      {/* Passt den Qibla-Pfad automatisch ein und stellt beim
+          Ausschalten die vorherige Kartenansicht wieder her. */}
+      <QiblaPathFitController
+        location={location}
+        enabled={isQiblaPathFitEnabled && isQiblaPathVisible}
+        isSelectingLocation={isSelectingLocation}
+        restoreViewport={preFitViewport}
       />
 
       {/* Der optionale Pfad wird nur bei aktivierter Checkbox berechnet und gezeichnet. Beim Ausschalten entfernt React die Polyline vollständig aus der Karte. */}

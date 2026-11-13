@@ -90,3 +90,26 @@ export function getQiblaPathFitBounds(
     [north, east],
   ]
 }
+
+// Zwei Weltkartenbreiten, insgesamt 720 Grad Längengrad.
+// Dadurch passen sowohl normale Kartenansichten als auch
+// verschobene Weltkartenkopien für Wege über die Datumsgrenze.
+const MAP_WEST = -360
+const MAP_EAST = 360
+
+// Der normale Kartenmodus bleibt innerhalb des darstellbaren
+// Web-Mercator-Bereichs. Im Pfadmodus erlauben wir etwas
+// zusätzlichen Platz, damit Polarstrecken eingepasst werden können.
+const NORMAL_LATITUDE_LIMIT = 85.05112878
+const FIT_LATITUDE_LIMIT = 89.9
+
+// Liefert feste und endliche Grenzen für beide Kartenmodi.
+// Wir berechnen sie nicht mehr aus dem sichtbaren Ausschnitt.
+export function getMapInteractionBounds(fitEnabled: boolean): [[number, number], [number, number]] {
+  const latitudeLimit = fitEnabled ? FIT_LATITUDE_LIMIT : NORMAL_LATITUDE_LIMIT
+
+  return [
+    [-latitudeLimit, MAP_WEST],
+    [latitudeLimit, MAP_EAST],
+  ]
+}
