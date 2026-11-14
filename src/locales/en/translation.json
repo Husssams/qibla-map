@@ -114,5 +114,15 @@
     "locationAnswer": "The Kaaba is located inside the Sacred Mosque, al-Masjid al-Haram, in Mecca, Saudi Arabia.",
     "calculationQuestion": "How does QiblaMap calculate the prayer direction?",
     "calculationAnswer": "QiblaMap calculates the direction from the selected location to the Kaaba using the WGS84 Earth model. The arrow shows the prayer direction at that location."
+  },
+  "compassPage": {
+    "north": "N",
+    "east": "E",
+    "south": "S",
+    "west": "W",
+    "turnRight": "Turn right",
+    "turnLeft": "Turn left",
+    "aligned": "You are facing the Qibla",
+    "selectLocation": "First select a location on the map."
   }
 }

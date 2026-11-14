@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useOutletContext } from 'react-router'
 
+import DetectLocationButton from '../components/location/DetectLocationButton'
 import QiblaMapView from '../components/map/QiblaMapView'
 import { PlaceSearch } from '../components/search/PlaceSearch'
 import { KAABA_COORDINATES } from '../constants/kaaba'
@@ -253,14 +254,8 @@ function MapPage() {
           </bdi>
         </p>
 
-        <button
-          type="button"
-          className="qm-primary-button"
-          onClick={handleDetectLocation}
-          disabled={isLocating}
-        >
-          {isLocating ? t('locating') : t('detectLocation')}
-        </button>
+        {/* Gemeinsamer GPS-Button, verwendet die Standortlogik dieser Seite. */}
+        <DetectLocationButton onDetect={handleDetectLocation} isLoading={isLocating} />
 
         {locationError && (
           <p className="qm-alert" role="alert">

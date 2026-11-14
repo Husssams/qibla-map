@@ -113,5 +113,15 @@
     "locationAnswer": "Die Kaaba steht im Innenhof der heiligen Moschee al-Masdschid al-Haram in Mekka, Saudi-Arabien.",
     "calculationQuestion": "Wie berechnet QiblaMap die Gebetsrichtung?",
     "calculationAnswer": "QiblaMap berechnet die Richtung vom ausgewählten Standort zur Kaaba anhand des WGS84-Erdmodells. Der Pfeil zeigt die Gebetsrichtung am Standort."
+  },
+  "compassPage": {
+    "north": "N",
+    "east": "O",
+    "south": "S",
+    "west": "W",
+    "turnRight": "Nach rechts drehen",
+    "turnLeft": "Nach links drehen",
+    "aligned": "Du blickst zur Qibla",
+    "selectLocation": "Wähle zuerst einen Standort auf der Karte."
   }
 }
