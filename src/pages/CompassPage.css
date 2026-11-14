@@ -58,19 +58,6 @@
   stroke-width: 3;
 }
 
-/* Der Simulator wird ausschließlich während der Entwicklung angezeigt. */
-.qm-compass__simulator {
-  display: grid;
-  gap: 12px;
-  max-width: 360px;
-  margin: 0 auto 24px;
-  color: var(--qm-text);
-}
-
-.qm-compass__simulator input {
-  width: 100%;
-  accent-color: var(--qm-primary);
-}
 /* Vereinfachtes Kaaba-Symbol auf der Kompassscheibe. */
 .qm-compass__kaaba {
   fill: #202020;
@@ -119,4 +106,23 @@ html[lang='ar'] .qm-compass__direction {
   width: min(100%, 360px);
   margin: 8px auto 0;
   text-align: center;
+}
+
+/* Zentriert den Info-Button unter der Kompassscheibe. */
+.qm-compass__info {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+/* Trennt die beiden Erklärungstexte im geöffneten Dialog. */
+.qm-compass__dialog .qm-qibla-path-dialog-content p + p {
+  margin-block-start: 16px;
+}
+/* Zeigt den Sensorstatus dezent unter dem Kompass an.
+   Die Statusanzeige passt sich automatisch an Deutsch, Englisch und RTL an. */
+.qm-compass__sensor-status {
+  margin-block: 12px 0;
+  text-align: center;
+  color: var(--qm-text-muted);
 }

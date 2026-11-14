@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import './HelpPage.css'
 import './CompassPage.css'
@@ -13,9 +13,120 @@ import DetectLocationButton from '../components/location/DetectLocationButton'
 // Die Kompassseite wird in den nächsten Schritten erweitert.
 export default function CompassPage() {
   const { t, i18n } = useTranslation()
+  // Mit dieser Referenz können wir den Info-Dialog öffnen und schließen.
+  const compassInfoDialogRef = useRef<HTMLDialogElement | null>(null)
 
-  // Simulierte Blickrichtung des Smartphones für die Entwicklung am PC.
-  const [simulatedHeading, setSimulatedHeading] = useState(0)
+  // Gibt an, ob wir die Überwachung des Bewegungssensors gestartet haben.
+  // Anfangs ist die Überwachung ausgeschaltet.
+  const [sensorEnabled, setSensorEnabled] = useState(false)
+
+  // Speichert die tatsächliche Ausrichtung des Smartphones.
+  // null bedeutet, dass noch keine verwendbare Messung vorliegt.
+  const [sensorHeading, setSensorHeading] = useState<number | null>(null)
+
+  // Prüft, ob der Browser eine ausdrückliche Sensorfreigabe verlangt.
+  // Auf deinem Android-Browser ist diese Methode offenbar nicht erforderlich.
+  const needsSensorPermission =
+    typeof DeviceOrientationEvent !== 'undefined' && 'requestPermission' in DeviceOrientationEvent
+
+  // Bestimmt den anfänglichen Sensorstatus beim Öffnen der Kompassseite.
+  // Die Funktion wird für den Initialwert des States verwendet.
+  const [sensorMessage, setSensorMessage] = useState(() => {
+    // Ohne sichere Verbindung oder Sensorunterstützung
+    // können wir keine Gerätedrehung auslesen.
+    if (!window.isSecureContext || !('DeviceOrientationEvent' in window)) {
+      return 'compassPage.sensorUnavailable'
+    }
+
+    // Manche Browser verlangen zuerst eine Benutzerfreigabe.
+    if (needsSensorPermission) {
+      return 'compassPage.sensorPermission'
+    }
+
+    // Ansonsten warten wir auf die erste gültige Sensormessung.
+    return 'compassPage.sensorWaiting'
+  })
+
+  // Startet die Sensorüberwachung automatisch beim Öffnen der Kompassseite.
+  useEffect(() => {
+    // Ohne HTTPS oder Sensorunterstützung starten wir keine Listener.
+    // Der passende Hinweis wurde bereits im Anfangsstatus festgelegt.
+    if (!window.isSecureContext || !('DeviceOrientationEvent' in window)) {
+      return
+    }
+
+    // Browser mit Berechtigungspflicht warten auf den Benutzer.
+    // Die Freigabe erfolgt über unseren vorhandenen Button.
+    if (needsSensorPermission && !sensorEnabled) {
+      return
+    }
+
+    // Merkt sich, ob mindestens eine gültige Sensormessung angekommen ist.
+    // Anfangs haben wir noch keine verwendbaren Daten erhalten.
+    let hasReceivedValidHeading = false
+
+    // Diese Funktion empfängt die Orientierung des Smartphones.
+    function handleOrientation(event: DeviceOrientationEvent) {
+      // Relative Daten reichen für die Qibla nicht aus.
+      // Auch fehlende oder ungültige Winkel werden ignoriert.
+      if (!event.absolute || event.alpha === null || !Number.isFinite(event.alpha)) {
+        return
+      }
+
+      // Bei flach gehaltenem Smartphone ist alpha entgegengesetzt
+      // zur Kompassrichtung definiert.
+      // Das Ergebnis wird auf 0 bis unter 360 Grad begrenzt.
+      const heading = (360 - event.alpha) % 360
+
+      // Eine gültige absolute Messung ist angekommen.
+      // Deshalb brauchen wir später keinen Hinweis auf fehlende Sensoren.
+      hasReceivedValidHeading = true
+
+      // Glättet die Sensordaten, damit die Kompassscheibe ruhiger reagiert.
+      setSensorHeading((previousHeading) => {
+        // Die erste Messung übernehmen wir direkt.
+        if (previousHeading === null) {
+          return heading
+        }
+
+        // Berechnet den kürzesten Winkel zwischen der letzten
+        // angezeigten Richtung und der neuen Sensormessung.
+        const difference = ((heading - previousHeading + 540) % 360) - 180
+
+        // Übernimmt 20 Prozent der Winkeländerung.
+        // Kleine Schwankungen wirken dadurch weniger stark.
+        const smoothedHeading = previousHeading + difference * 0.2
+
+        // Hält den Winkel im Bereich von 0 bis unter 360 Grad.
+        return (smoothedHeading + 360) % 360
+      })
+    }
+
+    // Wartet höchstens fünf Sekunden auf die erste gültige Sensormessung.
+    const noDataTimeout = window.setTimeout(() => {
+      // Wenn bis dahin keine Messung angekommen ist,
+      // ersetzen wir die Wartemeldung durch einen hilfreichen Hinweis.
+      if (!hasReceivedValidHeading) {
+        setSensorMessage('compassPage.sensorNoData')
+      }
+    }, 5000)
+
+    // Empfängt absolute Orientierung auf unterstützten Android-Browsern.
+    window.addEventListener('deviceorientationabsolute', handleOrientation)
+
+    // Manche Browser liefern absolute Daten über dieses Ereignis.
+    // Die Prüfung von event.absolute bleibt deshalb notwendig.
+    window.addEventListener('deviceorientation', handleOrientation)
+
+    // Entfernt beide Listener beim Verlassen der Kompassseite.
+    return () => {
+      // Entfernt den Timer, wenn die Kompassseite verlassen wird.
+      // So verhindern wir unnötige spätere Statusänderungen.
+      window.clearTimeout(noDataTimeout)
+      window.removeEventListener('deviceorientationabsolute', handleOrientation)
+      window.removeEventListener('deviceorientation', handleOrientation)
+    }
+  }, [sensorEnabled, needsSensorPermission])
 
   // Der manuelle Standort kann nach einer GPS-Messung geändert werden.
   const [manualLocation, setManualLocation] = useState(readManualLocation)
@@ -33,11 +144,17 @@ export default function CompassPage() {
   // Ohne echten Standort zeigen wir keine scheinbar genaue Qibla-Richtung.
   const qiblaBearing = activeLocation ? calculateQiblaBearing(activeLocation) : null
 
-  // In der Entwicklung verwenden wir die simulierte Geräteausrichtung.
-  const deviceHeading = import.meta.env.DEV ? simulatedHeading : 0
+  // Verwendet ausschließlich die echte Sensorausrichtung.
+  // Die 0 dient nur als neutraler Wert, solange keine Messung vorliegt.
+  const deviceHeading = sensorHeading ?? 0
 
-  // Die Nadel zeigt relativ zur Oberkante des Smartphones.
-  const needleAngle = qiblaBearing === null ? null : (qiblaBearing - deviceHeading + 360) % 360
+  // Eine gültige Handyrichtung liegt nur bei echten Sensordaten vor.
+  const hasHeading = sensorHeading !== null
+
+  // Berechnet die Kaaba-Position nur mit einem verfügbaren Gerätewinkel.
+  // So zeigen wir in der fertigen App keine erfundene Ausrichtung an.
+  const needleAngle =
+    qiblaBearing === null || !hasHeading ? null : (qiblaBearing - deviceHeading + 360) % 360
 
   // Berechnet den kürzesten Drehweg zur Qibla.
   // Positiv bedeutet rechts, negativ bedeutet links.
@@ -65,6 +182,49 @@ export default function CompassPage() {
     } finally {
       // Der Button wird nach Erfolg oder Fehler wieder freigegeben.
       setIsLocating(false)
+    }
+  }
+
+  // Startet die Sensorüberwachung nach einem Button-Klick.
+  async function handleStartSensor() {
+    // Prüft, ob die Webseite in einem sicheren Kontext läuft
+    // und ob der Browser DeviceOrientationEvent unterstützt.
+    if (!window.isSecureContext || !('DeviceOrientationEvent' in window)) {
+      // Zeigt einen Hinweis, falls eine Voraussetzung fehlt.
+      setSensorMessage('compassPage.sensorUnavailable')
+
+      // Beendet die Funktion, da wir den Sensor nicht starten können.
+      return
+    }
+
+    try {
+      // Manche Browser bieten zusätzlich requestPermission() an.
+      // Die Typ-Erweiterung macht diese optionale Methode für TypeScript bekannt.
+      const orientationApi = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+        // true fordert ausdrücklich auch absolute Orientierung an.
+        requestPermission?: (absolute?: boolean) => Promise<'granted' | 'denied'>
+      }
+
+      // Prüft, ob der Browser eine ausdrückliche Sensorfreigabe verlangt.
+      if (orientationApi.requestPermission) {
+        // Fordert bei Bedarf auch Zugriff auf das Magnetometer an.
+        const permission = await orientationApi.requestPermission(true)
+
+        // Wenn die Berechtigung verweigert wurde, starten wir nichts.
+        if (permission !== 'granted') {
+          setSensorMessage('compassPage.sensorDenied')
+          return
+        }
+      }
+
+      // Informiert den Benutzer, dass wir auf Daten warten.
+      setSensorMessage('compassPage.sensorWaiting')
+
+      // Aktiviert unseren useEffect und damit die Sensor-Listener.
+      setSensorEnabled(true)
+    } catch {
+      // Behandelt Fehler bei der Berechtigungsanfrage.
+      setSensorMessage('compassPage.sensorStartError')
     }
   }
 
@@ -147,8 +307,8 @@ export default function CompassPage() {
             <line className="qm-compass__kaaba-band" x1="141" y1="87" x2="159" y2="87" />
           </g>
         )}
-        {/* Die Nadel erscheint nur bei gültigem Qibla-Winkel. */}
-        {qiblaBearing !== null && (
+        {/* Zeigt die Nadel nur bei verfügbarer Geräteausrichtung. */}
+        {needleAngle !== null && (
           <g className="qm-compass__needle">
             <path className="qm-compass__needle-front" d="M150 104 L168 154 L150 140 L132 154 Z" />
             <path className="qm-compass__needle-back" d="M132 154 L150 140 L168 154 L150 192 Z" />
@@ -157,26 +317,64 @@ export default function CompassPage() {
         )}
       </svg>
 
-      {/* Entwicklungshilfe: Simuliert die Drehung eines Smartphones. */}
-      {import.meta.env.DEV && (
-        <div className="qm-compass__simulator">
-          <label htmlFor="qm-compass-heading">
-            Smartphone-Richtung simulieren: {simulatedHeading}°
-          </label>
+      {/* Öffnet eine Erklärung zur Benutzung unseres Kompasses. */}
+      <div className="qm-compass__info">
+        <button
+          type="button"
+          className="qm-map-info-button"
+          aria-haspopup="dialog"
+          aria-controls="qm-compass-info-dialog"
+          onClick={() => compassInfoDialogRef.current?.showModal()}
+        >
+          <span aria-hidden="true">ⓘ</span>
+          <span>{t('compassPage.infoButton')}</span>
+        </button>
+      </div>
 
-          <input
-            id="qm-compass-heading"
-            type="range"
-            min="0"
-            max="359"
-            value={simulatedHeading}
-            onChange={(event) => setSimulatedHeading(Number(event.target.value))}
-          />
+      {/* Nativer Dialog mit Informationen zur Kompassbenutzung. */}
+      <dialog
+        id="qm-compass-info-dialog"
+        ref={compassInfoDialogRef}
+        className="qm-qibla-path-dialog qm-compass__dialog"
+        aria-labelledby="qm-compass-info-title"
+        dir={i18n.dir()}
+        onClick={(event) => {
+          // Ein Klick auf den abgedunkelten Hintergrund schließt den Dialog.
+          if (event.target === event.currentTarget) {
+            event.currentTarget.close()
+          }
+        }}
+      >
+        <div className="qm-qibla-path-dialog-content">
+          {/* Schließt den Dialog auch über einen sichtbaren Button. */}
+          <button
+            type="button"
+            className="qm-qibla-path-dialog-close"
+            aria-label={t('qiblaPathInfoClose')}
+            onClick={() => compassInfoDialogRef.current?.close()}
+          >
+            ×
+          </button>
+
+          {/* Ein kleines Symbol als visuelle Kennzeichnung. */}
+          <span className="qm-qibla-path-dialog-icon" aria-hidden="true">
+            🧭
+          </span>
+
+          {/* Die Überschrift wird mit dem Dialog verknüpft. */}
+          <h2 id="qm-compass-info-title">{t('compassPage.infoTitle')}</h2>
+
+          {/* Erklärt die Nadel und das Kaaba-Symbol. */}
+          <p>{t('compassPage.infoExplanation')}</p>
+
+          {/* Erklärt die optimale Haltung und mögliche Messfehler. */}
+          <p>{t('compassPage.infoTip')}</p>
         </div>
-      )}
+      </dialog>
 
-      {/* Richtungsanweisung während der Entwicklung am PC. */}
-      {import.meta.env.DEV && (
+      {/* Richtungsanweisungen nur mit echten Sensordaten anzeigen.
+    Ohne Standort darf weiterhin der Standorthinweis erscheinen. */}
+      {(hasHeading || !activeLocation) && (
         <p
           className="qm-compass__guidance"
           data-aligned={turnAngle !== null && Math.abs(turnAngle) <= 5}
@@ -193,6 +391,23 @@ export default function CompassPage() {
           )}
         </p>
       )}
+
+      {/* Zeigt den Sensorstatus und gegebenenfalls die notwendige Freigabe. */}
+      <div className="qm-compass__location">
+        {/* Manche Browser verlangen eine ausdrückliche Benutzerfreigabe.
+      Nur in diesem Fall zeigen wir einen zusätzlichen Button. */}
+        {needsSensorPermission && !sensorEnabled && (
+          <button type="button" className="qm-primary-button" onClick={handleStartSensor}>
+            {t('compassPage.enableSensor')}
+          </button>
+        )}
+
+        {/* Zeigt einen verständlichen Status statt technischer Rohdaten.
+      Die erfolgreiche Messung hat Vorrang vor älteren Statusmeldungen. */}
+        <p className="qm-detail qm-compass__sensor-status" role="status">
+          {sensorHeading !== null ? t('compassPage.sensorActive') : t(sensorMessage)}
+        </p>
+      </div>
 
       <Link to="/" className="qm-help__back qm-compass__back">
         {t('helpPage.backToMap')}

@@ -122,6 +122,18 @@
     "turnRight": "Nach rechts drehen",
     "turnLeft": "Nach links drehen",
     "aligned": "Du blickst zur Qibla",
-    "selectLocation": "Wähle zuerst einen Standort auf der Karte."
+    "selectLocation": "Wähle zuerst einen Standort auf der Karte.",
+    "infoButton": "Über diesen Kompass",
+    "infoTitle": "Wie funktioniert der Qibla-Kompass?",
+    "infoExplanation": "Die feste goldene Nadel zeigt zur Oberkante deines Smartphones. Das Kaaba-Symbol markiert die Gebetsrichtung. Drehe dein Smartphone, bis das Kaaba-Symbol genau über der goldenen Nadel steht.",
+    "infoTip": "Für möglichst zuverlässige Ergebnisse mit der aktuellen Sensorberechnung halte dein Smartphone waagerecht, das Display nach oben zum Himmel und die Rückseite zum Boden. Halte Abstand zu Magneten und Metallgegenständen. Bei senkrechter Haltung können die Sensorwerte stärker schwanken. Die angezeigte Standortgenauigkeit beschreibt nur die GPS-Position, nicht die Genauigkeit des Kompasses.",
+    "sensorActive": "Bewegungssensor aktiv",
+    "sensorWaiting": "Warte auf Kompassdaten ...",
+    "sensorPermission": "Bitte erlaube den Zugriff auf den Bewegungssensor.",
+    "sensorDenied": "Der Sensorzugriff wurde nicht erlaubt.",
+    "sensorStartError": "Der Bewegungssensor konnte nicht gestartet werden.",
+    "sensorUnavailable": "Bewegungssensor nicht verfügbar. Prüfe die Sensorunterstützung und die HTTPS-Verbindung.",
+    "enableSensor": "Bewegungssensor freigeben",
+    "sensorNoData": "Dieses Gerät liefert keine Kompassdaten. Wenn du einen PC verwendest, kannst du die Gebetsrichtung mit dem Qibla-Pfeil auf der Karte ablesen."
   }
 }
