@@ -80,8 +80,9 @@ function MapPage() {
   // Ein zusätzlicher React-State ist dafür nicht erforderlich.
   const qiblaPathDialogRef = useRef<HTMLDialogElement | null>(null)
 
-  // Ein ausdrücklicher Auftrag, die Karte auf einen Ort zu zentrieren.
-  const [focusTarget, setFocusTarget] = useState<Coordinates | null>(null)
+  // Speichert einen gezielten Kartenauftrag.
+  // Eine optionale Zoomstufe erlaubt uns, nach GPS näher heranzuzoomen.
+  const [focusTarget, setFocusTarget] = useState<(Coordinates & { zoom?: number }) | null>(null)
 
   // Manuell gewählte Standorte bleiben nach einem Seitenneustart erhalten.
   const [manualLocation, setManualLocation] = useState<Coordinates | null>(readManualLocation)
@@ -192,6 +193,18 @@ function MapPage() {
 
     try {
       const location = await getUserLocation()
+
+      // Nach einer erfolgreichen GPS-Abfrage soll die Karte
+      // die umliegenden Straßen und Gebäude deutlich zeigen.
+      // Während der vollständigen Qibla-Pfadanpassung bleibt
+      // die dafür vorgesehene Kartenansicht erhalten.
+      if (!isQiblaPathFitEnabled) {
+        setFocusTarget({
+          latitude: location.latitude,
+          longitude: location.longitude,
+          zoom: 21,
+        })
+      }
 
       setDetectedLocation(location)
       saveSessionLocation(location)
