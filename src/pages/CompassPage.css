@@ -126,3 +126,59 @@ html[lang='ar'] .qm-compass__direction {
   text-align: center;
   color: var(--qm-text-muted);
 }
+
+/* Zeigt den Neigungshinweis mittig über dem Bildschirm an. */
+.qm-compass__tilt-warning {
+  /* Positioniert den Hinweis unabhängig von der Scrollposition. */
+  position: fixed;
+
+  /* Setzt den Ausgangspunkt in die Bildschirmmitte. */
+  top: 50%;
+  left: 50%;
+
+  /* Verschiebt das Element um die Hälfte seiner eigenen Größe. */
+  transform: translate(-50%, -50%);
+
+  /* Passt die Breite an kleinere Smartphones an. */
+  width: min(360px, calc(100vw - 32px));
+  box-sizing: border-box;
+
+  /* Legt den Hinweis über die übrigen Seitenelemente. */
+  z-index: 2000;
+
+  /* Macht den Hinweis gut lesbar und optisch hervorgehoben. */
+  background: var(--qm-surface);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  text-align: center;
+
+  /* Entfernt den bisherigen Abstand für den normalen Seitenfluss. */
+  margin: 0;
+
+  /* Der Hinweis blockiert keine Berührungen der Webseite. */
+  pointer-events: none;
+}
+
+/* Zeigt den Überprüfungshinweis nur bei gemeldeter Qibla-Ausrichtung. */
+.qm-compass__verification {
+  width: min(100%, 360px);
+  margin: 0 auto 24px;
+  text-align: center;
+}
+
+/* Der Erklärungstext bleibt optisch zurückhaltend. */
+.qm-compass__verification p {
+  margin: 0;
+  color: var(--qm-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Der Kartenlink ist gut erkennbar und per Tastatur erreichbar. */
+.qm-compass__verification-link {
+  display: inline-block;
+  margin-block-start: 12px;
+  color: var(--qm-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

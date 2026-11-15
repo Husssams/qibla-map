@@ -58,10 +58,15 @@ export function getUserLocation(): Promise<UserLocation> {
         reject(new Error('Ein unbekannter Standortfehler ist aufgetreten.'))
       },
 
-      // Konfiguriert die Standortermittlung.
       {
-        // Begrenzt die Positionssuche auf 10 Sekunden.
+        // Wartet höchstens zehn Sekunden auf eine Position.
         timeout: 10_000,
+
+        // Erlaubt die Wiederverwendung einer GPS-Messung,
+        // wenn diese höchstens 30 Sekunden alt ist.
+        // Ein erneuter Klick kurz nach der ersten Messung
+        // kann dadurch deutlich schneller beantwortet werden.
+        maximumAge: 30_000,
       },
     )
   })

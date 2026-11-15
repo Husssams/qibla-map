@@ -24,6 +24,10 @@ export default function CompassPage() {
   // null bedeutet, dass noch keine verwendbare Messung vorliegt.
   const [sensorHeading, setSensorHeading] = useState<number | null>(null)
 
+  // Merkt sich, ob das Smartphone stark geneigt gehalten wird.
+  // false bedeutet, dass bisher keine starke Neigung erkannt wurde.
+  const [isPhoneTilted, setIsPhoneTilted] = useState(false)
+
   // Prüft, ob der Browser eine ausdrückliche Sensorfreigabe verlangt.
   // Auf deinem Android-Browser ist diese Methode offenbar nicht erforderlich.
   const needsSensorPermission =
@@ -77,6 +81,23 @@ export default function CompassPage() {
       // zur Kompassrichtung definiert.
       // Das Ergebnis wird auf 0 bis unter 360 Grad begrenzt.
       const heading = (360 - event.alpha) % 360
+
+      // Prüft, ob beide Neigungswinkel vorhanden und gültig sind.
+      if (
+        event.beta !== null &&
+        event.gamma !== null &&
+        Number.isFinite(event.beta) &&
+        Number.isFinite(event.gamma)
+      ) {
+        // beta beschreibt die Neigung nach vorne oder hinten.
+        // gamma beschreibt die Neigung nach links oder rechts.
+        // Ab 35 Grad behandeln wir das Smartphone vorsichtshalber
+        // als zu stark geneigt für unsere bisherige Kompassberechnung.
+        const tilted = Math.abs(event.beta) > 35 || Math.abs(event.gamma) > 35
+
+        // Aktualisiert den Zustand nur, wenn sich der Wert unterscheidet.
+        setIsPhoneTilted(tilted)
+      }
 
       // Eine gültige absolute Messung ist angekommen.
       // Deshalb brauchen wir später keinen Hinweis auf fehlende Sensoren.
@@ -144,12 +165,12 @@ export default function CompassPage() {
   // Ohne echten Standort zeigen wir keine scheinbar genaue Qibla-Richtung.
   const qiblaBearing = activeLocation ? calculateQiblaBearing(activeLocation) : null
 
-  // Verwendet ausschließlich die echte Sensorausrichtung.
-  // Die 0 dient nur als neutraler Wert, solange keine Messung vorliegt.
-  const deviceHeading = sensorHeading ?? 0
+  // Nur mit gültigen Sensordaten und ohne starke Neigung
+  // verwenden wir die gemessene Richtung für den Kompass.
+  const hasHeading = sensorHeading !== null && !isPhoneTilted
 
-  // Eine gültige Handyrichtung liegt nur bei echten Sensordaten vor.
-  const hasHeading = sensorHeading !== null
+  // Ohne verlässlichen Winkel bleibt die Kompassscheibe neutral.
+  const deviceHeading = hasHeading && sensorHeading !== null ? sensorHeading : 0
 
   // Berechnet die Kaaba-Position nur mit einem verfügbaren Gerätewinkel.
   // So zeigen wir in der fertigen App keine erfundene Ausrichtung an.
@@ -178,7 +199,21 @@ export default function CompassPage() {
       setDetectedLocation(location)
       setManualLocation(null)
     } catch (error) {
-      setLocationError(error instanceof Error ? error.message : 'locationErrors.unexpected')
+      // Ermittelt den Übersetzungsschlüssel des GPS-Fehlers.
+      const errorKey = error instanceof Error ? error.message : 'locationErrors.unexpected'
+
+      // Wenn nur die erneute GPS-Abfrage zu lange dauert,
+      // behalten wir die bereits ermittelte GPS-Position bei.
+      if (
+        errorKey === 'locationErrors.timeout' &&
+        detectedLocation !== null &&
+        manualLocation === null
+      ) {
+        setLocationError('locationErrors.previousLocationKept')
+      } else {
+        // Andere Fehler werden weiterhin normal angezeigt.
+        setLocationError(errorKey)
+      }
     } finally {
       // Der Button wird nach Erfolg oder Fehler wieder freigegeben.
       setIsLocating(false)
@@ -237,7 +272,14 @@ export default function CompassPage() {
         <DetectLocationButton onDetect={handleDetectLocation} isLoading={isLocating} />
 
         {locationError && (
-          <p className="qm-alert" role="alert">
+          <p
+            // Ein fehlgeschlagener Aktualisierungsversuch ist kein
+            // vollständiger Standortverlust, wenn noch GPS-Daten vorliegen.
+            className={
+              locationError === 'locationErrors.previousLocationKept' ? 'qm-detail' : 'qm-alert'
+            }
+            role={locationError === 'locationErrors.previousLocationKept' ? 'status' : 'alert'}
+          >
             {t(locationError)}
           </p>
         )}
@@ -316,6 +358,12 @@ export default function CompassPage() {
           </g>
         )}
       </svg>
+      {/* Warnt bei starker Neigung vor einer unzuverlässigen Richtungsanzeige. */}
+      {sensorHeading !== null && isPhoneTilted && (
+        <p className="qm-alert qm-compass__tilt-warning" role="status">
+          {t('compassPage.tiltWarning')}
+        </p>
+      )}
 
       {/* Öffnet eine Erklärung zur Benutzung unseres Kompasses. */}
       <div className="qm-compass__info">
@@ -390,6 +438,21 @@ export default function CompassPage() {
             </>
           )}
         </p>
+      )}
+
+      {/* Zeigt die Überprüfungsmöglichkeit nur bei einer
+    vom Kompass gemeldeten Qibla-Ausrichtung an. */}
+      {turnAngle !== null && Math.abs(turnAngle) <= 5 && (
+        <div className="qm-compass__verification">
+          {/* Erklärt, wie die Richtung unabhängig vom
+        Bewegungssensor überprüft werden kann. */}
+          <p>{t('compassPage.verificationTip')}</p>
+
+          {/* Öffnet unsere bereits vorhandene Qibla-Karte. */}
+          <Link to="/" className="qm-compass__verification-link">
+            {t('compassPage.verifyOnMap')}
+          </Link>
+        </div>
       )}
 
       {/* Zeigt den Sensorstatus und gegebenenfalls die notwendige Freigabe. */}

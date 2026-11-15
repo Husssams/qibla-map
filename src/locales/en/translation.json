@@ -30,7 +30,8 @@
     "positionUnavailable": "Your location is currently unavailable.",
     "timeout": "Location detection took too long.",
     "unknown": "An unknown location error occurred.",
-    "unexpected": "An unexpected error occurred."
+    "unexpected": "An unexpected error occurred.",
+    "previousLocationKept": "A new GPS position could not be obtained. Your last detected location is still being used."
   },
   "placeSearch": {
     "label": "Search location",
@@ -122,7 +123,9 @@
     "west": "W",
     "turnRight": "Turn right",
     "turnLeft": "Turn left",
-    "aligned": "You are facing the Qibla",
+    "aligned": "According to the compass, you are facing the Qibla.",
+    "verificationTip": "Also check the direction on the map. Compare the Qibla arrow with nearby streets or buildings. If the directions differ significantly, do not rely on the compass alone.",
+    "verifyOnMap": "Verify direction on map",
     "selectLocation": "First select a location on the map.",
     "infoButton": "About this compass",
     "infoTitle": "How does the Qibla compass work?",
@@ -135,6 +138,7 @@
     "sensorStartError": "The motion sensor could not be started.",
     "sensorUnavailable": "Motion sensor unavailable. Check sensor support and the HTTPS connection.",
     "enableSensor": "Enable motion sensor",
-    "sensorNoData": "This device is not providing compass data. If you are using a computer, you can find the prayer direction using the Qibla arrow on the map."
+    "sensorNoData": "This device is not providing compass data. If you are using a computer, you can find the prayer direction using the Qibla arrow on the map.",
+    "tiltWarning": "Please hold your smartphone as flat as possible, with the screen facing up. The Qibla direction will appear when the device is sufficiently level again."
   }
 }

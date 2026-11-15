@@ -29,7 +29,8 @@
     "positionUnavailable": "Dein Standort ist momentan nicht verfügbar.",
     "timeout": "Die Standortermittlung hat zu lange gedauert.",
     "unknown": "Ein unbekannter Standortfehler ist aufgetreten.",
-    "unexpected": "Ein unbekannter Fehler ist aufgetreten."
+    "unexpected": "Ein unbekannter Fehler ist aufgetreten.",
+    "previousLocationKept": "Es konnte kein neuer GPS-Standort ermittelt werden. Dein zuletzt ermittelter Standort wird weiterhin verwendet."
   },
   "placeSearch": {
     "label": "Ort suchen",
@@ -121,7 +122,9 @@
     "west": "W",
     "turnRight": "Nach rechts drehen",
     "turnLeft": "Nach links drehen",
-    "aligned": "Du blickst zur Qibla",
+    "aligned": "Laut Kompass bist du zur Qibla ausgerichtet.",
+    "verificationTip": "Überprüfe die Richtung zusätzlich auf der Karte. Vergleiche den Qibla-Pfeil mit Straßen oder Gebäuden in deiner Umgebung. Falls die Richtungen deutlich voneinander abweichen, verlasse dich nicht allein auf den Kompass.",
+    "verifyOnMap": "Richtung auf Karte überprüfen",
     "selectLocation": "Wähle zuerst einen Standort auf der Karte.",
     "infoButton": "Über diesen Kompass",
     "infoTitle": "Wie funktioniert der Qibla-Kompass?",
@@ -134,6 +137,7 @@
     "sensorStartError": "Der Bewegungssensor konnte nicht gestartet werden.",
     "sensorUnavailable": "Bewegungssensor nicht verfügbar. Prüfe die Sensorunterstützung und die HTTPS-Verbindung.",
     "enableSensor": "Bewegungssensor freigeben",
-    "sensorNoData": "Dieses Gerät liefert keine Kompassdaten. Wenn du einen PC verwendest, kannst du die Gebetsrichtung mit dem Qibla-Pfeil auf der Karte ablesen."
+    "sensorNoData": "Dieses Gerät liefert keine Kompassdaten. Wenn du einen PC verwendest, kannst du die Gebetsrichtung mit dem Qibla-Pfeil auf der Karte ablesen.",
+    "tiltWarning": "Bitte halte dein Smartphone möglichst waagerecht, mit dem Display nach oben. Die Qibla-Richtung wird angezeigt, sobald das Gerät wieder ausreichend flach liegt."
   }
 }
