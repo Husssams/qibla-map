@@ -8,7 +8,8 @@ import { getMapInteractionBounds } from '../../utils/qibla/qiblaMapBounds'
 type MapCenterUpdaterProps = {
   location: Coordinates
   enabled: boolean
-  focusTarget?: Coordinates | null
+  // Optional kann ein Kartenauftrag eine bestimmte Zoomstufe verlangen.
+  focusTarget?: (Coordinates & { zoom?: number }) | null
   hasRestoredViewport: boolean
   fitEnabled: boolean
 }
@@ -68,7 +69,10 @@ export default function MapCenterUpdater({
   useEffect(() => {
     if (!focusTarget) return
 
-    const zoom = Math.max(3, map.getZoom())
+    // Verwendet die gewünschte Zoomstufe, falls eine angegeben wurde.
+    // Ohne Zoomauftrag bleibt das bisherige Kartenverhalten erhalten.
+    // Die maximal erlaubte Zoomstufe wird nicht überschritten.
+    const zoom = Math.min(map.getMaxZoom(), focusTarget.zoom ?? Math.max(3, map.getZoom()))
 
     map.flyTo([focusTarget.latitude, focusTarget.longitude], zoom, {
       duration: 0.8,

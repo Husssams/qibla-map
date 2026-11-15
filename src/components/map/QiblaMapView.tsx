@@ -26,7 +26,8 @@ type QiblaMapViewProps = {
   theme: Theme
   isSelectingLocation: boolean
   followLocation: boolean
-  focusTarget?: Coordinates | null
+  // Ein gezielter Kartenauftrag kann auch eine Zoomstufe enthalten.
+  focusTarget?: (Coordinates & { zoom?: number }) | null
   onSelectLocation: (location: Coordinates) => void
 }
 

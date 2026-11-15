@@ -1,0 +1,184 @@
+/* Die Kompassscheibe bleibt auf kleinen Bildschirmen responsiv. */
+.qm-compass__dial {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  margin: 24px auto;
+}
+
+/* Äußerer Kreis mit einer dezenten Hintergrundfläche. */
+.qm-compass__ring {
+  fill: var(--qm-surface-alt);
+  stroke: var(--qm-border);
+  stroke-width: 5;
+}
+
+/* Der innere Ring dient als zusätzliche Orientierung. */
+.qm-compass__inner-ring {
+  fill: none;
+  stroke: var(--qm-text-muted);
+  stroke-opacity: 0.45;
+}
+
+/* Kleine Markierungen am Rand der Scheibe. */
+.qm-compass__tick {
+  stroke: var(--qm-text-muted);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Himmelsrichtungen innerhalb des Kompasses. */
+.qm-compass__direction {
+  fill: var(--qm-text);
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* Norden wird hervorgehoben. */
+.qm-compass__north {
+  fill: var(--qm-primary);
+}
+
+/* Goldene Spitze der Qibla-Nadel. */
+.qm-compass__needle-front {
+  fill: #e5b65b;
+}
+
+/* Der hintere Teil bleibt zurückhaltend. */
+.qm-compass__needle-back {
+  fill: var(--qm-text-muted);
+}
+
+/* Der Mittelpunkt verbindet beide Teile der Nadel. */
+.qm-compass__needle-center {
+  fill: var(--qm-surface);
+  stroke: #e5b65b;
+  stroke-width: 3;
+}
+
+/* Vereinfachtes Kaaba-Symbol auf der Kompassscheibe. */
+.qm-compass__kaaba {
+  fill: #202020;
+  stroke: #e5b65b;
+  stroke-width: 1.5;
+}
+
+/* Goldenes Band auf der Kaaba. */
+.qm-compass__kaaba-band {
+  stroke: #e5b65b;
+  stroke-width: 3;
+}
+/* Ganze arabische Richtungsnamen benötigen etwas weniger Platz. */
+html[lang='ar'] .qm-compass__direction {
+  font-size: 12px;
+}
+
+/* Richtungsanweisung unter dem Kompass. */
+.qm-compass__guidance {
+  margin: 12px auto 24px;
+  text-align: center;
+  color: var(--qm-text);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Hebt die erfolgreiche Ausrichtung hervor. */
+.qm-compass__guidance[data-aligned='true'] {
+  color: #34c79a;
+}
+
+/* Standortermittlung oberhalb der Kompassscheibe. */
+.qm-compass__location {
+  width: min(100%, 360px);
+  margin: 16px auto 0;
+}
+/* Der Zurück-Button ist eine sekundäre Aktion. */
+.qm-compass__back {
+  background: transparent;
+  color: var(--qm-text);
+  border: 1px solid var(--qm-border);
+}
+
+/* GPS-Genauigkeit unter dem Standort-Button. */
+.qm-compass__accuracy {
+  width: min(100%, 360px);
+  margin: 8px auto 0;
+  text-align: center;
+}
+
+/* Zentriert den Info-Button unter der Kompassscheibe. */
+.qm-compass__info {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+/* Trennt die beiden Erklärungstexte im geöffneten Dialog. */
+.qm-compass__dialog .qm-qibla-path-dialog-content p + p {
+  margin-block-start: 16px;
+}
+/* Zeigt den Sensorstatus dezent unter dem Kompass an.
+   Die Statusanzeige passt sich automatisch an Deutsch, Englisch und RTL an. */
+.qm-compass__sensor-status {
+  margin-block: 12px 0;
+  text-align: center;
+  color: var(--qm-text-muted);
+}
+
+/* Zeigt den Neigungshinweis mittig über dem Bildschirm an. */
+.qm-compass__tilt-warning {
+  /* Positioniert den Hinweis unabhängig von der Scrollposition. */
+  position: fixed;
+
+  /* Setzt den Ausgangspunkt in die Bildschirmmitte. */
+  top: 50%;
+  left: 50%;
+
+  /* Verschiebt das Element um die Hälfte seiner eigenen Größe. */
+  transform: translate(-50%, -50%);
+
+  /* Passt die Breite an kleinere Smartphones an. */
+  width: min(360px, calc(100vw - 32px));
+  box-sizing: border-box;
+
+  /* Legt den Hinweis über die übrigen Seitenelemente. */
+  z-index: 2000;
+
+  /* Macht den Hinweis gut lesbar und optisch hervorgehoben. */
+  background: var(--qm-surface);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  text-align: center;
+
+  /* Entfernt den bisherigen Abstand für den normalen Seitenfluss. */
+  margin: 0;
+
+  /* Der Hinweis blockiert keine Berührungen der Webseite. */
+  pointer-events: none;
+}
+
+/* Zeigt den Überprüfungshinweis nur bei gemeldeter Qibla-Ausrichtung. */
+.qm-compass__verification {
+  width: min(100%, 360px);
+  margin: 0 auto 24px;
+  text-align: center;
+}
+
+/* Der Erklärungstext bleibt optisch zurückhaltend. */
+.qm-compass__verification p {
+  margin: 0;
+  color: var(--qm-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Der Kartenlink ist gut erkennbar und per Tastatur erreichbar. */
+.qm-compass__verification-link {
+  display: inline-block;
+  margin-block-start: 12px;
+  color: var(--qm-text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

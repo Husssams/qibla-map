@@ -6,7 +6,7 @@ import './NavigationMenu.css'
 
 // Diese Seiten werden in späteren Issues implementiert.
 // Bis dahin erscheinen sie nur als geplante Funktionen.
-const plannedPages = ['compass', 'arCamera', 'settings'] as const
+const plannedPages = ['arCamera'] as const
 
 export default function NavigationMenu() {
   const { t } = useTranslation()
@@ -67,6 +67,11 @@ export default function NavigationMenu() {
           {/* Die Karten-Hauptseite ist bereits verfügbar. */}
           <NavLink to="/" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.map')}
+          </NavLink>
+
+          {/* Die Kompassseite ist jetzt über das Menü erreichbar. */}
+          <NavLink to="/compass" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.compass')}
           </NavLink>
 
           {/* Die Hilfeseite ist bereits verfügbar. */}
