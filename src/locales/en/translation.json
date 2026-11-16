@@ -149,6 +149,20 @@
     "unavailable": "The camera is unavailable. Check browser support and your HTTPS connection.",
     "permissionDenied": "Camera access was denied. Please check your browser permissions.",
     "noCamera": "No suitable camera was found.",
-    "startError": "The camera could not be started. Another application may be using it."
+    "startError": "The camera could not be started. Another application may be using it.",
+    "detectLocation": "Detect GPS location",
+    "locating": "Detecting location...",
+    "locationDetected": "GPS location detected, accuracy: ±{{accuracy}} m",
+    "bearingFromNorth": "Qibla bearing from true north",
+    "sensorTitle": "Orientation sensors",
+    "sensorWaiting": "Waiting for sensor data...",
+    "sensorNoData": "No sensor data received. Check sensor permissions.",
+    "sensorAbsolute": "Absolute orientation data available",
+    "sensorRelative": "Only relative orientation data available",
+    "screenAngle": "Screen rotation",
+    "postureWaiting": "Checking camera orientation...",
+    "postureNoData": "Camera orientation cannot be detected. Check sensor permissions.",
+    "postureReady": "Camera position suitable. AR direction guidance will follow.",
+    "postureAdjust": "Please hold your smartphone upright with the rear camera facing forward."
   }
 }

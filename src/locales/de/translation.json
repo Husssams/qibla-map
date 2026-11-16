@@ -148,6 +148,20 @@
     "unavailable": "Die Kamera ist nicht verfügbar. Prüfe die Browserunterstützung und die HTTPS-Verbindung.",
     "permissionDenied": "Der Kamerazugriff wurde verweigert. Bitte überprüfe die Browserberechtigungen.",
     "noCamera": "Es wurde keine geeignete Kamera gefunden.",
-    "startError": "Die Kamera konnte nicht gestartet werden. Möglicherweise wird sie von einer anderen Anwendung verwendet."
+    "startError": "Die Kamera konnte nicht gestartet werden. Möglicherweise wird sie von einer anderen Anwendung verwendet.",
+    "detectLocation": "GPS-Standort ermitteln",
+    "locating": "Standort wird ermittelt ...",
+    "locationDetected": "GPS-Standort ermittelt, Genauigkeit: ±{{accuracy}} m",
+    "bearingFromNorth": "Qibla-Richtung ab geografisch Nord",
+    "sensorTitle": "Orientierungssensoren",
+    "sensorWaiting": "Warte auf Sensordaten ...",
+    "sensorNoData": "Keine Sensordaten empfangen. Prüfe die Sensorberechtigung.",
+    "sensorAbsolute": "Absolute Orientierungsdaten vorhanden",
+    "sensorRelative": "Nur relative Orientierungsdaten verfügbar",
+    "screenAngle": "Bildschirmrotation",
+    "postureWaiting": "Kamerahaltung wird geprüft ...",
+    "postureNoData": "Die Kamerahaltung kann nicht erkannt werden. Prüfe die Sensorberechtigung.",
+    "postureReady": "Kamerahaltung geeignet. Die AR-Richtungsanzeige folgt später.",
+    "postureAdjust": "Bitte halte dein Smartphone aufrecht und richte die Rückkamera nach vorne."
   }
 }
