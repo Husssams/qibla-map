@@ -140,5 +140,15 @@
     "enableSensor": "Enable motion sensor",
     "sensorNoData": "This device is not providing compass data. If you are using a computer, you can find the prayer direction using the Qibla arrow on the map.",
     "tiltWarning": "Please hold your smartphone as flat as possible, with the screen facing up. The Qibla direction will appear when the device is sufficiently level again."
+  },
+  "cameraPage": {
+    "intro": "Start the camera to view your surroundings in fullscreen.",
+    "start": "Start camera",
+    "starting": "Starting camera...",
+    "stop": "Stop camera",
+    "unavailable": "The camera is unavailable. Check browser support and your HTTPS connection.",
+    "permissionDenied": "Camera access was denied. Please check your browser permissions.",
+    "noCamera": "No suitable camera was found.",
+    "startError": "The camera could not be started. Another application may be using it."
   }
 }

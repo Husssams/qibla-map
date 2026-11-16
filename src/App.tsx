@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router'
 import AppLayout from './components/navigation/AppLayout'
 import HelpPage from './pages/HelpPage'
 import CompassPage from './pages/CompassPage'
+import CameraPage from './pages/CameraPage'
 import QiblaFaqPage from './pages/QiblaFaqPage'
 import ImprintPage from './pages/ImprintPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -18,7 +19,9 @@ function App() {
         <Route index element={<MapPage />} />
         {/* Eigene Seite für den zukünftigen Live-Kompass. */}
         <Route path="compass" element={<CompassPage />} />
-
+        {/* Die AR-Kameraseite erhält eine eigene URL.
+    Der Kamerazugriff wird später in CameraPage implementiert. */}
+        <Route path="camera" element={<CameraPage />} />
         {/* Erste zusätzliche Seite mit eigenem URL-Pfad. */}
         <Route path="help" element={<HelpPage />} />
         {/* Häufige Fragen über die Qibla und die Kaaba. */}

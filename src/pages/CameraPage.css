@@ -1,0 +1,114 @@
+/* Normale Kameraseite vor dem Start.
+   border-box verhindert, dass Padding die Seite zu breit macht. */
+.qm-camera {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 600px;
+  margin-inline: auto;
+  padding: 24px 16px 40px;
+  text-align: center;
+}
+
+.qm-camera__description {
+  margin: 12px 0 24px;
+  line-height: 1.6;
+}
+
+/* Vor dem Kamerastart benötigen wir keine leere schwarze Box. */
+.qm-camera__preview {
+  display: none;
+}
+
+/* Das Kamerabild füllt immer seinen Container. */
+.qm-camera__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Bedienelemente der normalen Seite. */
+.qm-camera__controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.qm-camera__button {
+  min-height: 48px;
+  min-width: 180px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: #7c3aed;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qm-camera__button:hover:not(:disabled) {
+  background: #6d28d9;
+}
+
+.qm-camera__button:focus-visible {
+  outline: 3px solid #a78bfa;
+  outline-offset: 3px;
+}
+
+.qm-camera__button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.qm-camera__error {
+  margin-top: 16px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* VOLLBILDMODUS:
+   Die Kamera liegt über der gesamten QiblaMap-Oberfläche. */
+.qm-camera--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Während der Kameranutzung verstecken wir die Seitenüberschrift. */
+.qm-camera--fullscreen h2,
+.qm-camera--fullscreen .qm-camera__description {
+  display: none;
+}
+
+/* Das Video erhält die komplette Bildschirmfläche. */
+.qm-camera--fullscreen .qm-camera__preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Der Stopp-Button liegt über dem Kamerabild, nahe am unteren Rand. */
+.qm-camera--fullscreen .qm-camera__controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 1;
+  margin: 0;
+}
+
+/* Halbtransparenter Button wie in einer Kameraoberfläche. */
+.qm-camera--fullscreen .qm-camera__button {
+  background: rgba(20, 24, 40, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}

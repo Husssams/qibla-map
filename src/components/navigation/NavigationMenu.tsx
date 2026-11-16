@@ -4,10 +4,6 @@ import { NavLink } from 'react-router'
 
 import './NavigationMenu.css'
 
-// Diese Seiten werden in späteren Issues implementiert.
-// Bis dahin erscheinen sie nur als geplante Funktionen.
-const plannedPages = ['arCamera'] as const
-
 export default function NavigationMenu() {
   const { t } = useTranslation()
 
@@ -73,6 +69,11 @@ export default function NavigationMenu() {
           <NavLink to="/compass" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.compass')}
           </NavLink>
+          {/* Die neue Kameraseite ist über das Menü erreichbar.
+    Nach dem Anklicken schließen wir das Hamburger-Menü. */}
+          <NavLink to="/camera" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.arCamera')}
+          </NavLink>
 
           {/* Die Hilfeseite ist bereits verfügbar. */}
           <NavLink to="/help" className="qm-nav__link" onClick={() => setIsOpen(false)}>
@@ -91,14 +92,6 @@ export default function NavigationMenu() {
           <NavLink to="/imprint" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.imprint')}
           </NavLink>
-
-          {/* Noch nicht implementierte Seiten sind keine Links. */}
-          {plannedPages.map((page) => (
-            <div className="qm-nav__planned" key={page}>
-              <span>{t(`navigation.${page}`)}</span>
-              <small>{t('navigation.comingSoon')}</small>
-            </div>
-          ))}
         </nav>
       )}
     </div>
