@@ -187,3 +187,119 @@
   font-size: 0.8rem;
   opacity: 0.8;
 }
+/* Vorläufige Kamerablickrichtung für unsere Android-Tests.
+   Die Darstellung bleibt auch in arabischer RTL-Ansicht zentriert. */
+.qm-camera__heading {
+  margin-top: 8px;
+  color: #e9d5ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+/* Overlay für die visuelle Kaaba-Richtungsanzeige.
+   pointer-events: none verhindert, dass Buttons darunter blockiert werden. */
+.qm-camera__kaaba-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  /* Teile des Modells außerhalb des Kamerablickfelds abschneiden. */
+  overflow: hidden;
+}
+
+/* Der Marker wird frei über dem Kamerabild positioniert. */
+.qm-camera__kaaba-marker {
+  position: absolute;
+  top: 38%;
+  transform: translate(-50%, -50%) scale(1.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition:
+    left 140ms linear,
+    transform 140ms linear;
+}
+
+/* Wenn die Ausrichtung fast stimmt, wird die Kaaba leicht hervorgehoben. */
+.qm-camera__kaaba-marker--aligned {
+  transform: translate(-50%, -50%) scale(1.7);
+}
+
+/* Einfaches pseudo-3D-Modell der Kaaba. */
+.qm-camera__kaaba-model {
+  position: relative;
+  width: 88px;
+  height: 78px;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+}
+
+/* Oberseite der Kaaba. */
+.qm-camera__kaaba-top-face {
+  position: absolute;
+  top: 8px;
+  left: 18px;
+  width: 42px;
+  height: 14px;
+  background: #2f2f2f;
+  border: 2px solid #e5b65b;
+  border-bottom: none;
+  transform: skewX(-45deg);
+  transform-origin: left bottom;
+  box-sizing: border-box;
+}
+
+/* Vorderseite mit goldenem Band. */
+.qm-camera__kaaba-front-face {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(to bottom, #1f1f1f 0 18%, #d8b254 18% 28%, #1f1f1f 28% 100%);
+  border: 2px solid #e5b65b;
+  box-sizing: border-box;
+}
+
+/* Seitenfläche für einen einfachen 3D-Eindruck. */
+.qm-camera__kaaba-side-face {
+  position: absolute;
+  top: 20px;
+  left: 52px;
+  width: 14px;
+  height: 42px;
+  background: linear-gradient(to bottom, #2b2b2b 0 18%, #caa447 18% 28%, #2b2b2b 28% 100%);
+  border: 2px solid #e5b65b;
+  border-left: none;
+  transform: skewY(-45deg);
+  transform-origin: left top;
+  box-sizing: border-box;
+}
+
+/* Kleine Beschriftung unter der Kaaba. */
+.qm-camera__kaaba-caption {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(8, 18, 48, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--qm-text);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Auf kleineren Geräten etwas kompakter. */
+@media (max-width: 640px) {
+  .qm-camera__kaaba-marker {
+    top: 36%;
+  }
+
+  .qm-camera__kaaba-model {
+    width: 76px;
+    height: 68px;
+  }
+
+  .qm-camera__kaaba-caption {
+    font-size: 13px;
+    padding: 5px 9px;
+  }
+}

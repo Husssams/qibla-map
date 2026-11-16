@@ -162,6 +162,11 @@
     "postureWaiting": "Kamerahaltung wird geprüft ...",
     "postureNoData": "Die Kamerahaltung kann nicht erkannt werden. Prüfe die Sensorberechtigung.",
     "postureReady": "Kamerahaltung geeignet. Die AR-Richtungsanzeige folgt später.",
-    "postureAdjust": "Bitte halte dein Smartphone aufrecht und richte die Rückkamera nach vorne."
+    "postureAdjust": "Bitte halte dein Smartphone aufrecht und richte die Rückkamera nach vorne.",
+    "cameraHeading": "Kamerablickrichtung laut Sensor",
+    "turnRight": "Laut Sensor etwa {{degrees}}° nach rechts drehen.",
+    "turnLeft": "Laut Sensor etwa {{degrees}}° nach links drehen.",
+    "sensorAligned": "Laut Sensor stimmt die Kamerarichtung ungefähr mit der Qibla überein. Bitte zusätzlich überprüfen.",
+    "kaabaMarker": "Kaaba-Richtung"
   }
 }

@@ -4,6 +4,8 @@ import './CameraPage.css'
 
 import { getUserLocation, type UserLocation } from '../utils/location/getUserLocation'
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
+import { calculateCameraHeading } from '../utils/ar/cameraHeading'
+import { calculateQiblaTurnAngle } from '../utils/ar/qiblaTurnAngle'
 
 // Rohdaten der Orientierungssensoren für unsere AR-Diagnose.
 type OrientationSample = {
@@ -56,6 +58,31 @@ export default function CameraPage() {
   // Wir erlauben zunächst 25° Abweichung in beide Richtungen.
   // Alpha und Gamma werden hier bewusst nicht begrenzt.
   const isCameraUpright = orientation !== null && Math.abs(orientation.beta - 90) <= 25
+
+  // Berechnet die horizontale Blickrichtung der Rückkamera.
+  // Nur absolute Sensordaten liefern eine feste Nordreferenz.
+  // Das Ergebnis ist noch nicht gegen geografisch Nord geprüft.
+  const cameraHeading = orientation ? calculateCameraHeading(orientation) : null
+
+  // Erst wenn GPS, Kamerablickrichtung und eine geeignete Haltung
+  // vorhanden sind, berechnen wir den Unterschied zur Qibla.
+  const turnAngle =
+    qiblaBearing !== null && cameraHeading !== null && isCameraUpright
+      ? calculateQiblaTurnAngle(qiblaBearing, cameraHeading)
+      : null
+
+  // Die Kaaba erscheint nur nahe der berechneten Qibla-Richtung.
+  // Bei größeren Winkelabweichungen bleibt sie unsichtbar.
+  const showKaabaMarker = turnAngle !== null && isCameraUpright && Math.abs(turnAngle) <= 15
+
+  // Statt den Marker am Bildschirmrand festzuhalten,
+  // lassen wir ihn tatsächlich aus dem Blickfeld wandern.
+  // Der Faktor 8 ist zunächst ein Testwert für Smartphones.
+  const kaabaOffsetPercent = turnAngle === null ? 0 : (turnAngle / 8) * 50
+
+  // Nur bei einer kleinen Winkelabweichung steht die Kaaba mittig
+  // und wird optisch hervorgehoben.
+  const isKaabaAligned = turnAngle !== null && Math.abs(turnAngle) <= 3
 
   // Meldet, wenn das Gerät längere Zeit keine gültigen Werte liefert.
   const [sensorNoData, setSensorNoData] = useState(false)
@@ -265,6 +292,28 @@ export default function CameraPage() {
         So ist der Kamerabereich auch im ausgeschalteten Zustand sichtbar. */}
       <div className="qm-camera__preview">
         <video ref={videoRef} autoPlay playsInline muted className="qm-camera__video" />
+        {/* Diese Kaaba ist ein erster visueller Richtungsmarker.
+        Sie ist noch kein echtes world-anchored 3D-Objekt,
+        sondern ein Overlay, das sich anhand der Sensorwerte
+        nach links oder rechts bewegt. */}
+        {showKaabaMarker && (
+          <div className="qm-camera__kaaba-overlay" aria-hidden="true">
+            <div
+              className={`qm-camera__kaaba-marker${
+                isKaabaAligned ? ' qm-camera__kaaba-marker--aligned' : ''
+              }`}
+              style={{ left: `calc(50% + ${kaabaOffsetPercent}%)` }}
+            >
+              <div className="qm-camera__kaaba-model">
+                <div className="qm-camera__kaaba-top-face" />
+                <div className="qm-camera__kaaba-front-face" />
+                <div className="qm-camera__kaaba-side-face" />
+              </div>
+
+              <div className="qm-camera__kaaba-caption">{t('cameraPage.kaabaMarker')}</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Der Button zeigt je nach Kamerastatus den passenden Text. */}
@@ -329,10 +378,28 @@ export default function CameraPage() {
       {status === 'active' && (
         <div className="qm-camera__sensor">
           <p className="qm-camera__posture" role="status">
+            {/* Zeigt erst die Haltung und anschließend die geschätzte
+              Drehrichtung an. Bei fehlenden Daten bleibt die Warnung sichtbar. */}
             {!orientation
               ? t(sensorNoData ? 'cameraPage.postureNoData' : 'cameraPage.postureWaiting')
-              : t(isCameraUpright ? 'cameraPage.postureReady' : 'cameraPage.postureAdjust')}
+              : !isCameraUpright
+                ? t('cameraPage.postureAdjust')
+                : turnAngle === null
+                  ? t('cameraPage.postureReady')
+                  : Math.abs(turnAngle) <= 5
+                    ? t('cameraPage.sensorAligned')
+                    : t(turnAngle > 0 ? 'cameraPage.turnRight' : 'cameraPage.turnLeft', {
+                        degrees: Math.round(Math.abs(turnAngle)),
+                      })}
           </p>
+
+          {/* Vorläufige Anzeige der Kamerablickrichtung.
+    Erst nach Prüfung der Nordreferenz verwenden wir sie für AR. */}
+          {isCameraUpright && cameraHeading !== null && (
+            <p className="qm-camera__heading">
+              {t('cameraPage.cameraHeading')}: <bdi dir="ltr">{cameraHeading.toFixed(1)}°</bdi>
+            </p>
+          )}
 
           {/* Nur für uns Entwickler: Rohwerte zur Überprüfung auf Android. */}
           {import.meta.env.DEV && orientation && (

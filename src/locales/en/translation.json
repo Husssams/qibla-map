@@ -163,6 +163,11 @@
     "postureWaiting": "Checking camera orientation...",
     "postureNoData": "Camera orientation cannot be detected. Check sensor permissions.",
     "postureReady": "Camera position suitable. AR direction guidance will follow.",
-    "postureAdjust": "Please hold your smartphone upright with the rear camera facing forward."
+    "postureAdjust": "Please hold your smartphone upright with the rear camera facing forward.",
+    "cameraHeading": "Camera heading from sensor",
+    "turnRight": "According to the sensor, turn approximately {{degrees}}° right.",
+    "turnLeft": "According to the sensor, turn approximately {{degrees}}° left.",
+    "sensorAligned": "According to the sensor, the camera is approximately facing the Qibla. Please verify independently.",
+    "kaabaMarker": "Kaaba direction"
   }
 }
