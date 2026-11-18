@@ -56,6 +56,12 @@
     "comingSoon": "Coming soon",
     "help": "Help"
   },
+  "quickNavigation": {
+    "label": "Quick navigation between Qibla tools",
+    "goToCamera": "Go to camera",
+    "goToCompass": "Go to compass",
+    "goToMap": "Go to map"
+  },
   "helpPage": {
     "title": "How to use QiblaMap",
     "intro": "Find your prayer direction with these features:",
@@ -124,8 +130,6 @@
     "turnRight": "Turn right",
     "turnLeft": "Turn left",
     "aligned": "According to the compass, you are facing the Qibla.",
-    "verificationTip": "Also check the direction on the map. Compare the Qibla arrow with nearby streets or buildings. If the directions differ significantly, do not rely on the compass alone.",
-    "verifyOnMap": "Verify direction on map",
     "selectLocation": "First select a location on the map.",
     "infoButton": "About this compass",
     "infoTitle": "How does the Qibla compass work?",

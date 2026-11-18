@@ -1,0 +1,52 @@
+/* Zwei kompakte Navigationsbuttons nebeneinander. */
+.qm-quick-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: min(100%, 440px);
+  margin-inline: auto;
+}
+
+/* Sekundäre Navigation bleibt optisch ruhiger als der Hauptbutton. */
+.qm-quick-navigation__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: var(--qm-shadow);
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.qm-quick-navigation__link:hover {
+  background: var(--qm-surface-alt);
+}
+
+.qm-quick-navigation__link:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+.qm-quick-navigation__link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

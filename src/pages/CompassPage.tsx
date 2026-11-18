@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
 import { useEffect, useRef, useState } from 'react'
 
 import './HelpPage.css'
@@ -9,6 +8,7 @@ import { readSessionLocation, saveSessionLocation } from '../utils/location/dete
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
 import { getUserLocation } from '../utils/location/getUserLocation'
 import DetectLocationButton from '../components/location/DetectLocationButton'
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 
 // Die Kompassseite wird in den nächsten Schritten erweitert.
 export default function CompassPage() {
@@ -284,7 +284,6 @@ export default function CompassPage() {
           </p>
         )}
       </div>
-
       {/* Zeigt die vom Browser geschätzte GPS-Genauigkeit. */}
       {!manualLocation && detectedLocation && (
         <div className="qm-compass__accuracy">
@@ -440,21 +439,6 @@ export default function CompassPage() {
         </p>
       )}
 
-      {/* Zeigt die Überprüfungsmöglichkeit nur bei einer
-    vom Kompass gemeldeten Qibla-Ausrichtung an. */}
-      {turnAngle !== null && Math.abs(turnAngle) <= 5 && (
-        <div className="qm-compass__verification">
-          {/* Erklärt, wie die Richtung unabhängig vom
-        Bewegungssensor überprüft werden kann. */}
-          <p>{t('compassPage.verificationTip')}</p>
-
-          {/* Öffnet unsere bereits vorhandene Qibla-Karte. */}
-          <Link to="/" className="qm-compass__verification-link">
-            {t('compassPage.verifyOnMap')}
-          </Link>
-        </div>
-      )}
-
       {/* Zeigt den Sensorstatus und gegebenenfalls die notwendige Freigabe. */}
       <div className="qm-compass__location">
         {/* Manche Browser verlangen eine ausdrückliche Benutzerfreigabe.
@@ -471,10 +455,9 @@ export default function CompassPage() {
           {sensorHeading !== null ? t('compassPage.sensorActive') : t(sensorMessage)}
         </p>
       </div>
-
-      <Link to="/" className="qm-help__back qm-compass__back">
-        {t('helpPage.backToMap')}
-      </Link>
+      {/* Die Navigation ist unabhängig von der Kompassausrichtung
+      und bleibt deshalb immer sichtbar. */}
+      <QuickToolNavigation currentTool="compass" />
     </section>
   )
 }

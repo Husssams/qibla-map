@@ -386,3 +386,8 @@
 .qm-camera__turn-arrow--left {
   right: 16px;
 }
+
+/* Abstand zwischen Kamera-Hauptbutton und Schnellnavigation. */
+.qm-camera > .qm-quick-navigation {
+  margin-top: 16px;
+}
