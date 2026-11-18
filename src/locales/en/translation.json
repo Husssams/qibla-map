@@ -168,6 +168,10 @@
     "turnRight": "According to the sensor, turn approximately {{degrees}}° right.",
     "turnLeft": "According to the sensor, turn approximately {{degrees}}° left.",
     "sensorAligned": "According to the sensor, the camera is approximately facing the Qibla. Please verify independently.",
-    "kaabaMarker": "Kaaba direction"
+    "kaabaMarker": "Kaaba direction",
+    "confirmationTitle": "Qibla direction found",
+    "confirmationIntro": "According to the sensor, the camera is approximately facing the Qibla.",
+    "confirmationWarning": "Turn your phone slightly left or right. When it vibrates, the sensor indicates that you are facing the Qibla. If it does not vibrate, check your vibration settings. If in doubt, verify the direction on the map.",
+    "verifyOnMap": "Verify direction on map"
   }
 }

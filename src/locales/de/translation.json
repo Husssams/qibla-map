@@ -167,6 +167,10 @@
     "turnRight": "Laut Sensor etwa {{degrees}}° nach rechts drehen.",
     "turnLeft": "Laut Sensor etwa {{degrees}}° nach links drehen.",
     "sensorAligned": "Laut Sensor stimmt die Kamerarichtung ungefähr mit der Qibla überein. Bitte zusätzlich überprüfen.",
-    "kaabaMarker": "Kaaba-Richtung"
+    "kaabaMarker": "Kaaba-Richtung",
+    "confirmationTitle": "Qibla-Richtung gefunden",
+    "confirmationIntro": "Die Kamera zeigt laut Sensor ungefähr zur Qibla.",
+    "confirmationWarning": "Drehe dein Handy leicht nach links oder rechts. Wenn es vibriert, bist du laut Sensor zur Qibla ausgerichtet. Falls keine Vibration erfolgt, überprüfe deine Vibrationseinstellungen. Bei Unsicherheit überprüfe die Richtung auf der Karte.",
+    "verifyOnMap": "Richtung auf Karte überprüfen"
   }
 }

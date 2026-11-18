@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './CameraPage.css'
+import { Link } from 'react-router'
 
 import { getUserLocation, type UserLocation } from '../utils/location/getUserLocation'
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
 import { calculateCameraHeading } from '../utils/ar/cameraHeading'
 import { calculateQiblaTurnAngle } from '../utils/ar/qiblaTurnAngle'
+import { INITIAL_QIBLA_CONFIRMATION, updateQiblaConfirmation } from '../utils/ar/qiblaConfirmation'
 
 // Rohdaten der Orientierungssensoren für unsere AR-Diagnose.
 type OrientationSample = {
@@ -30,6 +32,9 @@ export default function CameraPage() {
   // der Seite noch ein Kamerabild aktiviert.
   const requestIdRef = useRef(0)
 
+  // Verhindert veraltete GPS-Ergebnisse nach dem Stoppen der Kamera.
+  const locationRequestRef = useRef(0)
+
   const [status, setStatus] = useState<'idle' | 'starting' | 'active'>('idle')
   const [error, setError] = useState('')
 
@@ -43,16 +48,23 @@ export default function CameraPage() {
   // Speichert einen übersetzbaren Fehler bei der Standortermittlung.
   const [locationError, setLocationError] = useState<string | null>(null)
 
-  // Verhindert veraltete GPS-Ergebnisse nach dem Stoppen der Kamera.
-  const locationRequestRef = useRef(0)
+  // Speichert die zuletzt empfangenen Sensorwerte.
+  const [orientation, setOrientation] = useState<OrientationSample | null>(null)
+
+  // Merkt sich, ob die Kamera lange genug zur Qibla zeigt.
+  const [confirmation, setConfirmation] = useState(INITIAL_QIBLA_CONFIRMATION)
+
+  // Speichert ein vorübergehendes Standbild ausschließlich im Arbeitsspeicher.
+  // null bedeutet, dass die Livekamera angezeigt werden soll.
+  const [frozenFrame, setFrozenFrame] = useState<string | null>(null)
+
+  // Meldet, wenn das Gerät längere Zeit keine gültigen Werte liefert.
+  const [sensorNoData, setSensorNoData] = useState(false)
 
   // Berechnet die Qibla-Richtung aus dem echten GPS-Standort.
   // Ohne GPS-Standort gibt es bewusst keinen Qibla-Winkel.
   // Die Berechnung verwendet geografisch Nord, nicht magnetisch Nord.
   const qiblaBearing = cameraLocation ? calculateQiblaBearing(cameraLocation) : null
-
-  // Speichert die zuletzt empfangenen Sensorwerte.
-  const [orientation, setOrientation] = useState<OrientationSample | null>(null)
 
   // Bei normaler Hochformathaltung liegt Beta ungefähr bei +90°.
   // Wir erlauben zunächst 25° Abweichung in beide Richtungen.
@@ -71,26 +83,36 @@ export default function CameraPage() {
       ? calculateQiblaTurnAngle(qiblaBearing, cameraHeading)
       : null
 
-  // Die Kaaba erscheint nur nahe der berechneten Qibla-Richtung.
-  // Bei größeren Winkelabweichungen bleibt sie unsichtbar.
-  const showKaabaMarker = turnAngle !== null && isCameraUpright && Math.abs(turnAngle) <= 15
+  // Die bestätigte Kaaba bleibt sichtbar, bis wir mindestens
+  // 20° von der Qibla wegdrehen.
+  const showKaabaMarker =
+    confirmation.confirmed || (turnAngle !== null && isCameraUpright && Math.abs(turnAngle) <= 12)
 
-  // Statt den Marker am Bildschirmrand festzuhalten,
-  // lassen wir ihn tatsächlich aus dem Blickfeld wandern.
-  // Der Faktor 8 ist zunächst ein Testwert für Smartphones.
-  const kaabaOffsetPercent = turnAngle === null ? 0 : (turnAngle / 8) * 50
+  // Während der Bestätigung bleibt die Kaaba fest in der Mitte,
+  // auch wenn der Sensor um wenige Grad schwankt.
+  const kaabaOffsetPercent = confirmation.confirmed
+    ? 0
+    : turnAngle === null
+      ? 0
+      : (turnAngle / 5) * 30
 
-  // Nur bei einer kleinen Winkelabweichung steht die Kaaba mittig
-  // und wird optisch hervorgehoben.
-  const isKaabaAligned = turnAngle !== null && Math.abs(turnAngle) <= 3
+  const isKaabaAligned = confirmation.confirmed || (turnAngle !== null && Math.abs(turnAngle) <= 3)
 
-  // Meldet, wenn das Gerät längere Zeit keine gültigen Werte liefert.
-  const [sensorNoData, setSensorNoData] = useState(false)
+  // Die Vibration ist nur während eines bestätigten Standbildes aktiv,
+  // solange die aktuelle Kamerarichtung höchstens 2° von der Qibla abweicht.
+  const shouldVibrate =
+    status === 'active' &&
+    frozenFrame !== null &&
+    confirmation.confirmed &&
+    isCameraUpright &&
+    turnAngle !== null &&
+    Math.abs(turnAngle) <= 2
 
   // Stoppt einen Kamerastream und gibt die Kamera wieder frei.
   function stopCamera() {
     // Eine laufende GPS-Anfrage wird für diese Kamerasitzung ungültig.
     locationRequestRef.current += 1
+    requestIdRef.current += 1
 
     setCameraLocation(null)
     setLocationError(null)
@@ -99,7 +121,11 @@ export default function CameraPage() {
     setOrientation(null)
     setSensorNoData(false)
 
-    requestIdRef.current += 1
+    // Eine neue Kamerasitzung beginnt ohne alte Bestätigung oder Standbild.
+    setConfirmation(INITIAL_QIBLA_CONFIRMATION)
+    setFrozenFrame(null)
+    // Beim manuellen Stoppen die Vibration sofort abbrechen.
+    navigator.vibrate?.(0)
 
     streamRef.current?.getTracks().forEach((track) => track.stop())
     streamRef.current = null
@@ -112,63 +138,7 @@ export default function CameraPage() {
     setError('')
   }
 
-  // Die Kamera muss auch beim Wechsel zur Karte gestoppt werden.
-  useEffect(() => {
-    return () => {
-      // Auch ausstehende GPS-Ergebnisse nach dem Seitenwechsel ignorieren.
-      locationRequestRef.current += 1
-      requestIdRef.current += 1
-      streamRef.current?.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
-  }, [])
-
-  // Während die Kamera im Vollbild läuft, darf die Webseite
-  // im Hintergrund nicht nach oben oder unten scrollen.
-  useEffect(() => {
-    if (status === 'idle') return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-
-    // Beim Stoppen oder Verlassen der Kameraseite
-    // stellen wir das ursprüngliche Scrollverhalten wieder her.
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [status])
-
-  // Ermittelt die tatsächliche Geräteposition für die AR-Kamera.
-  async function detectCameraLocation() {
-    if (isLocating) return
-
-    setIsLocating(true)
-    setLocationError(null)
-
-    const requestId = ++locationRequestRef.current
-
-    try {
-      const location = await getUserLocation()
-
-      // Ein Ergebnis nach dem Stoppen der Kamera ignorieren.
-      if (requestId !== locationRequestRef.current) return
-
-      setCameraLocation(location)
-    } catch (locationFailure) {
-      if (requestId !== locationRequestRef.current) return
-
-      // getUserLocation liefert bereits unsere Übersetzungsschlüssel.
-      setLocationError(
-        locationFailure instanceof Error ? locationFailure.message : 'locationErrors.unexpected',
-      )
-    } finally {
-      if (requestId === locationRequestRef.current) {
-        setIsLocating(false)
-      }
-    }
-  }
-
-  async function startCamera() {
+  const startCamera = useCallback(async () => {
     // Kamera-Zugriff funktioniert nur in unterstützten,
     // sicheren Browserumgebungen (HTTPS oder localhost).
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -202,6 +172,10 @@ export default function CameraPage() {
 
       if (requestId === requestIdRef.current) {
         setStatus('active')
+
+        // Das alte Standbild erst entfernen, wenn die Kamera
+        // tatsächlich wieder erfolgreich gestartet wurde.
+        setFrozenFrame(null)
       }
     } catch (cameraError) {
       if (requestId !== requestIdRef.current) return
@@ -211,6 +185,9 @@ export default function CameraPage() {
 
       if (videoRef.current) videoRef.current.srcObject = null
 
+      // Bei einem Kamerafehler alte Bestätigungen entfernen.
+      setConfirmation(INITIAL_QIBLA_CONFIRMATION)
+      setFrozenFrame(null)
       setStatus('idle')
 
       const name = cameraError instanceof Error ? cameraError.name : ''
@@ -224,7 +201,65 @@ export default function CameraPage() {
         setError('cameraPage.startError')
       }
     }
+  }, [])
+
+  // Ermittelt die tatsächliche Geräteposition für die AR-Kamera.
+  async function detectCameraLocation() {
+    if (isLocating) return
+
+    setIsLocating(true)
+    setLocationError(null)
+
+    const requestId = ++locationRequestRef.current
+
+    try {
+      const location = await getUserLocation()
+
+      // Ein Ergebnis nach dem Stoppen der Kamera ignorieren.
+      if (requestId !== locationRequestRef.current) return
+
+      setCameraLocation(location)
+    } catch (locationFailure) {
+      if (requestId !== locationRequestRef.current) return
+
+      // getUserLocation liefert bereits unsere Übersetzungsschlüssel.
+      setLocationError(
+        locationFailure instanceof Error ? locationFailure.message : 'locationErrors.unexpected',
+      )
+    } finally {
+      if (requestId === locationRequestRef.current) {
+        setIsLocating(false)
+      }
+    }
   }
+
+  // Die Kamera muss auch beim Wechsel zur Karte gestoppt werden.
+  useEffect(() => {
+    return () => {
+      // Auch ausstehende GPS-Ergebnisse nach dem Seitenwechsel ignorieren.
+      locationRequestRef.current += 1
+      requestIdRef.current += 1
+      streamRef.current?.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+      // Auch beim Seitenwechsel keine Vibration zurücklassen.
+      navigator.vibrate?.(0)
+    }
+  }, [])
+
+  // Während die Kamera im Vollbild läuft, darf die Webseite
+  // im Hintergrund nicht nach oben oder unten scrollen.
+  useEffect(() => {
+    if (status === 'idle') return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    // Beim Stoppen oder Verlassen der Kameraseite
+    // stellen wir das ursprüngliche Scrollverhalten wieder her.
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [status])
 
   // Liest die Geräteorientierung nur bei eingeschalteter Kamera.
   useEffect(() => {
@@ -282,6 +317,131 @@ export default function CameraPage() {
     }
   }, [status])
 
+  // Prüft ungefähr zehnmal pro Sekunde, ob die Kamera
+  // innerhalb von ±2° zur Qibla ausgerichtet ist.
+  //
+  // Auch bei einem Standbild bleibt status === 'active',
+  // damit die Orientierungssensoren weiterlaufen.
+  useEffect(() => {
+    if (status !== 'active') return
+
+    const intervalId = window.setInterval(() => {
+      setConfirmation((previous) => updateQiblaConfirmation(previous, turnAngle, isCameraUpright))
+    }, 100)
+
+    return () => window.clearInterval(intervalId)
+  }, [status, turnAngle, isCameraUpright])
+
+  // Friert die Kamera genau einmal ein, sobald die Ausrichtung
+  // innerhalb von ±2° bestätigt wurde.
+  useEffect(() => {
+    if (status !== 'active' || !confirmation.confirmed || frozenFrame !== null) {
+      return
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const video = videoRef.current
+
+      // Ohne vollständiges Videobild darf die Kamera nicht gestoppt werden.
+      if (!video || !streamRef.current || !video.videoWidth || !video.videoHeight) {
+        setConfirmation(INITIAL_QIBLA_CONFIRMATION)
+        return
+      }
+
+      const canvas = document.createElement('canvas')
+
+      // Begrenzte Bildgröße hält den Speicherverbrauch auf Smartphones niedrig.
+      const scale = Math.min(1, 960 / video.videoWidth)
+      canvas.width = Math.round(video.videoWidth * scale)
+      canvas.height = Math.round(video.videoHeight * scale)
+
+      const context = canvas.getContext('2d')
+
+      if (!context) {
+        setConfirmation(INITIAL_QIBLA_CONFIRMATION)
+        return
+      }
+
+      try {
+        // Kopiert ausschließlich den aktuellen Kameraframe.
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+        // Das Standbild wird nur im React-Zustand gehalten.
+        setFrozenFrame(canvas.toDataURL('image/jpeg', 0.8))
+
+        // Gibt die Hardwarekamera frei. GPS und Sensoren bleiben aktiv.
+        streamRef.current.getTracks().forEach((track) => track.stop())
+        streamRef.current = null
+        video.srcObject = null
+      } catch {
+        // Bei einem Aufnahmefehler läuft die Kamera weiter.
+        setConfirmation(INITIAL_QIBLA_CONFIRMATION)
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [status, confirmation.confirmed, frozenFrame])
+
+  // Sobald die Bestätigung wegen mindestens 20° Abweichung endet,
+  // starten wir automatisch die Kamera erneut.
+  useEffect(() => {
+    if (status !== 'active' || confirmation.confirmed || frozenFrame === null) {
+      return
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      void startCamera()
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [status, confirmation.confirmed, frozenFrame, startCamera])
+
+  // Wiederholt kurze Vibrationsabschnitte, solange die Kamera
+  // innerhalb von ±2° zur Qibla zeigt.
+  useEffect(() => {
+    // Beim Verlassen des gültigen Bereichs sofort abbrechen.
+    if (!shouldVibrate) {
+      navigator.vibrate?.(0)
+      return
+    }
+
+    const vibrateOnce = () => {
+      if (document.visibilityState === 'visible') {
+        // Kurze Abschnitte statt einer langen 10-Sekunden-Vibration.
+        navigator.vibrate?.(180)
+      }
+    }
+
+    // Sofort beim Erreichen der Qibla beginnen.
+    vibrateOnce()
+
+    // Alle 200 ms erneut auslösen.
+    const intervalId = window.setInterval(vibrateOnce, 200)
+
+    const stopVibration = () => {
+      navigator.vibrate?.(0)
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        stopVibration()
+      } else {
+        vibrateOnce()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('pagehide', stopVibration)
+
+    // Beim Wegdrehen oder Verlassen der Kamera alles stoppen.
+    return () => {
+      window.clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('pagehide', stopVibration)
+      stopVibration()
+    }
+  }, [shouldVibrate])
+
   return (
     <section className={`qm-camera${status !== 'idle' ? ' qm-camera--fullscreen' : ''}`}>
       <h2>{t('navigation.arCamera')}</h2>
@@ -292,28 +452,74 @@ export default function CameraPage() {
         So ist der Kamerabereich auch im ausgeschalteten Zustand sichtbar. */}
       <div className="qm-camera__preview">
         <video ref={videoRef} autoPlay playsInline muted className="qm-camera__video" />
-        {/* Diese Kaaba ist ein erster visueller Richtungsmarker.
-        Sie ist noch kein echtes world-anchored 3D-Objekt,
-        sondern ein Overlay, das sich anhand der Sensorwerte
-        nach links oder rechts bewegt. */}
-        {showKaabaMarker && (
+
+        {/* Das Standbild liegt über dem zuletzt angezeigten Videoframe.
+        Die Kaaba bleibt als separates Overlay darüber sichtbar. */}
+        {frozenFrame && (
+          <img src={frozenFrame} alt="" aria-hidden="true" className="qm-camera__frozen-frame" />
+        )}
+
+        {/* Das Kaaba-Bild bleibt während der aktiven GPS-Kamerasitzung geladen.
+        Seine Sichtbarkeit wird unabhängig davon gesteuert. */}
+        {status === 'active' && cameraLocation !== null && (
           <div className="qm-camera__kaaba-overlay" aria-hidden="true">
             <div
               className={`qm-camera__kaaba-marker${
                 isKaabaAligned ? ' qm-camera__kaaba-marker--aligned' : ''
               }`}
               style={{ left: `calc(50% + ${kaabaOffsetPercent}%)` }}
-            >
-              <div className="qm-camera__kaaba-model">
-                <div className="qm-camera__kaaba-top-face" />
-                <div className="qm-camera__kaaba-front-face" />
-                <div className="qm-camera__kaaba-side-face" />
-              </div>
 
-              <div className="qm-camera__kaaba-caption">{t('cameraPage.kaabaMarker')}</div>
+              // Bestimmt, ob die Kaaba sichtbar sein soll.
+              // Außerhalb der Qibla-Richtung wird sie ausgeblendet.
+              data-visible={showKaabaMarker ? 'true' : 'false'}
+            >
+              {/* Freigestelltes Kaaba-Bild als sensorbasierter AR-Richtungsmarker. */}
+              <img
+                src="/images/kaaba-ar.webp"
+                alt=""
+                className="qm-camera__kaaba-photo"
+                draggable={false}
+              />
             </div>
           </div>
         )}
+
+        {/* Der Pfeil zeigt die benötigte Drehrichtung.
+        Er erscheint nur während der Livekamera und bei mehr als 5° Abweichung.
+        Während des Standbildes bleibt er ausgeblendet. */}
+        {status === 'active' &&
+          frozenFrame === null &&
+          turnAngle !== null &&
+          Math.abs(turnAngle) > 5 && (
+            <div
+              className={`qm-camera__turn-arrow ${
+                turnAngle > 0 ? 'qm-camera__turn-arrow--right' : 'qm-camera__turn-arrow--left'
+              }`}
+              aria-hidden="true"
+              dir="ltr"
+            >
+              {/* SVG statt Schriftzeichen, damit der Pfeil exakt mittig sitzt. */}
+              <svg
+                width="42"
+                height="42"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                {turnAngle > 0 ? (
+                  // Pfeil nach rechts
+                  <path d="M4 12h16m-7-7 7 7-7 7" />
+                ) : (
+                  // Pfeil nach links
+                  <path d="M20 12H4m7-7-7 7 7 7" />
+                )}
+              </svg>
+            </div>
+          )}
       </div>
 
       {/* Der Button zeigt je nach Kamerastatus den passenden Text. */}
@@ -333,8 +539,9 @@ export default function CameraPage() {
           </button>
         )}
 
-        {/* Die aktuelle Position wird nur bei eingeschalteter Kamera abgefragt. */}
-        {status === 'active' && (
+        {/* GPS nur anbieten, solange noch kein Standort ermittelt wurde.
+        Nach einem Fehler bleibt der Button zum erneuten Versuch sichtbar. */}
+        {status === 'active' && cameraLocation === null && (
           <button
             type="button"
             className="qm-camera__button"
@@ -373,9 +580,8 @@ export default function CameraPage() {
         </div>
       )}
 
-      {/* Die Haltungserkennung wird nur bei aktiver Kamera angezeigt.
-    Technische Sensorwerte bleiben auf die Entwicklungsumgebung beschränkt. */}
-      {status === 'active' && (
+      {/* Während des Standbildes keine wechselnden Sensorhinweise anzeigen. */}
+      {status === 'active' && frozenFrame === null && (
         <div className="qm-camera__sensor">
           <p className="qm-camera__posture" role="status">
             {/* Zeigt erst die Haltung und anschließend die geschätzte
@@ -386,7 +592,7 @@ export default function CameraPage() {
                 ? t('cameraPage.postureAdjust')
                 : turnAngle === null
                   ? t('cameraPage.postureReady')
-                  : Math.abs(turnAngle) <= 5
+                  : Math.abs(turnAngle) <= 2
                     ? t('cameraPage.sensorAligned')
                     : t(turnAngle > 0 ? 'cameraPage.turnRight' : 'cameraPage.turnLeft', {
                         degrees: Math.round(Math.abs(turnAngle)),
@@ -394,33 +600,30 @@ export default function CameraPage() {
           </p>
 
           {/* Vorläufige Anzeige der Kamerablickrichtung.
-    Erst nach Prüfung der Nordreferenz verwenden wir sie für AR. */}
+          Erst nach Prüfung der Nordreferenz verwenden wir sie für AR. */}
           {isCameraUpright && cameraHeading !== null && (
             <p className="qm-camera__heading">
               {t('cameraPage.cameraHeading')}: <bdi dir="ltr">{cameraHeading.toFixed(1)}°</bdi>
             </p>
           )}
+        </div>
+      )}
 
-          {/* Nur für uns Entwickler: Rohwerte zur Überprüfung auf Android. */}
-          {import.meta.env.DEV && orientation && (
-            <div className="qm-camera__debug">
-              <p>
-                α: {orientation.alpha.toFixed(1)}° | β: {orientation.beta.toFixed(1)}° | γ:{' '}
-                {orientation.gamma.toFixed(1)}°
-              </p>
+      {/* Nach erfolgreicher Aufnahme ersetzt die Bestätigungskarte
+          die bisherigen Links-/Rechts-Anweisungen. */}
+      {frozenFrame !== null && confirmation.confirmed && (
+        <div className="qm-camera__confirmation" role="status" aria-live="polite">
+          <h3>{t('cameraPage.confirmationTitle')}</h3>
 
-              <p>
-                {t(
-                  orientation.absolute ? 'cameraPage.sensorAbsolute' : 'cameraPage.sensorRelative',
-                )}
-              </p>
+          <p>{t('cameraPage.confirmationIntro')}</p>
 
-              <p>
-                {t('cameraPage.screenAngle')}:{' '}
-                {orientation.screenAngle === null ? '?' : `${orientation.screenAngle}°`}
-              </p>
-            </div>
-          )}
+          <p>{t('cameraPage.confirmationWarning')}</p>
+
+          {/* Führt zur vorhandenen Hauptkarte.
+        Beim Seitenwechsel gibt der Kamera-Cleanup die Ressourcen frei. */}
+          <Link to="/" className="qm-camera__confirmation-link">
+            {t('cameraPage.verifyOnMap')}
+          </Link>
         </div>
       )}
 
