@@ -55,6 +55,12 @@
     "comingSoon": "Demnächst",
     "help": "Hilfe"
   },
+  "quickNavigation": {
+    "label": "Schnellnavigation zwischen Qibla-Werkzeugen",
+    "goToCamera": "Zur Kamera",
+    "goToCompass": "Zum Kompass",
+    "goToMap": "Zur Karte"
+  },
   "helpPage": {
     "title": "So verwendest du QiblaMap",
     "intro": "Mit diesen Funktionen findest du deine Gebetsrichtung:",
@@ -123,8 +129,6 @@
     "turnRight": "Nach rechts drehen",
     "turnLeft": "Nach links drehen",
     "aligned": "Laut Kompass bist du zur Qibla ausgerichtet.",
-    "verificationTip": "Überprüfe die Richtung zusätzlich auf der Karte. Vergleiche den Qibla-Pfeil mit Straßen oder Gebäuden in deiner Umgebung. Falls die Richtungen deutlich voneinander abweichen, verlasse dich nicht allein auf den Kompass.",
-    "verifyOnMap": "Richtung auf Karte überprüfen",
     "selectLocation": "Wähle zuerst einen Standort auf der Karte.",
     "infoButton": "Über diesen Kompass",
     "infoTitle": "Wie funktioniert der Qibla-Kompass?",

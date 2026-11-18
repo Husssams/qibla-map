@@ -23,6 +23,8 @@ import {
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
 import './MapPage.css'
 
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
+
 // Fallback, solange weder ein manueller noch ein GPS-Standort vorliegt.
 const testLocation: Coordinates = {
   latitude: 33.511571,
@@ -481,6 +483,8 @@ function MapPage() {
               {t('selectOnMap')}
             </button>
           </div>
+          {/* Direkter Wechsel zur Kamera und zum Kompass. */}
+          <QuickToolNavigation currentTool="map" />
         </div>
       )}
     </div>

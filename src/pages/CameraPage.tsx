@@ -8,6 +8,7 @@ import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
 import { calculateCameraHeading } from '../utils/ar/cameraHeading'
 import { calculateQiblaTurnAngle } from '../utils/ar/qiblaTurnAngle'
 import { INITIAL_QIBLA_CONFIRMATION, updateQiblaConfirmation } from '../utils/ar/qiblaConfirmation'
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 
 // Rohdaten der Orientierungssensoren für unsere AR-Diagnose.
 type OrientationSample = {
@@ -552,6 +553,10 @@ export default function CameraPage() {
           </button>
         )}
       </div>
+
+      {/* Navigation nur anzeigen, solange die Kamera ausgeschaltet ist.
+    Im Kameravollbild bleiben die zusätzlichen Buttons verborgen. */}
+      {status === 'idle' && <QuickToolNavigation currentTool="camera" />}
 
       {/* Zeigt GPS-Genauigkeit und geografische Qibla-Richtung.
     Ohne gültigen GPS-Standort wird kein Winkel angezeigt. */}
