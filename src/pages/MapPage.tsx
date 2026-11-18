@@ -21,11 +21,12 @@ import {
   saveManualLocation,
 } from '../utils/location/manualLocation'
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
+import './MapPage.css'
 
 // Fallback, solange weder ein manueller noch ein GPS-Standort vorliegt.
 const testLocation: Coordinates = {
-  latitude: 33.439073,
-  longitude: 36.078122,
+  latitude: 33.511571,
+  longitude: 36.306746,
 }
 
 function MapPage() {
@@ -80,12 +81,22 @@ function MapPage() {
   // Ein zusätzlicher React-State ist dafür nicht erforderlich.
   const qiblaPathDialogRef = useRef<HTMLDialogElement | null>(null)
 
-  // Speichert einen gezielten Kartenauftrag.
-  // Eine optionale Zoomstufe erlaubt uns, nach GPS näher heranzuzoomen.
-  const [focusTarget, setFocusTarget] = useState<(Coordinates & { zoom?: number }) | null>(null)
-
   // Manuell gewählte Standorte bleiben nach einem Seitenneustart erhalten.
   const [manualLocation, setManualLocation] = useState<Coordinates | null>(readManualLocation)
+
+  // Stellt beim Laden den gespeicherten GPS-Standort
+  // mit derselben Zoomstufe wie bei der GPS-Ermittlung wieder her.
+  const [focusTarget, setFocusTarget] = useState<(Coordinates & { zoom?: number }) | null>(() => {
+    if (!detectedLocation || manualLocation !== null || isQiblaPathFitEnabled) {
+      return null
+    }
+
+    return {
+      latitude: detectedLocation.latitude,
+      longitude: detectedLocation.longitude,
+      zoom: 21,
+    }
+  })
 
   // Manuelle Auswahl hat Vorrang vor GPS und dem Teststandort.
   const activeLocation: Coordinates = manualLocation ?? detectedLocation ?? testLocation
@@ -267,9 +278,6 @@ function MapPage() {
           </bdi>
         </p>
 
-        {/* Gemeinsamer GPS-Button, verwendet die Standortlogik dieser Seite. */}
-        <DetectLocationButton onDetect={handleDetectLocation} isLoading={isLocating} />
-
         {locationError && (
           <p className="qm-alert" role="alert">
             {t(locationError)}
@@ -337,6 +345,14 @@ function MapPage() {
       Die Bedienelemente liegen mit ihrem höheren z-index darüber. */}
         {!isMapExpanded && <div className="qm-map-scroll-guard" aria-hidden="true" />}
 
+        {/* GPS ist die Hauptfunktion der Karte.
+          Im vergrößerten Auswahlmodus bleibt der Button ausgeblendet. */}
+        {!isMapExpanded && (
+          <div className="qm-map-gps-button">
+            <DetectLocationButton onDetect={handleDetectLocation} isLoading={isLocating} />
+          </div>
+        )}
+
         {/* Die vergrößerte Karte kann unabhängig vom Info-Dialog geschlossen werden. */}
         {isMapExpanded && (
           <button
@@ -350,8 +366,45 @@ function MapPage() {
           </button>
         )}
 
-        {/* Alle Kartenbedienelemente verwenden den bestehenden React-State.
-      Die Einstellung bleibt beim Vergrößern der Karte erhalten. */}
+        {/* Der native Dialog erscheint über der Karte statt als dauerhafter Hinweis.
+      Escape und die Fokusverwaltung übernimmt weitgehend der Browser. */}
+        <dialog
+          id="qm-qibla-path-dialog"
+          ref={qiblaPathDialogRef}
+          className="qm-qibla-path-dialog"
+          aria-labelledby="qm-qibla-path-dialog-title"
+          dir={i18n.dir()}
+          onClick={(event) => {
+            // Ein Klick auf die abgedunkelte Fläche schließt den Dialog.
+            // Klicks innerhalb des eigentlichen Inhalts bleiben ohne Wirkung.
+            if (event.target === event.currentTarget) {
+              event.currentTarget.close()
+            }
+          }}
+        >
+          <div className="qm-qibla-path-dialog-content">
+            <button
+              type="button"
+              className="qm-qibla-path-dialog-close"
+              onClick={() => qiblaPathDialogRef.current?.close()}
+              aria-label={t('qiblaPathInfoClose')}
+            >
+              ×
+            </button>
+
+            {/* Das Symbol unterstreicht den Bezug zur Erdoberfläche. */}
+            <span className="qm-qibla-path-dialog-icon" aria-hidden="true">
+              🌍
+            </span>
+
+            <h2 id="qm-qibla-path-dialog-title">{t('qiblaPathInfoTitle')}</h2>
+
+            <p>{t('qiblaPathExplanation')}</p>
+          </div>
+        </dialog>
+      </div>
+
+      {!isMapExpanded && (
         <div className="qm-map-controls">
           <div className="qm-map-control-actions">
             <label className="qm-qibla-path-label">
@@ -374,7 +427,7 @@ function MapPage() {
             </label>
 
             {/* Die automatische Kartenanpassung ist nur sinnvoll,
-    wenn ein gültiger Qibla-Pfad angezeigt werden kann. */}
+          wenn ein gültiger Qibla-Pfad angezeigt werden kann. */}
             {isQiblaPathVisible && qiblaBearing !== null && (
               <label className="qm-qibla-path-label">
                 <input
@@ -420,57 +473,16 @@ function MapPage() {
               </button>
             )}
 
-            {/* Die Standortauswahl ist in der vergrößerten Karte bereits aktiv.
-          Deshalb wird der zusätzliche Auswahlbutton dort ausgeblendet. */}
-            {!isMapExpanded && (
-              <button
-                type="button"
-                className="qm-map-select-button"
-                onClick={() => setIsMapExpanded(true)}
-              >
-                {t('selectOnMap')}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Der native Dialog erscheint über der Karte statt als dauerhafter Hinweis.
-      Escape und die Fokusverwaltung übernimmt weitgehend der Browser. */}
-        <dialog
-          id="qm-qibla-path-dialog"
-          ref={qiblaPathDialogRef}
-          className="qm-qibla-path-dialog"
-          aria-labelledby="qm-qibla-path-dialog-title"
-          dir={i18n.dir()}
-          onClick={(event) => {
-            // Ein Klick auf die abgedunkelte Fläche schließt den Dialog.
-            // Klicks innerhalb des eigentlichen Inhalts bleiben ohne Wirkung.
-            if (event.target === event.currentTarget) {
-              event.currentTarget.close()
-            }
-          }}
-        >
-          <div className="qm-qibla-path-dialog-content">
             <button
               type="button"
-              className="qm-qibla-path-dialog-close"
-              onClick={() => qiblaPathDialogRef.current?.close()}
-              aria-label={t('qiblaPathInfoClose')}
+              className="qm-map-select-button"
+              onClick={() => setIsMapExpanded(true)}
             >
-              ×
+              {t('selectOnMap')}
             </button>
-
-            {/* Das Symbol unterstreicht den Bezug zur Erdoberfläche. */}
-            <span className="qm-qibla-path-dialog-icon" aria-hidden="true">
-              🌍
-            </span>
-
-            <h2 id="qm-qibla-path-dialog-title">{t('qiblaPathInfoTitle')}</h2>
-
-            <p>{t('qiblaPathExplanation')}</p>
           </div>
-        </dialog>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
