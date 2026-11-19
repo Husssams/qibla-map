@@ -61,7 +61,7 @@ export default function NavigationMenu() {
       {isOpen && (
         <nav id={menuId} className="qm-nav__panel" aria-label={t('navigation.title')}>
           {/* Die Karten-Hauptseite ist bereits verfügbar. */}
-          <NavLink to="/" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          <NavLink to="/map" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.map')}
           </NavLink>
 

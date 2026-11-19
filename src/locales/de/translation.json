@@ -63,12 +63,31 @@
   },
   "helpPage": {
     "title": "So verwendest du QiblaMap",
-    "intro": "Mit diesen Funktionen findest du deine Gebetsrichtung:",
-    "search": "Suche nach einer Stadt oder Adresse, um einen Standort auszuwählen.",
-    "gps": "Verwende die Standortermittlung, um deine aktuelle Position abzufragen.",
-    "map": "Wähle einen Standort direkt auf der Karte aus.",
-    "path": "Aktiviere die Qibla-Linie, um den Weg zur Kaaba darzustellen.",
-    "backToMap": "Zurück zur Karte"
+    "intro": "Wähle ein Werkzeug aus und folge der Schritt-für-Schritt-Anleitung.",
+    "backToMap": "Zurück zur Karte",
+    "sections": {
+      "camera": {
+        "title": "Qibla mit der Kamera finden",
+        "start": "Öffne die Kameraseite und tippe auf „Kamera starten“. Erlaube den Kamerazugriff.",
+        "gps": "Tippe auf „Standort ermitteln“ und erlaube den GPS-Zugriff, damit die Qibla-Richtung berechnet werden kann.",
+        "hold": "Halte dein Smartphone aufrecht und drehe dich langsam in die angezeigte Richtung.",
+        "confirm": "Wenn die Kamera genau zur Qibla ausgerichtet ist, wird die Kaaba in der Mitte bestätigt. Das Kamerabild wird kurzzeitig eingefroren und dein Gerät kann vibrieren."
+      },
+      "compass": {
+        "title": "Qibla mit dem Kompass finden",
+        "gps": "Öffne den Kompass und tippe auf „Standort ermitteln“, um deine aktuelle Position zu verwenden.",
+        "hold": "Halte dein Smartphone möglichst waagerecht und vermeide starke Neigungen.",
+        "direction": "Drehe dich langsam und beobachte die Kompassnadel, bis sie in Richtung der Kaaba zeigt.",
+        "accuracy": "Halte Abstand zu Magneten und elektronischen Störquellen. Die Genauigkeit hängt von den Sensoren deines Geräts ab."
+      },
+      "map": {
+        "title": "Qibla mit der Karte finden",
+        "gps": "Tippe zuerst auf „Standort ermitteln“. Dadurch wird deine aktuelle Position erkannt und der Qibla-Pfeil auf der Karte angezeigt.",
+        "direction": "Anhand dieses Pfeils siehst du, in welche Richtung die Qibla von deinem Standort aus liegt.",
+        "path": "Wenn du mehr Details sehen möchtest, aktiviere „Qibla-Pfad anzeigen“. So kannst du die Richtung zur Kaaba auf der Karte verfolgen. Mit der vollständigen Pfadansicht kannst du den ganzen Verlauf sehen.",
+        "manual": "Falls du deinen Standort nicht per GPS verwenden möchtest, kannst du ihn auch manuell auf der Karte auswählen oder nach einer Stadt bzw. Adresse suchen."
+      }
+    }
   },
   "notFoundPage": {
     "title": "Seite nicht gefunden",

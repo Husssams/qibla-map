@@ -1,0 +1,108 @@
+/* Die FAQ verwendet dasselbe offene Seitenlayout wie die Hilfeseite. */
+.qm-faq-page {
+  box-sizing: border-box;
+  width: 100%;
+  margin-inline: auto;
+  color: var(--qm-text);
+}
+
+.qm-faq-page h2 {
+  margin: 0 0 16px;
+}
+
+.qm-faq-page p {
+  color: var(--qm-text-muted);
+  line-height: 1.7;
+}
+
+/* FAQ-Fragen als aufklappbare Karten. */
+.qm-faq-page__questions {
+  display: grid;
+  gap: 12px;
+  margin-block: 24px;
+}
+
+.qm-faq-page__questions details {
+  overflow: hidden;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+}
+
+.qm-faq-page__questions details[open] {
+  border-color: var(--qm-primary);
+}
+
+.qm-faq-page__questions summary {
+  padding: 16px;
+  color: var(--qm-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qm-faq-page__questions summary:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: -3px;
+}
+
+.qm-faq-page__questions details p {
+  margin: 0;
+  padding: 0 16px 16px;
+}
+
+/* Drei kompakte Navigationsbuttons unter den FAQ-Fragen. */
+.qm-faq-page > .qm-quick-navigation {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  max-width: none;
+  margin-block-start: 24px;
+}
+
+/* Auf Smartphones bleiben die drei Buttons nebeneinander. */
+@media (max-width: 560px) {
+  .qm-faq-page > .qm-quick-navigation {
+    gap: 8px;
+  }
+
+  .qm-faq-page > .qm-quick-navigation .qm-quick-navigation__link {
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 4px;
+    font-size: 12px;
+  }
+}
+
+/* Einheitliche Pfeile wie auf der Hilfeseite. */
+.qm-faq-page__questions summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+}
+
+.qm-faq-page__questions summary::-webkit-details-marker {
+  display: none;
+}
+
+.qm-faq-page__questions summary::before {
+  content: '▶';
+  flex-shrink: 0;
+  color: var(--qm-text);
+  font-size: 11px;
+}
+
+.qm-faq-page__questions details[open] summary::before {
+  content: '▼';
+}
+
+/* Geschlossene FAQ-Fragen zeigen auf Arabisch nach links. */
+.qm-faq-page__questions details:dir(rtl) summary::before {
+  content: '◀';
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Geöffnete FAQ-Fragen zeigen nach unten. */
+.qm-faq-page__questions details[open]:dir(rtl) summary::before {
+  content: '▼';
+}

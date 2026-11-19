@@ -182,3 +182,11 @@ html[lang='ar'] .qm-compass__direction {
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+/* Die zwei Navigationsbuttons nutzen die gesamte Kompassbreite. */
+.qm-compass-page > .qm-quick-navigation {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
+}

@@ -17,7 +17,7 @@ export default function NotFoundPage() {
       <p>{t('notFoundPage.description')}</p>
 
       {/* Link navigiert zur Startseite, ohne die App neu zu laden. */}
-      <Link to="/" className="qm-not-found__link">
+      <Link to="/map" className="qm-not-found__link">
         {t('notFoundPage.backToMap')}
       </Link>
     </section>

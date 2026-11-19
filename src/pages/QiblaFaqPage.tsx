@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 
-import './HelpPage.css'
+import './QiblaFaqPage.css'
 
 export default function QiblaFaqPage() {
   const { t } = useTranslation()
@@ -10,25 +10,35 @@ export default function QiblaFaqPage() {
   const questions = ['meaning', 'unity', 'worship', 'builder', 'location', 'calculation'] as const
 
   return (
-    <article className="qm-help" aria-labelledby="qm-faq-title">
+    <article className="qm-faq-page" aria-labelledby="qm-faq-title">
       <h2 id="qm-faq-title">{t('navigation.qiblaFaq')}</h2>
 
       <p>{t('qiblaFaqPage.intro')}</p>
 
-      <div className="qm-faq">
+      <div className="qm-faq-page__questions">
         {questions.map((question) => (
           // Gleicher Name bedeutet: Immer nur eine Antwort ist geöffnet.
-          <details name="qibla-faq" key={question}>
+          <details
+            name="qibla-faq"
+            key={question}
+            onToggle={(event) => {
+              // Nur beim Öffnen scrollen, nicht beim Schließen.
+              if (!event.currentTarget.open) return
+
+              event.currentTarget.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              })
+            }}
+          >
             <summary>{t(`qiblaFaqPage.${question}Question`)}</summary>
 
             <p>{t(`qiblaFaqPage.${question}Answer`)}</p>
           </details>
         ))}
       </div>
-
-      <Link to="/" className="qm-help__back">
-        {t('helpPage.backToMap')}
-      </Link>
+      {/* Direkter Wechsel zu allen drei Qibla-Werkzeugen. */}
+      <QuickToolNavigation />
     </article>
   )
 }
