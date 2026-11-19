@@ -52,7 +52,7 @@ export default function PrivacyPage() {
       {/* Kennzeichnet die noch nicht rechtlich freigegebene Fassung. */}
       <p>{t('privacyPage.reviewNotice')}</p>
 
-      <Link to="/" className="qm-help__back">
+      <Link to="/map" className="qm-help__back">
         {t('helpPage.backToMap')}
       </Link>
     </article>

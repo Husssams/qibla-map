@@ -626,7 +626,7 @@ export default function CameraPage() {
 
           {/* Führt zur vorhandenen Hauptkarte.
         Beim Seitenwechsel gibt der Kamera-Cleanup die Ressourcen frei. */}
-          <Link to="/" className="qm-camera__confirmation-link">
+          <Link to="/map" className="qm-camera__confirmation-link">
             {t('cameraPage.verifyOnMap')}
           </Link>
         </div>

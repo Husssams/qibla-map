@@ -54,7 +54,7 @@ export default function ImprintPage() {
 
       <p>{t('imprintPage.paypalNotice')}</p>
 
-      <Link to="/" className="qm-help__back">
+      <Link to="/map" className="qm-help__back">
         {t('helpPage.backToMap')}
       </Link>
     </article>

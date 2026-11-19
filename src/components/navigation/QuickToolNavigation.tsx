@@ -5,7 +5,7 @@ import './QuickToolNavigation.css'
 type Tool = 'camera' | 'compass' | 'map'
 
 type Props = {
-  currentTool: Tool
+  currentTool?: Tool
 }
 
 // Einheitliche Symbole für alle drei Werkzeuge.
@@ -42,7 +42,7 @@ export default function QuickToolNavigation({ currentTool }: Props) {
   const links: { tool: Tool; to: string; label: string }[] = [
     { tool: 'camera', to: '/camera', label: t('quickNavigation.goToCamera') },
     { tool: 'compass', to: '/compass', label: t('quickNavigation.goToCompass') },
-    { tool: 'map', to: '/', label: t('quickNavigation.goToMap') },
+    { tool: 'map', to: '/map', label: t('quickNavigation.goToMap') },
   ]
 
   return (

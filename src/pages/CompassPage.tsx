@@ -264,7 +264,7 @@ export default function CompassPage() {
   }
 
   return (
-    <section className="qm-help" aria-labelledby="qm-compass-title">
+    <section className="qm-help qm-compass-page" aria-labelledby="qm-compass-title">
       <h2 id="qm-compass-title">{t('navigation.compass')}</h2>
 
       {/* Gemeinsamer GPS-Button für Karte und Kompass. */}

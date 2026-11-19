@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router'
+import { Navigate, Route, Routes } from 'react-router'
 
 import AppLayout from './components/navigation/AppLayout'
 import HelpPage from './pages/HelpPage'
@@ -15,8 +15,11 @@ function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {/* Die Karte bleibt unsere Hauptseite. */}
-        <Route index element={<MapPage />} />
+        {/* Bis zur Sprachauswahl leitet die Startseite zur Karte weiter. */}
+        <Route index element={<Navigate to="/map" replace />} />
+
+        {/* Die Qibla-Karte erhält eine eigene dauerhafte URL. */}
+        <Route path="map" element={<MapPage />} />
         {/* Eigene Seite für den zukünftigen Live-Kompass. */}
         <Route path="compass" element={<CompassPage />} />
         {/* Die AR-Kameraseite erhält eine eigene URL.

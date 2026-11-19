@@ -1,81 +1,124 @@
-/* Eigenes Layout für die Hilfeseite. */
-.qm-help {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 760px;
-  margin-inline: auto;
-  padding: clamp(20px, 4vw, 36px);
-  border: 1px solid var(--qm-border);
-  border-radius: 20px;
-  background: var(--qm-surface);
-  color: var(--qm-text);
-}
-
-.qm-help h2 {
-  margin-block: 0 16px;
-}
-
-.qm-help p,
-.qm-help li {
-  color: var(--qm-text-muted);
-  line-height: 1.7;
-}
-
-.qm-help__steps {
-  padding-inline-start: 24px;
-  margin-block: 24px;
-}
-
-.qm-help__steps li {
-  margin-block: 12px;
-}
-
-/* Verlinkung zurück zur Karten-Hauptseite. */
-.qm-help__back {
-  display: inline-block;
-  padding: 12px 20px;
-  border-radius: 10px;
-  background: var(--qm-primary);
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.qm-help__back:focus-visible {
-  outline: 3px solid var(--qm-text);
-  outline-offset: 3px;
-}
-
-/* Die Qibla-Fragen erscheinen als einzelne aufklappbare Karten. */
-.qm-faq {
+/* Drei aufklappbare Anleitungen für Kamera, Kompass und Karte. */
+.qm-help__accordion {
   display: grid;
   gap: 12px;
   margin-block: 24px;
 }
 
-.qm-faq details {
-  border: 1px solid var(--qm-border);
-  border-radius: 12px;
+.qm-help__accordion-item {
   overflow: hidden;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
 }
 
-.qm-faq details[open] {
+.qm-help__accordion-item[open] {
   border-color: var(--qm-primary);
 }
 
-/* Eine Frage kann per Maus und Tastatur geöffnet werden. */
-.qm-faq summary {
+.qm-help__accordion-item summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 16px;
-  cursor: pointer;
+  list-style: none;
   font-weight: 600;
+  cursor: pointer;
 }
 
-.qm-faq summary:focus-visible {
+.qm-help__accordion-item summary:focus-visible {
   outline: 3px solid var(--qm-primary);
   outline-offset: -3px;
 }
 
-.qm-faq details p {
+.qm-help__accordion-item .qm-help__steps {
   margin: 0;
-  padding: 0 16px 16px;
+  padding: 8px 24px 20px;
+  padding-inline-start: 44px;
+}
+/* Direkter Wechsel zum Werkzeug am Ende jeder Anleitung. */
+.qm-help__tool-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  margin-inline: 16px;
+  margin-block-end: 20px;
+  padding: 10px 18px;
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-primary);
+  color: var(--qm-primary-text);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.qm-help__tool-link:hover {
+  background: var(--qm-primary-hover);
+}
+
+.qm-help__tool-link:focus-visible {
+  outline: 3px solid var(--qm-primary);
+  outline-offset: 3px;
+}
+
+/* Auf der Hilfeseite stehen alle drei Werkzeuge nebeneinander. */
+.qm-help--guide > .qm-quick-navigation {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  margin-block-start: 24px;
+}
+
+/* Auf Smartphones stehen die Icons über dem Text,
+   damit alle drei Buttons nebeneinander passen. */
+@media (max-width: 560px) {
+  .qm-help--guide > .qm-quick-navigation {
+    gap: 8px;
+  }
+
+  .qm-help--guide > .qm-quick-navigation .qm-quick-navigation__link {
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 4px;
+    font-size: 12px;
+  }
+}
+
+.qm-help__accordion-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.qm-help__accordion-item summary::before {
+  content: '▶';
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--qm-text);
+}
+
+/* Beim Öffnen zeigt der Pfeil nach unten. */
+.qm-help__accordion-item[open] summary::before {
+  content: '▼';
+}
+
+/* Im arabischen RTL-Modus zeigt der geschlossene Pfeil nach links. */
+.qm-help__accordion-item:dir(rtl) summary::before {
+  content: '◀';
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Beim Öffnen zeigt der Pfeil auch auf Arabisch nach unten. */
+.qm-help__accordion-item[open]:dir(rtl) summary::before {
+  content: '▼';
+}
+
+/* Mehr Abstand zwischen den nummerierten Anleitungen. */
+.qm-help__accordion-item .qm-help__steps li {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.qm-help__accordion-item .qm-help__steps li + li {
+  margin-block-start: 14px;
 }

@@ -64,12 +64,31 @@
   },
   "helpPage": {
     "title": "How to use QiblaMap",
-    "intro": "Find your prayer direction with these features:",
-    "search": "Search for a city or address to select a location.",
-    "gps": "Use Detect my location to request your current position.",
-    "map": "Choose a location directly on the map.",
-    "path": "Enable Show Qibla path to visualize the route to the Kaaba.",
-    "backToMap": "Back to map"
+    "intro": "Choose a tool and follow its step-by-step instructions.",
+    "backToMap": "Back to map",
+    "sections": {
+      "camera": {
+        "title": "Find the Qibla with the camera",
+        "start": "Open the Camera page and tap \"Start camera\". Allow access to your camera.",
+        "gps": "Tap \"Detect my location\" and allow location access so the Qibla direction can be calculated.",
+        "hold": "Hold your phone upright and slowly turn in the indicated direction.",
+        "confirm": "When the camera is accurately aligned with the Qibla, the Kaaba is confirmed in the center. The camera image freezes temporarily and your device may vibrate."
+      },
+      "compass": {
+        "title": "Find the Qibla with the compass",
+        "gps": "Open the Compass page and tap \"Detect my location\" to use your current position.",
+        "hold": "Keep your phone as level as possible and avoid tilting it too much.",
+        "direction": "Turn slowly and watch the compass needle until it points toward the Kaaba.",
+        "accuracy": "Keep your phone away from magnets and electronic interference. Accuracy depends on your device's sensors."
+      },
+      "map": {
+        "title": "Find the Qibla with the map",
+        "gps": "First, tap \"Detect my location\". Your current position will be detected and the Qibla arrow will appear on the map.",
+        "direction": "The arrow shows you the Qibla direction from your current location.",
+        "path": "For more details, enable \"Show Qibla path\". This lets you follow the direction toward the Kaaba on the map. You can also use the full-path option to display the entire path.",
+        "manual": "If you prefer not to use GPS, you can select your location manually on the map or search for a city or address."
+      }
+    }
   },
   "notFoundPage": {
     "title": "Page not found",
