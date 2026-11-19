@@ -57,7 +57,7 @@
 
 .qm-nav__link:hover {
   background: var(--qm-primary);
-  color: white;
+  color: var(--qm-primary-text);
 }
 
 .qm-nav__planned {

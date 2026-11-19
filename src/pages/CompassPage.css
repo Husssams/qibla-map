@@ -43,7 +43,7 @@
 
 /* Goldene Spitze der Qibla-Nadel. */
 .qm-compass__needle-front {
-  fill: #e5b65b;
+  fill: var(--qm-gold);
 }
 
 /* Der hintere Teil bleibt zurückhaltend. */
@@ -54,20 +54,20 @@
 /* Der Mittelpunkt verbindet beide Teile der Nadel. */
 .qm-compass__needle-center {
   fill: var(--qm-surface);
-  stroke: #e5b65b;
+  stroke: var(--qm-gold);
   stroke-width: 3;
 }
 
 /* Vereinfachtes Kaaba-Symbol auf der Kompassscheibe. */
 .qm-compass__kaaba {
   fill: #202020;
-  stroke: #e5b65b;
+  stroke: var(--qm-gold);
   stroke-width: 1.5;
 }
 
 /* Goldenes Band auf der Kaaba. */
 .qm-compass__kaaba-band {
-  stroke: #e5b65b;
+  stroke: var(--qm-gold);
   stroke-width: 3;
 }
 /* Ganze arabische Richtungsnamen benötigen etwas weniger Platz. */
@@ -86,7 +86,7 @@ html[lang='ar'] .qm-compass__direction {
 
 /* Hebt die erfolgreiche Ausrichtung hervor. */
 .qm-compass__guidance[data-aligned='true'] {
-  color: #34c79a;
+  color: var(--qm-qibla);
 }
 
 /* Standortermittlung oberhalb der Kompassscheibe. */
