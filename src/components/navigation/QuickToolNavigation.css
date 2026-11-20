@@ -17,8 +17,8 @@
   padding: 10px 16px;
   border: 1px solid var(--qm-border);
   border-radius: var(--qm-radius-sm);
-  background: var(--qm-surface);
-  color: var(--qm-text);
+  background: var(--qm-secondary-button-bg);
+  color: var(--qm-secondary-button-text);
   font: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -45,6 +45,7 @@
   height: 18px;
   flex-shrink: 0;
   fill: none;
+  color: var(--qm-icon-accent);
   stroke: currentColor;
   stroke-width: 1.8;
   stroke-linecap: round;
