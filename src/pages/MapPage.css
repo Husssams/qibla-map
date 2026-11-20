@@ -19,9 +19,13 @@
   gap: 20px 24px;
 }
 
+/* Die Standortsuche liegt über der Karte,
+   damit alle Suchvorschläge sichtbar bleiben. */
 .qm-location-card {
   grid-area: location;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .qm-result-card {
@@ -80,11 +84,13 @@
   color: var(--qm-text);
 }
 
-/* Kartencontainer: vorbereitet für Marker und Qibla-Pfeil. */
+/* Die Karte erhält einen eigenen Stapelkontext.
+   Leaflet-Elemente können dadurch die Suchliste nicht überdecken. */
 .qm-map-card {
   position: relative;
   min-width: 0;
   overflow: hidden;
+  z-index: 0;
 }
 
 .qm-map-card .qibla-map {
