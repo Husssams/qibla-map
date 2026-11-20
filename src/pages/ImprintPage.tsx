@@ -1,13 +1,14 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 
 import './HelpPage.css'
+import './LegalPageNavigation.css'
 
 export default function ImprintPage() {
   const { t } = useTranslation()
 
   return (
-    <article className="qm-help" aria-labelledby="qm-imprint-title">
+    <article className="qm-help qm-legal-page" aria-labelledby="qm-imprint-title">
       <h2 id="qm-imprint-title">{t('navigation.imprint')}</h2>
 
       {/* Angaben zum Entwickler */}
@@ -54,9 +55,8 @@ export default function ImprintPage() {
 
       <p>{t('imprintPage.paypalNotice')}</p>
 
-      <Link to="/map" className="qm-help__back">
-        {t('helpPage.backToMap')}
-      </Link>
+      {/* Immer sichtbare Navigation zu Kamera, Kompass und Karte. */}
+      <QuickToolNavigation />
     </article>
   )
 }

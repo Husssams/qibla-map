@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
+import './LegalPageNavigation.css'
 
 import './HelpPage.css'
 
@@ -23,7 +24,7 @@ export default function PrivacyPage() {
   ] as const
 
   return (
-    <article className="qm-help" aria-labelledby="qm-privacy-title">
+    <article className="qm-help qm-legal-page" aria-labelledby="qm-privacy-title">
       <h2 id="qm-privacy-title">{t('navigation.privacy')}</h2>
 
       <p>{t('privacyPage.intro')}</p>
@@ -52,9 +53,8 @@ export default function PrivacyPage() {
       {/* Kennzeichnet die noch nicht rechtlich freigegebene Fassung. */}
       <p>{t('privacyPage.reviewNotice')}</p>
 
-      <Link to="/map" className="qm-help__back">
-        {t('helpPage.backToMap')}
-      </Link>
+      {/* Immer sichtbare Navigation zu den drei Qibla-Werkzeugen. */}
+      <QuickToolNavigation />
     </article>
   )
 }
