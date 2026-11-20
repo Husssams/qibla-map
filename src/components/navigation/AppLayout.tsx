@@ -9,8 +9,11 @@ import '../../App.css'
 import NavigationMenu from './NavigationMenu'
 import type { MapViewport } from '../../types/mapViewport'
 
+import { getSeasonalLogo } from '../../utils/branding/seasonalLogo'
+
 function AppLayout() {
   const { t, i18n } = useTranslation()
+  const appLogo = getSeasonalLogo()
 
   // Das Theme gehört zum gemeinsamen Layout, damit es beim
   // Seitenwechsel nicht zurückgesetzt wird.
@@ -46,9 +49,7 @@ function AppLayout() {
         <NavigationMenu />
 
         <div className="qm-brand">
-          <span className="qm-brand-icon" aria-hidden="true">
-            ✦
-          </span>
+          <img src={appLogo} alt="" className="qm-brand-icon" width={54} height={54} />
 
           <div className="qm-brand-text">
             <h1>{t('appTitle')}</h1>

@@ -1,9 +1,9 @@
 {
-  "appTitle": "QiblaMap",
+  "appTitle": "Qibla",
   "languageLabel": "Language",
   "switchToDark": "Switch to dark mode",
   "switchToLight": "Switch to light mode",
-  "subtitle": "Find your prayer direction on the map.",
+  "subtitle": "Find your prayer direction with camera, compass or map.",
   "testLocation": "Sample location",
   "reportedLocation": "Detected location",
   "lastDetectedLocation": "Last detected location",
@@ -63,7 +63,7 @@
     "goToMap": "Go to map"
   },
   "helpPage": {
-    "title": "How to use QiblaMap",
+    "title": "How to use Qibla",
     "intro": "Choose a tool and follow its step-by-step instructions.",
     "backToMap": "Back to map",
     "sections": {
@@ -96,21 +96,21 @@
     "backToMap": "Back to map"
   },
   "privacyPage": {
-    "intro": "QiblaMap displays the prayer direction based on a selected location. This page explains which data is used for this purpose.",
+    "intro": "Qibla displays the prayer direction based on a selected location. This page explains which data is used for this purpose.",
     "locationTitle": "1. Location detection",
-    "locationText": "When you request location detection, QiblaMap asks your browser for your latitude, longitude, and estimated accuracy. These details are used to display the map and calculate the Qibla direction. The reviewed application code does not explicitly send GPS coordinates to the Geoapify search API.",
+    "locationText": "When you request location detection, Qibla asks your browser for your latitude, longitude, and estimated accuracy. These details are used to display the map and calculate the Qibla direction. The reviewed application code does not explicitly send GPS coordinates to the Geoapify search API.",
     "storageTitle": "2. Browser storage",
     "storageText": "A detected GPS location, including its accuracy, is saved in sessionStorage for the browser session. A manually selected location is saved in localStorage and remains there until it is replaced or removed. Your selected language and appearance settings are also saved in localStorage.",
     "searchTitle": "3. Place search",
-    "searchText": "When you search for a place, your search text is sent to the QiblaMap API. A Cloudflare Worker processes the request and forwards the search text to Geoapify. To limit search requests, the Worker uses the IP address provided by Cloudflare. The services involved may process additional technical request data.",
+    "searchText": "When you search for a place, your search text is sent to the Qibla API. A Cloudflare Worker processes the request and forwards the search text to Geoapify. To limit search requests, the Worker uses the IP address provided by Cloudflare. The services involved may process additional technical request data.",
     "tilesTitle": "4. OpenStreetMap tiles",
     "tilesText": "When you view the map, your browser downloads map tiles directly from tile.openstreetmap.org. The provider may receive your IP address, technical request information, and information about the requested map areas. Light and dark map modes use the same tile provider.",
     "hostingTitle": "5. Hosting with Cloudflare",
-    "hostingText": "Cloudflare is intended to host the public QiblaMap website. When visiting the website, technical connection data, particularly IP addresses and requested URLs, will be transmitted to Cloudflare. Cloudflare may process this information to deliver and secure the service and investigate errors. Specific logging periods and possible international data transfers must be reviewed before publication based on the services used.",
+    "hostingText": "Cloudflare is intended to host the public Qibla website. When visiting the website, technical connection data, particularly IP addresses and requested URLs, will be transmitted to Cloudflare. Cloudflare may process this information to deliver and secure the service and investigate errors. Specific logging periods and possible international data transfers must be reviewed before publication based on the services used.",
     "operatorTitle": "6. Data controller and contact",
-    "operatorText": "Responsible for QiblaMap and contact for privacy questions:",
+    "operatorText": "Responsible for Qibla and contact for privacy questions:",
     "paypalTitle": "7. Voluntary support through PayPal",
-    "paypalText": "QiblaMap displays a PayPal link and a locally stored QR code for voluntary support. Simply displaying the QR code does not connect to PayPal. If you open the PayPal link or visit PayPal through the QR code, PayPal may process personal and payment information.",
+    "paypalText": "Qibla displays a PayPal link and a locally stored QR code for voluntary support. Simply displaying the QR code does not connect to PayPal. If you open the PayPal link or visit PayPal through the QR code, PayPal may process personal and payment information.",
     "retentionTitle": "8. Data retention and deletion",
     "retentionText": "Your detected location is stored in sessionStorage and normally remains available only for the browser session. Manually selected locations, language, and appearance settings remain in localStorage until replaced or deleted. You can remove this information through your browser's website data settings and change location permissions in your browser settings. This does not delete any information that external providers may hold.",
     "rightsTitle": "9. Your privacy rights",
@@ -138,8 +138,8 @@
     "builderAnswer": "According to the Quran, Abraham (Ibrahim) and his son Ishmael (Ismail) raised the foundations of the Kaaba (2:127). Its exact historical construction date is not known with certainty.",
     "locationQuestion": "Where is the Kaaba located?",
     "locationAnswer": "The Kaaba is located inside the Sacred Mosque, al-Masjid al-Haram, in Mecca, Saudi Arabia.",
-    "calculationQuestion": "How does QiblaMap calculate the prayer direction?",
-    "calculationAnswer": "QiblaMap calculates the direction from the selected location to the Kaaba using the WGS84 Earth model. The arrow shows the prayer direction at that location."
+    "calculationQuestion": "How does Qibla calculate the prayer direction?",
+    "calculationAnswer": "Qibla calculates the direction from the selected location to the Kaaba using the WGS84 Earth model. The arrow shows the prayer direction at that location."
   },
   "compassPage": {
     "north": "N",

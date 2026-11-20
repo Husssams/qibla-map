@@ -38,16 +38,14 @@ body {
   min-width: 0;
 }
 
+/* Das saisonale Qibla-Logo im Header. */
 .qm-brand-icon {
-  display: grid;
+  display: block;
   width: 54px;
   height: 54px;
   flex-shrink: 0;
-  place-items: center;
+  object-fit: contain;
   border-radius: 16px;
-  background: var(--qm-primary);
-  color: var(--qm-primary-text);
-  font-size: 30px;
   box-shadow: var(--qm-shadow);
 }
 
