@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes, useLocation } from 'react-router'
 
 import AppLayout from './components/navigation/AppLayout'
 import LanguageSelectionPage from './pages/LanguageSelectionPage'
@@ -13,10 +13,28 @@ import MapPage from './pages/MapPage'
 import NotFoundPage from './pages/NotFoundPage'
 
 // App verwaltet ausschließlich unsere Seiten und deren URLs.
+
 function App() {
-  // Prüfen, ob die Sprache bereits bewusst ausgewählt wurde.
+  // Aktuellen URL-Pfad ermitteln, beispielsweise /camera oder /map.
+  const { pathname } = useLocation()
+
+  // Prüfen, ob der Nutzer seine Sprache bereits
+  // mit dem Weiter-Button bestätigt hat.
   const hasChosenLanguage = localStorage.getItem(LANGUAGE_CHOICE_KEY) === 'true'
 
+  /*
+   * Solange keine Sprachwahl abgeschlossen wurde,
+   * dürfen keine anderen Seiten geöffnet werden.
+   *
+   * Auch manuell eingegebene URLs und unbekannte
+   * Routen werden zur Sprachauswahl weitergeleitet.
+   */
+  if (!hasChosenLanguage && pathname !== '/') {
+    return <Navigate to="/" replace />
+  }
+
+  // Nach der Sprachauswahl funktionieren alle
+  // vorhandenen Routen wieder wie bisher.
   return (
     <Routes>
       <Route element={<AppLayout />}>

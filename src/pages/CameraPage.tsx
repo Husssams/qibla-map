@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './CameraPage.css'
-import { Link } from 'react-router'
+import { AppLink } from '../components/navigation/AppNavigationLinks'
 
 import { getUserLocation, type UserLocation } from '../utils/location/getUserLocation'
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
@@ -626,9 +626,9 @@ export default function CameraPage() {
 
           {/* Führt zur vorhandenen Hauptkarte.
         Beim Seitenwechsel gibt der Kamera-Cleanup die Ressourcen frei. */}
-          <Link to="/map" className="qm-camera__confirmation-link">
+          <AppLink to="/map" className="qm-camera__confirmation-link">
             {t('cameraPage.verifyOnMap')}
-          </Link>
+          </AppLink>
         </div>
       )}
 

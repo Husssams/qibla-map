@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { AppLink } from './AppNavigationLinks'
 import { useTranslation } from 'react-i18next'
 import './QuickToolNavigation.css'
 
@@ -50,10 +50,10 @@ export default function QuickToolNavigation({ currentTool }: Props) {
       {links
         .filter((link) => link.tool !== currentTool)
         .map((link) => (
-          <Link key={link.tool} to={link.to} className="qm-quick-navigation__link">
+          <AppLink key={link.tool} to={link.to} className="qm-quick-navigation__link">
             <ToolIcon tool={link.tool} />
             <span>{link.label}</span>
-          </Link>
+          </AppLink>
         ))}
     </nav>
   )

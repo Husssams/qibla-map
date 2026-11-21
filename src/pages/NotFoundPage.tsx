@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+// Wiederverwendbare Navigation zu Kamera, Kompass und Karte.
+import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 
 import './NotFoundPage.css'
 
@@ -16,10 +17,10 @@ export default function NotFoundPage() {
 
       <p>{t('notFoundPage.description')}</p>
 
-      {/* Link navigiert zur Startseite, ohne die App neu zu laden. */}
-      <Link to="/map" className="qm-not-found__link">
-        {t('notFoundPage.backToMap')}
-      </Link>
+      {/* Direkte Navigation zu unseren drei Qibla-Werkzeugen.
+      Die bestehende Komponente übernimmt Icons, Übersetzungen
+      und das responsive Design. */}
+      <QuickToolNavigation />
     </section>
   )
 }
