@@ -1,0 +1,135 @@
+/* Hauptkarte unserer Sprachauswahl */
+.qm-language-selection {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 800px;
+  margin: 30px auto 0;
+  padding: clamp(18px, 4vw, 40px);
+  text-align: center;
+}
+
+.qm-language-selection h2 {
+  margin: 0;
+  color: var(--qm-text);
+  font-size: clamp(24px, 4vw, 34px);
+}
+
+.qm-language-selection__description {
+  margin: 16px 0 28px;
+  color: var(--qm-text-muted);
+  line-height: 1.6;
+}
+
+/* Immer drei Spalten, auch auf Smartphones. */
+.qm-language-selection__options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Jede Sprachkarte kann durch das Radio-Element gewählt werden. */
+.qm-language-selection__option {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  min-width: 0;
+  min-height: 112px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 6px;
+  border: 2px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  background: var(--qm-surface-alt);
+  color: var(--qm-text);
+  cursor: pointer;
+}
+
+/* Radio bleibt für Tastatur und Screenreader verfügbar. */
+.qm-language-selection__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* Ausgewählte Sprache bekommt einen goldenen Rahmen. */
+.qm-language-selection__option--selected {
+  border-color: var(--qm-gold);
+  background: var(--qm-surface);
+}
+
+.qm-language-selection__option:focus-within {
+  outline: 3px solid var(--qm-gold);
+  outline-offset: 3px;
+}
+
+.qm-language-selection__flag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  line-height: 1;
+}
+
+/* Die syrische SVG an die Größe der Emoji-Flaggen anpassen. */
+.qm-language-selection__flag img {
+  display: block;
+  width: 38px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.qm-language-selection__name {
+  font-size: clamp(12px, 2.5vw, 18px);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.qm-language-selection__check {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  color: var(--qm-gold);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Weiter-Button unterhalb der gesamten Sprachliste. */
+.qm-language-selection__continue {
+  max-width: 420px;
+  margin: 28px auto 0;
+}
+
+.qm-language-selection__continue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Auch auf kleinen Geräten drei Spalten beibehalten. */
+@media (max-width: 560px) {
+  .qm-language-selection__options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .qm-language-selection__option {
+    min-height: 100px;
+    padding: 12px 4px;
+  }
+
+  .qm-language-selection__flag {
+    font-size: 28px;
+  }
+
+  /* Auch auf Smartphones soll die SVG nicht größer wirken. */
+  .qm-language-selection__flag img {
+    width: 40px;
+    height: 30px;
+  }
+
+  .qm-language-selection__name {
+    font-size: 13px;
+  }
+}

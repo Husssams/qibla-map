@@ -4,6 +4,11 @@
   "switchToDark": "Switch to dark mode",
   "switchToLight": "Switch to light mode",
   "subtitle": "Find your prayer direction with camera, compass or map.",
+  "languageSelection": {
+    "title": "Choose your language",
+    "description": "Select a language to start Qibla. You can change it at any time later.",
+    "continue": "Next"
+  },
   "testLocation": "Sample location",
   "reportedLocation": "Detected location",
   "lastDetectedLocation": "Last detected location",

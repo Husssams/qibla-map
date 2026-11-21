@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router'
+import { AppNavLink } from './AppNavigationLinks'
 
 import './NavigationMenu.css'
 
@@ -60,38 +60,41 @@ export default function NavigationMenu() {
 
       {isOpen && (
         <nav id={menuId} className="qm-nav__panel" aria-label={t('navigation.title')}>
-          {/* Die Karten-Hauptseite ist bereits verfügbar. */}
-          <NavLink to="/map" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
-            {t('navigation.map')}
-          </NavLink>
-
-          {/* Die Kompassseite ist jetzt über das Menü erreichbar. */}
-          <NavLink to="/compass" className="qm-nav__link" onClick={() => setIsOpen(false)}>
-            {t('navigation.compass')}
-          </NavLink>
-          {/* Die neue Kameraseite ist über das Menü erreichbar.
-    Nach dem Anklicken schließen wir das Hamburger-Menü. */}
-          <NavLink to="/camera" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          {/* Kamera ist die Hauptfunktion unserer Qibla-App.
+    Deshalb steht sie an erster Stelle im Menü. */}
+          <AppNavLink to="/camera" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.arCamera')}
-          </NavLink>
+          </AppNavLink>
+
+          {/* Der Live-Kompass steht an zweiter Stelle.
+    Nach dem Anklicken schließen wir das Hamburger-Menü. */}
+          <AppNavLink to="/compass" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.compass')}
+          </AppNavLink>
+
+          {/* Die Karte ist unser drittes Hauptwerkzeug.
+    Sie bleibt weiterhin unter /map erreichbar. */}
+          <AppNavLink to="/map" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.map')}
+          </AppNavLink>
 
           {/* Die Hilfeseite ist bereits verfügbar. */}
-          <NavLink to="/help" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          <AppNavLink to="/help" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.help')}
-          </NavLink>
+          </AppNavLink>
           {/* Erklärungen über Qibla und Kaaba. */}
-          <NavLink to="/qibla-faq" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          <AppNavLink to="/qibla-faq" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.qiblaFaq')}
-          </NavLink>
+          </AppNavLink>
 
           {/* Rechtliche Seiten sind über das Menü erreichbar. */}
-          <NavLink to="/privacy" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          <AppNavLink to="/privacy" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.privacy')}
-          </NavLink>
+          </AppNavLink>
 
-          <NavLink to="/imprint" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+          <AppNavLink to="/imprint" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.imprint')}
-          </NavLink>
+          </AppNavLink>
         </nav>
       )}
     </div>

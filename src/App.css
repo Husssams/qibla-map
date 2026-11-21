@@ -191,3 +191,29 @@ body {
     transition: none;
   }
 }
+
+/* Auf der Sprachauswahl bleibt der Header auch mobil kompakt. */
+@media (max-width: 640px) {
+  .qm-header--landing {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .qm-header--landing .qm-header-actions {
+    width: auto;
+  }
+
+  .qm-header--landing .qm-brand {
+    gap: 10px;
+  }
+
+  .qm-header--landing .qm-brand-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .qm-header--landing .qm-brand-text h1 {
+    font-size: 24px;
+  }
+}

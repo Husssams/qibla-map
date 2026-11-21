@@ -41,3 +41,26 @@
   outline: 3px solid var(--qm-primary);
   outline-offset: 3px;
 }
+
+/* Auf der 404-Seite alle drei Navigationsbuttons nebeneinander.
+   Andere Seiten behalten ihre bisherige Navigation. */
+.qm-not-found .qm-quick-navigation {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  max-width: none;
+  margin-block-start: 16px;
+}
+
+/* Auf Smartphones bleiben die drei Buttons nebeneinander.
+   Icons über dem Text sparen horizontalen Platz. */
+@media (max-width: 560px) {
+  .qm-not-found .qm-quick-navigation__link {
+    flex-direction: column;
+    gap: 6px;
+    min-height: 64px;
+    padding: 10px 4px;
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: normal;
+  }
+}

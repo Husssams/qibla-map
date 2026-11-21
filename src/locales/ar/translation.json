@@ -4,6 +4,11 @@
   "switchToDark": "التبديل إلى الوضع الداكن",
   "switchToLight": "التبديل إلى الوضع الفاتح",
   "subtitle": "حدد اتجاه القِبلة بالكاميرا أو البوصلة أو الخريطة.",
+  "languageSelection": {
+    "title": "اختر لغتك",
+    "description": "اختر لغة لبدء استخدام القبلة. يمكنك تغيير اللغة لاحقًا في أي وقت.",
+    "continue": "متابعة"
+  },
   "testLocation": "موقع تجريبي",
   "reportedLocation": "الموقع المحدد",
   "lastDetectedLocation": "آخر موقع تم تحديده",

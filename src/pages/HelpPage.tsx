@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { AppLink } from '../components/navigation/AppNavigationLinks'
 
 import './HelpPage.css'
 import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
@@ -66,9 +66,9 @@ export default function HelpPage() {
             </ol>
 
             {/* Öffnet direkt das Werkzeug dieser Anleitung. */}
-            <Link to={section.to} className="qm-help__tool-link">
+            <AppLink to={section.to} className="qm-help__tool-link">
               {t(section.actionKey)}
-            </Link>
+            </AppLink>
           </details>
         ))}
       </div>

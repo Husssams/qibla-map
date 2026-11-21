@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Outlet } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 
 import { applyTheme, initialTheme, type Theme } from '../../theme'
 
@@ -13,6 +13,11 @@ import { getSeasonalLogo } from '../../utils/branding/seasonalLogo'
 
 function AppLayout() {
   const { t, i18n } = useTranslation()
+
+  // Auf der Startseite verwenden wir einen reduzierten Header.
+  const { pathname } = useLocation()
+  const isLanguageSelection = pathname === '/'
+
   const appLogo = getSeasonalLogo()
 
   // Das Theme gehört zum gemeinsamen Layout, damit es beim
@@ -43,36 +48,39 @@ function AppLayout() {
 
   return (
     <main className="qm-page">
-      <header className="qm-header">
+      <header className={`qm-header${isLanguageSelection ? ' qm-header--landing' : ''}`}>
         {/* Die Navigation gehört zum gemeinsamen Layout.
       Dadurch ist sie später auf allen Seiten verfügbar. */}
-        <NavigationMenu />
+        {!isLanguageSelection && <NavigationMenu />}
 
         <div className="qm-brand">
           <img src={appLogo} alt="" className="qm-brand-icon" width={54} height={54} />
 
           <div className="qm-brand-text">
             <h1>{t('appTitle')}</h1>
-            <p>{t('subtitle')}</p>
+            {!isLanguageSelection && <p>{t('subtitle')}</p>}
           </div>
         </div>
 
         <div className="qm-header-actions">
-          <div className="qm-language">
-            <label htmlFor="language-select">{t('languageLabel')}</label>
+          {/* Auf der Sprachauswahl kein zusätzliches Sprach-Dropdown. */}
+          {!isLanguageSelection && (
+            <div className="qm-language">
+              <label htmlFor="language-select">{t('languageLabel')}</label>
 
-            <select
-              id="language-select"
-              value={i18n.language}
-              onChange={(event) => {
-                void i18n.changeLanguage(event.target.value)
-              }}
-            >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="ar">العربية</option>
-            </select>
-          </div>
+              <select
+                id="language-select"
+                value={i18n.language}
+                onChange={(event) => {
+                  void i18n.changeLanguage(event.target.value)
+                }}
+              >
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="ar">العربية</option>
+              </select>
+            </div>
+          )}
 
           <button
             type="button"
