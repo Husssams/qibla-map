@@ -4,6 +4,11 @@
   "switchToDark": "Zum Dark Mode wechseln",
   "switchToLight": "Zum Light Mode wechseln",
   "subtitle": "Finde deine Gebetsrichtung mit Kamera, Kompass oder Karte.",
+  "languageSelection": {
+    "title": "Wähle deine Sprache",
+    "description": "Wähle eine Sprache, um Qibla zu starten. Du kannst sie später jederzeit ändern.",
+    "continue": "Weiter"
+  },
   "testLocation": "Teststandort",
   "reportedLocation": "Gemeldeter Standort",
   "lastDetectedLocation": "Zuletzt ermittelter Standort",

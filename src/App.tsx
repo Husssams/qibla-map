@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router'
 
 import AppLayout from './components/navigation/AppLayout'
+import LanguageSelectionPage from './pages/LanguageSelectionPage'
+import { LANGUAGE_CHOICE_KEY } from './constants/supportedLanguages'
 import HelpPage from './pages/HelpPage'
 import CompassPage from './pages/CompassPage'
 import CameraPage from './pages/CameraPage'
@@ -12,11 +14,20 @@ import NotFoundPage from './pages/NotFoundPage'
 
 // App verwaltet ausschließlich unsere Seiten und deren URLs.
 function App() {
+  // Prüfen, ob die Sprache bereits bewusst ausgewählt wurde.
+  const hasChosenLanguage = localStorage.getItem(LANGUAGE_CHOICE_KEY) === 'true'
+
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {/* Bis zur Sprachauswahl leitet die Startseite zur Karte weiter. */}
-        <Route index element={<Navigate to="/map" replace />} />
+        {/* Beim ersten Besuch erscheint die Sprachauswahl.
+    Bei späteren Starts öffnen wir direkt die Kamera. */}
+        <Route
+          index
+          element={
+            hasChosenLanguage ? <Navigate to="/camera" replace /> : <LanguageSelectionPage />
+          }
+        />
 
         {/* Die Qibla-Karte erhält eine eigene dauerhafte URL. */}
         <Route path="map" element={<MapPage />} />

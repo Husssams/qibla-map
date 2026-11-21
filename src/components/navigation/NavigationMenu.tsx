@@ -60,19 +60,22 @@ export default function NavigationMenu() {
 
       {isOpen && (
         <nav id={menuId} className="qm-nav__panel" aria-label={t('navigation.title')}>
-          {/* Die Karten-Hauptseite ist bereits verfügbar. */}
-          <NavLink to="/map" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
-            {t('navigation.map')}
+          {/* Kamera ist die Hauptfunktion unserer Qibla-App.
+    Deshalb steht sie an erster Stelle im Menü. */}
+          <NavLink to="/camera" className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.arCamera')}
           </NavLink>
 
-          {/* Die Kompassseite ist jetzt über das Menü erreichbar. */}
+          {/* Der Live-Kompass steht an zweiter Stelle.
+    Nach dem Anklicken schließen wir das Hamburger-Menü. */}
           <NavLink to="/compass" className="qm-nav__link" onClick={() => setIsOpen(false)}>
             {t('navigation.compass')}
           </NavLink>
-          {/* Die neue Kameraseite ist über das Menü erreichbar.
-    Nach dem Anklicken schließen wir das Hamburger-Menü. */}
-          <NavLink to="/camera" className="qm-nav__link" onClick={() => setIsOpen(false)}>
-            {t('navigation.arCamera')}
+
+          {/* Die Karte ist unser drittes Hauptwerkzeug.
+    Sie bleibt weiterhin unter /map erreichbar. */}
+          <NavLink to="/map" end className="qm-nav__link" onClick={() => setIsOpen(false)}>
+            {t('navigation.map')}
           </NavLink>
 
           {/* Die Hilfeseite ist bereits verfügbar. */}
