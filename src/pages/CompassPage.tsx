@@ -9,6 +9,8 @@ import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
 import { getUserLocation } from '../utils/location/getUserLocation'
 import DetectLocationButton from '../components/location/DetectLocationButton'
 import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
+import { Capacitor } from '@capacitor/core'
+import { isCompassLevel } from '../utils/sensors/sensorPosture'
 
 // Die Kompassseite wird in den nächsten Schritten erweitert.
 export default function CompassPage() {
@@ -28,10 +30,16 @@ export default function CompassPage() {
   // false bedeutet, dass bisher keine starke Neigung erkannt wurde.
   const [isPhoneTilted, setIsPhoneTilted] = useState(false)
 
-  // Prüft, ob der Browser eine ausdrückliche Sensorfreigabe verlangt.
-  // Auf deinem Android-Browser ist diese Methode offenbar nicht erforderlich.
+  // Android startet die verfügbaren WebView-Sensoren automatisch.
+  // Andere Browser behalten ihre notwendige Berechtigungsprüfung.
   const needsSensorPermission =
-    typeof DeviceOrientationEvent !== 'undefined' && 'requestPermission' in DeviceOrientationEvent
+    Capacitor.getPlatform() !== 'android' &&
+    typeof DeviceOrientationEvent !== 'undefined' &&
+    typeof (
+      DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+        requestPermission?: () => Promise<'granted' | 'denied'>
+      }
+    ).requestPermission === 'function'
 
   // Bestimmt den anfänglichen Sensorstatus beim Öffnen der Kompassseite.
   // Die Funktion wird für den Initialwert des States verwendet.
@@ -77,31 +85,36 @@ export default function CompassPage() {
         return
       }
 
-      // Bei flach gehaltenem Smartphone ist alpha entgegengesetzt
-      // zur Kompassrichtung definiert.
-      // Das Ergebnis wird auf 0 bis unter 360 Grad begrenzt.
-      const heading = (360 - event.alpha) % 360
-
-      // Prüft, ob beide Neigungswinkel vorhanden und gültig sind.
+      // Ohne vollständige Neigungsdaten zeigen wir
+      // keine vermeintlich genaue Kompassrichtung.
       if (
-        event.beta !== null &&
-        event.gamma !== null &&
-        Number.isFinite(event.beta) &&
-        Number.isFinite(event.gamma)
+        event.beta === null ||
+        event.gamma === null ||
+        !Number.isFinite(event.beta) ||
+        !Number.isFinite(event.gamma)
       ) {
-        // beta beschreibt die Neigung nach vorne oder hinten.
-        // gamma beschreibt die Neigung nach links oder rechts.
-        // Ab 35 Grad behandeln wir das Smartphone vorsichtshalber
-        // als zu stark geneigt für unsere bisherige Kompassberechnung.
-        const tilted = Math.abs(event.beta) > 35 || Math.abs(event.gamma) > 35
-
-        // Aktualisiert den Zustand nur, wenn sich der Wert unterscheidet.
-        setIsPhoneTilted(tilted)
+        setIsPhoneTilted(true)
+        setSensorHeading(null)
+        return
       }
 
-      // Eine gültige absolute Messung ist angekommen.
-      // Deshalb brauchen wir später keinen Hinweis auf fehlende Sensoren.
+      // Eine vollständige absolute Sensormessung ist angekommen.
       hasReceivedValidHeading = true
+
+      // Nur maximal 8° Gesamtabweichung von horizontal zulassen.
+      const tilted = !isCompassLevel(event.beta, event.gamma)
+      setIsPhoneTilted(tilted)
+
+      if (tilted) {
+        // Bei falscher Haltung die bisherige Richtung verwerfen.
+        // Nach dem erneuten Waagerechthalten beginnt die
+        // Glättung mit einer frischen Messung.
+        setSensorHeading(null)
+        return
+      }
+
+      // Nur bei gültiger Haltung eine Nordrichtung berechnen.
+      const heading = (360 - event.alpha) % 360
 
       // Glättet die Sensordaten, damit die Kompassscheibe ruhiger reagiert.
       setSensorHeading((previousHeading) => {
@@ -358,7 +371,7 @@ export default function CompassPage() {
         )}
       </svg>
       {/* Warnt bei starker Neigung vor einer unzuverlässigen Richtungsanzeige. */}
-      {sensorHeading !== null && isPhoneTilted && (
+      {isPhoneTilted && (
         <p className="qm-alert qm-compass__tilt-warning" role="status">
           {t('compassPage.tiltWarning')}
         </p>

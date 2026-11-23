@@ -9,6 +9,12 @@ import { calculateCameraHeading } from '../utils/ar/cameraHeading'
 import { calculateQiblaTurnAngle } from '../utils/ar/qiblaTurnAngle'
 import { INITIAL_QIBLA_CONFIRMATION, updateQiblaConfirmation } from '../utils/ar/qiblaConfirmation'
 import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
+import { isCameraHeldUpright } from '../utils/sensors/sensorPosture'
+import {
+  pulseQiblaVibration,
+  stopQiblaVibration,
+  QIBLA_VIBRATION_INTERVAL_MS,
+} from '../utils/haptics/qiblaHaptics'
 
 // Rohdaten der Orientierungssensoren für unsere AR-Diagnose.
 type OrientationSample = {
@@ -67,10 +73,9 @@ export default function CameraPage() {
   // Die Berechnung verwendet geografisch Nord, nicht magnetisch Nord.
   const qiblaBearing = cameraLocation ? calculateQiblaBearing(cameraLocation) : null
 
-  // Bei normaler Hochformathaltung liegt Beta ungefähr bei +90°.
-  // Wir erlauben zunächst 25° Abweichung in beide Richtungen.
-  // Alpha und Gamma werden hier bewusst nicht begrenzt.
-  const isCameraUpright = orientation !== null && Math.abs(orientation.beta - 90) <= 25
+  // Nur bei nahezu exakt aufrechter Hochformathaltung
+  // darf die Kamera die Qibla-Richtung bestätigen.
+  const isCameraUpright = orientation !== null && isCameraHeldUpright(orientation.beta)
 
   // Berechnet die horizontale Blickrichtung der Rückkamera.
   // Nur absolute Sensordaten liefern eine feste Nordreferenz.
@@ -87,7 +92,7 @@ export default function CameraPage() {
   // Die bestätigte Kaaba bleibt sichtbar, bis wir mindestens
   // 20° von der Qibla wegdrehen.
   const showKaabaMarker =
-    confirmation.confirmed || (turnAngle !== null && isCameraUpright && Math.abs(turnAngle) <= 12)
+    isCameraUpright && (confirmation.confirmed || (turnAngle !== null && Math.abs(turnAngle) <= 12))
 
   // Während der Bestätigung bleibt die Kaaba fest in der Mitte,
   // auch wenn der Sensor um wenige Grad schwankt.
@@ -97,7 +102,8 @@ export default function CameraPage() {
       ? 0
       : (turnAngle / 5) * 30
 
-  const isKaabaAligned = confirmation.confirmed || (turnAngle !== null && Math.abs(turnAngle) <= 3)
+  const isKaabaAligned =
+    isCameraUpright && (confirmation.confirmed || (turnAngle !== null && Math.abs(turnAngle) <= 3))
 
   // Die Vibration ist nur während eines bestätigten Standbildes aktiv,
   // solange die aktuelle Kamerarichtung höchstens 2° von der Qibla abweicht.
@@ -126,7 +132,7 @@ export default function CameraPage() {
     setConfirmation(INITIAL_QIBLA_CONFIRMATION)
     setFrozenFrame(null)
     // Beim manuellen Stoppen die Vibration sofort abbrechen.
-    navigator.vibrate?.(0)
+    stopQiblaVibration()
 
     streamRef.current?.getTracks().forEach((track) => track.stop())
     streamRef.current = null
@@ -243,7 +249,7 @@ export default function CameraPage() {
       streamRef.current?.getTracks().forEach((track) => track.stop())
       streamRef.current = null
       // Auch beim Seitenwechsel keine Vibration zurücklassen.
-      navigator.vibrate?.(0)
+      stopQiblaVibration()
     }
   }, [])
 
@@ -402,25 +408,26 @@ export default function CameraPage() {
   useEffect(() => {
     // Beim Verlassen des gültigen Bereichs sofort abbrechen.
     if (!shouldVibrate) {
-      navigator.vibrate?.(0)
+      stopQiblaVibration()
       return
     }
 
     const vibrateOnce = () => {
       if (document.visibilityState === 'visible') {
         // Kurze Abschnitte statt einer langen 10-Sekunden-Vibration.
-        navigator.vibrate?.(180)
+        pulseQiblaVibration()
       }
     }
 
     // Sofort beim Erreichen der Qibla beginnen.
     vibrateOnce()
 
-    // Alle 200 ms erneut auslösen.
-    const intervalId = window.setInterval(vibrateOnce, 200)
+    // Android erhält kurze, getrennte Vibrationsimpulse.
+    // Der Browser behält sein bisheriges Intervall.
+    const intervalId = window.setInterval(vibrateOnce, QIBLA_VIBRATION_INTERVAL_MS)
 
     const stopVibration = () => {
-      navigator.vibrate?.(0)
+      stopQiblaVibration()
     }
 
     const handleVisibilityChange = () => {
