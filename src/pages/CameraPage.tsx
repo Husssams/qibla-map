@@ -16,6 +16,9 @@ import {
   QIBLA_VIBRATION_INTERVAL_MS,
 } from '../utils/haptics/qiblaHaptics'
 
+import { Capacitor } from '@capacitor/core'
+import { App as CapacitorApp } from '@capacitor/app'
+
 // Rohdaten der Orientierungssensoren für unsere AR-Diagnose.
 type OrientationSample = {
   alpha: number
@@ -116,7 +119,7 @@ export default function CameraPage() {
     Math.abs(turnAngle) <= 2
 
   // Stoppt einen Kamerastream und gibt die Kamera wieder frei.
-  function stopCamera() {
+  const stopCamera = useCallback(() => {
     // Eine laufende GPS-Anfrage wird für diese Kamerasitzung ungültig.
     locationRequestRef.current += 1
     requestIdRef.current += 1
@@ -143,7 +146,42 @@ export default function CameraPage() {
 
     setStatus('idle')
     setError('')
-  }
+  }, [])
+
+  // Gibt die Kamera frei, wenn die Android-App in den Hintergrund geht.
+  useEffect(() => {
+    // Die Webversion behält ihr bisheriges Verhalten.
+    if (Capacitor.getPlatform() !== 'android') {
+      return
+    }
+
+    let cancelled = false
+
+    // Android meldet, ob Qibla im Vordergrund aktiv ist.
+    const registration = CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+      if (cancelled) return
+
+      if (!isActive) {
+        // Stoppt Kamera, Vibration und ungültige Sensordaten.
+        stopCamera()
+      }
+    })
+
+    void registration.catch((error: unknown) => {
+      console.error('Android lifecycle listener failed:', error)
+    })
+
+    // Listener beim Verlassen der Kameraseite entfernen.
+    return () => {
+      cancelled = true
+
+      void registration
+        .then((listener) => listener.remove())
+        .catch((error: unknown) => {
+          console.error('Android lifecycle cleanup failed:', error)
+        })
+    }
+  }, [stopCamera])
 
   const startCamera = useCallback(async () => {
     // Kamera-Zugriff funktioniert nur in unterstützten,

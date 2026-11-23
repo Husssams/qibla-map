@@ -11,6 +11,7 @@ import ImprintPage from './pages/ImprintPage'
 import PrivacyPage from './pages/PrivacyPage'
 import MapPage from './pages/MapPage'
 import NotFoundPage from './pages/NotFoundPage'
+import AndroidBackHandler from './components/navigation/AndroidBackHandler'
 
 // App verwaltet ausschließlich unsere Seiten und deren URLs.
 
@@ -36,35 +37,39 @@ function App() {
   // Nach der Sprachauswahl funktionieren alle
   // vorhandenen Routen wieder wie bisher.
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        {/* Beim ersten Besuch erscheint die Sprachauswahl.
-    Bei späteren Starts öffnen wir direkt die Kamera. */}
-        <Route
-          index
-          element={
-            hasChosenLanguage ? <Navigate to="/camera" replace /> : <LanguageSelectionPage />
-          }
-        />
+    <>
+      {/* Native Android-Zurück-Taste verwalten. */}
+      <AndroidBackHandler />
+      <Routes>
+        <Route element={<AppLayout />}>
+          {/* Beim ersten Besuch erscheint die Sprachauswahl.
+            Bei späteren Starts öffnen wir direkt die Kamera. */}
+          <Route
+            index
+            element={
+              hasChosenLanguage ? <Navigate to="/camera" replace /> : <LanguageSelectionPage />
+            }
+          />
 
-        {/* Die Qibla-Karte erhält eine eigene dauerhafte URL. */}
-        <Route path="map" element={<MapPage />} />
-        {/* Eigene Seite für den zukünftigen Live-Kompass. */}
-        <Route path="compass" element={<CompassPage />} />
-        {/* Die AR-Kameraseite erhält eine eigene URL.
+          {/* Die Qibla-Karte erhält eine eigene dauerhafte URL. */}
+          <Route path="map" element={<MapPage />} />
+          {/* Eigene Seite für den zukünftigen Live-Kompass. */}
+          <Route path="compass" element={<CompassPage />} />
+          {/* Die AR-Kameraseite erhält eine eigene URL.
     Der Kamerazugriff wird später in CameraPage implementiert. */}
-        <Route path="camera" element={<CameraPage />} />
-        {/* Erste zusätzliche Seite mit eigenem URL-Pfad. */}
-        <Route path="help" element={<HelpPage />} />
-        {/* Häufige Fragen über die Qibla und die Kaaba. */}
-        <Route path="qibla-faq" element={<QiblaFaqPage />} />
-        {/* Rechtliche Informationen mit eigenen, dauerhaften URL-Pfaden. */}
-        <Route path="privacy" element={<PrivacyPage />} />
-        <Route path="imprint" element={<ImprintPage />} />
-        {/* Fallback für unbekannte URLs, beispielsweise "/helps". */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+          <Route path="camera" element={<CameraPage />} />
+          {/* Erste zusätzliche Seite mit eigenem URL-Pfad. */}
+          <Route path="help" element={<HelpPage />} />
+          {/* Häufige Fragen über die Qibla und die Kaaba. */}
+          <Route path="qibla-faq" element={<QiblaFaqPage />} />
+          {/* Rechtliche Informationen mit eigenen, dauerhaften URL-Pfaden. */}
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="imprint" element={<ImprintPage />} />
+          {/* Fallback für unbekannte URLs, beispielsweise "/helps". */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 
