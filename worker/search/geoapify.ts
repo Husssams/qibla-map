@@ -11,7 +11,7 @@ export type PlaceSuggestion = {
 // Promise<PlaceSuggestion[]>: Sie liefert später eine Liste von Suchvorschlägen.
 export async function searchGeoapify(query: string, apiKey: string): Promise<PlaceSuggestion[]> {
   // Erstellt die Adresse des Geoapify-Suchdienstes.
-  const url = new URL('https://api.geoapify.com/v1/geocode/autocomplete')
+  const url = new URL('https://api-eu.geoapify.com/v1/geocode/autocomplete')
 
   // Fügt Suchtext, Antwortformat, maximale Trefferzahl und API-Schlüssel hinzu.
   // searchParams kodiert auch arabische Zeichen und Sonderzeichen korrekt.
