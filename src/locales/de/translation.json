@@ -200,5 +200,11 @@
     "confirmationIntro": "Die Kamera zeigt laut Sensor ungefähr zur Qibla.",
     "confirmationWarning": "Drehe dein Handy leicht nach links oder rechts. Wenn es vibriert, bist du laut Sensor zur Qibla ausgerichtet. Falls keine Vibration erfolgt, überprüfe deine Vibrationseinstellungen. Bei Unsicherheit überprüfe die Richtung auf der Karte.",
     "verifyOnMap": "Richtung auf Karte überprüfen"
+  },
+
+  "directionHelp": {
+    "button": "Glaubst du, die Richtung ist falsch?",
+    "title": "Glaubst du, die Qibla-Richtung ist falsch?",
+    "calibration": "Bewege dein Telefon drei- bis viermal in Form einer liegenden Acht (∞) durch die Luft. Halte dabei Abstand zu Magneten, Eisen und anderen Metallgegenständen."
   }
 }

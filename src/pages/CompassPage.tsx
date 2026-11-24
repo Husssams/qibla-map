@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import './HelpPage.css'
 import './CompassPage.css'
@@ -11,12 +11,11 @@ import DetectLocationButton from '../components/location/DetectLocationButton'
 import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
 import { Capacitor } from '@capacitor/core'
 import { isCompassLevel } from '../utils/sensors/sensorPosture'
+import QiblaDirectionHelp from '../components/navigation/QiblaDirectionHelp'
 
 // Die Kompassseite wird in den nächsten Schritten erweitert.
 export default function CompassPage() {
   const { t, i18n } = useTranslation()
-  // Mit dieser Referenz können wir den Info-Dialog öffnen und schließen.
-  const compassInfoDialogRef = useRef<HTMLDialogElement | null>(null)
 
   // Gibt an, ob wir die Überwachung des Bewegungssensors gestartet haben.
   // Anfangs ist die Überwachung ausgeschaltet.
@@ -377,60 +376,8 @@ export default function CompassPage() {
         </p>
       )}
 
-      {/* Öffnet eine Erklärung zur Benutzung unseres Kompasses. */}
-      <div className="qm-compass__info">
-        <button
-          type="button"
-          className="qm-map-info-button"
-          aria-haspopup="dialog"
-          aria-controls="qm-compass-info-dialog"
-          onClick={() => compassInfoDialogRef.current?.showModal()}
-        >
-          <span aria-hidden="true">ⓘ</span>
-          <span>{t('compassPage.infoButton')}</span>
-        </button>
-      </div>
-
-      {/* Nativer Dialog mit Informationen zur Kompassbenutzung. */}
-      <dialog
-        id="qm-compass-info-dialog"
-        ref={compassInfoDialogRef}
-        className="qm-qibla-path-dialog qm-compass__dialog"
-        aria-labelledby="qm-compass-info-title"
-        dir={i18n.dir()}
-        onClick={(event) => {
-          // Ein Klick auf den abgedunkelten Hintergrund schließt den Dialog.
-          if (event.target === event.currentTarget) {
-            event.currentTarget.close()
-          }
-        }}
-      >
-        <div className="qm-qibla-path-dialog-content">
-          {/* Schließt den Dialog auch über einen sichtbaren Button. */}
-          <button
-            type="button"
-            className="qm-qibla-path-dialog-close"
-            aria-label={t('qiblaPathInfoClose')}
-            onClick={() => compassInfoDialogRef.current?.close()}
-          >
-            ×
-          </button>
-
-          {/* Ein kleines Symbol als visuelle Kennzeichnung. */}
-          <span className="qm-qibla-path-dialog-icon" aria-hidden="true">
-            🧭
-          </span>
-
-          {/* Die Überschrift wird mit dem Dialog verknüpft. */}
-          <h2 id="qm-compass-info-title">{t('compassPage.infoTitle')}</h2>
-
-          {/* Erklärt die Nadel und das Kaaba-Symbol. */}
-          <p>{t('compassPage.infoExplanation')}</p>
-
-          {/* Erklärt die optimale Haltung und mögliche Messfehler. */}
-          <p>{t('compassPage.infoTip')}</p>
-        </div>
-      </dialog>
+      {/* Hinweise zu Messfehlern und Kompasskalibrierung. */}
+      <QiblaDirectionHelp/>
 
       {/* Richtungsanweisungen nur mit echten Sensordaten anzeigen.
     Ohne Standort darf weiterhin der Standorthinweis erscheinen. */}

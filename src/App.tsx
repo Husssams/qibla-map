@@ -12,6 +12,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import MapPage from './pages/MapPage'
 import NotFoundPage from './pages/NotFoundPage'
 import AndroidBackHandler from './components/navigation/AndroidBackHandler'
+import AndroidSeasonalIcon from './components/branding/AndroidSeasonalIcon'
 
 // App verwaltet ausschließlich unsere Seiten und deren URLs.
 
@@ -40,6 +41,8 @@ function App() {
     <>
       {/* Native Android-Zurück-Taste verwalten. */}
       <AndroidBackHandler />
+      {/* Aktualisiert das Android-App-Symbol passend zum Ramadan. */}
+      <AndroidSeasonalIcon />
       <Routes>
         <Route element={<AppLayout />}>
           {/* Beim ersten Besuch erscheint die Sprachauswahl.

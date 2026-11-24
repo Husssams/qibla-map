@@ -9,6 +9,7 @@ import { calculateCameraHeading } from '../utils/ar/cameraHeading'
 import { calculateQiblaTurnAngle } from '../utils/ar/qiblaTurnAngle'
 import { INITIAL_QIBLA_CONFIRMATION, updateQiblaConfirmation } from '../utils/ar/qiblaConfirmation'
 import QuickToolNavigation from '../components/navigation/QuickToolNavigation'
+import QiblaDirectionHelp from '../components/navigation/QiblaDirectionHelp'
 import { isCameraHeldUpright } from '../utils/sensors/sensorPosture'
 import {
   pulseQiblaVibration,
@@ -598,6 +599,8 @@ export default function CameraPage() {
           </button>
         )}
       </div>
+      {/* Hilfe bei ungenauer Qibla-Richtung. */}
+      <QiblaDirectionHelp />
 
       {/* Navigation nur anzeigen, solange die Kamera ausgeschaltet ist.
     Im Kameravollbild bleiben die zusätzlichen Buttons verborgen. */}

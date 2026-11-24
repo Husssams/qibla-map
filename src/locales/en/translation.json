@@ -201,5 +201,11 @@
     "confirmationIntro": "According to the sensor, the camera is approximately facing the Qibla.",
     "confirmationWarning": "Turn your phone slightly left or right. When it vibrates, the sensor indicates that you are facing the Qibla. If it does not vibrate, check your vibration settings. If in doubt, verify the direction on the map.",
     "verifyOnMap": "Verify direction on map"
+  },
+
+  "directionHelp": {
+    "button": "Do you think the direction is wrong?",
+    "title": "Do you think the Qibla direction is wrong?",
+    "calibration": "Move your phone through the air in a figure-eight (∞) motion three or four times. Keep it away from magnets, iron and other metal objects."
   }
 }

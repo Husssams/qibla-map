@@ -1,0 +1,18 @@
+/* Den Hilfe-Button immer mittig ausrichten. */
+.qm-direction-help {
+  margin-block: 16px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Pop-up bleibt auch auf kleinen Smartphones gut lesbar. */
+.qm-direction-help__dialog {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+}
+
+.qm-direction-help__dialog p {
+  line-height: 1.6;
+}
