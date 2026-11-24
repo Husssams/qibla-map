@@ -79,15 +79,96 @@ body {
   font-size: 14px;
 }
 
-.qm-language select {
+/* Beschriftung neben der Sprachauswahl. */
+.qm-language__label {
+  color: var(--qm-text-muted);
+  font-size: 14px;
+}
+
+/* Eigener Dropdown-Container statt Android-Systemdialog. */
+.qm-language-dropdown {
+  position: relative;
+  z-index: 30;
+  min-width: 145px;
+}
+
+/* Der sichtbare Button der Sprachauswahl. */
+.qm-language-dropdown summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
   min-height: 44px;
   padding: 8px 12px;
+
   border: 1px solid var(--qm-border);
   border-radius: var(--qm-radius-sm);
   background: var(--qm-surface);
   color: var(--qm-text);
+
   font: inherit;
   cursor: pointer;
+  list-style: none;
+}
+
+.qm-language-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Geöffnete Liste direkt unter der Auswahl. */
+.qm-language-dropdown__list {
+  position: absolute;
+  inset-block-start: calc(100% + 5px);
+  inset-inline-start: 0;
+
+  box-sizing: border-box;
+  width: max(100%, 175px);
+  max-height: min(320px, 50dvh);
+
+  margin: 0;
+  padding: 5px 0;
+  overflow-y: auto;
+
+  list-style: none;
+  border: 1px solid var(--qm-border);
+  border-radius: 12px;
+  background: var(--qm-surface);
+  box-shadow: var(--qm-shadow);
+}
+
+/* Einzelne Sprache. */
+.qm-language-dropdown__list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+
+  border: 0;
+  background: transparent;
+  color: var(--qm-text);
+
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Aktive oder berührte Sprache hervorheben. */
+.qm-language-dropdown__list button:hover,
+.qm-language-dropdown__list button:focus-visible,
+.qm-language-dropdown__list button[aria-pressed='true'] {
+  background: var(--qm-surface-alt);
+}
+
+/* Tastaturbedienung gut sichtbar machen. */
+.qm-language-dropdown summary:focus-visible,
+.qm-language-dropdown__list button:focus-visible {
+  outline: 2px solid var(--qm-gold);
+  outline-offset: 2px;
 }
 
 .qm-header .theme-toggle {
@@ -144,8 +225,7 @@ body {
   cursor: wait;
 }
 
-.qm-primary-button:focus-visible,
-.qm-language select:focus-visible {
+.qm-primary-button:focus-visible {
   outline: 3px solid var(--qm-primary);
   outline-offset: 3px;
 }

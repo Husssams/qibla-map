@@ -10,9 +10,10 @@ import NavigationMenu from './NavigationMenu'
 import type { MapViewport } from '../../types/mapViewport'
 
 import { getSeasonalLogo } from '../../utils/branding/seasonalLogo'
+import HeaderLanguageDropdown from './HeaderLanguageDropdown'
 
 function AppLayout() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   // Auf der Startseite verwenden wir einen reduzierten Header.
   const { pathname } = useLocation()
@@ -66,19 +67,9 @@ function AppLayout() {
           {/* Auf der Sprachauswahl kein zusätzliches Sprach-Dropdown. */}
           {!isLanguageSelection && (
             <div className="qm-language">
-              <label htmlFor="language-select">{t('languageLabel')}</label>
+              <span className="qm-language__label">{t('languageLabel')}</span>
 
-              <select
-                id="language-select"
-                value={i18n.language}
-                onChange={(event) => {
-                  void i18n.changeLanguage(event.target.value)
-                }}
-              >
-                <option value="en">English</option>
-                <option value="de">Deutsch</option>
-                <option value="ar">العربية</option>
-              </select>
+              <HeaderLanguageDropdown />
             </div>
           )}
 

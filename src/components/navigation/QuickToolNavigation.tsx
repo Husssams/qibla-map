@@ -1,6 +1,7 @@
 import { AppLink } from './AppNavigationLinks'
 import { useTranslation } from 'react-i18next'
 import './QuickToolNavigation.css'
+import NavigationIcon from './NavigationIcon'
 
 type Tool = 'camera' | 'compass' | 'map'
 
@@ -8,33 +9,7 @@ type Props = {
   currentTool?: Tool
 }
 
-// Einheitliche Symbole für alle drei Werkzeuge.
-function ToolIcon({ tool }: { tool: Tool }) {
-  if (tool === 'camera') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 7h4l2-2h4l2 2h4v12H4z" />
-        <circle cx="12" cy="13" r="3.5" />
-      </svg>
-    )
-  }
 
-  if (tool === 'compass') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" />
-        <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8z" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z" />
-      <path d="M9 3v15M15 6v15" />
-    </svg>
-  )
-}
 
 export default function QuickToolNavigation({ currentTool }: Props) {
   const { t } = useTranslation()
@@ -51,7 +26,7 @@ export default function QuickToolNavigation({ currentTool }: Props) {
         .filter((link) => link.tool !== currentTool)
         .map((link) => (
           <AppLink key={link.tool} to={link.to} className="qm-quick-navigation__link">
-            <ToolIcon tool={link.tool} />
+            <NavigationIcon name={link.tool} />
             <span>{link.label}</span>
           </AppLink>
         ))}

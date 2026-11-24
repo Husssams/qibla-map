@@ -1,5 +1,7 @@
 // Importiert unseren vorhandenen Koordinatentyp.
 import type { Coordinates } from '../../types/geo'
+import { Capacitor } from '@capacitor/core'
+import { Geolocation } from '@capacitor/geolocation'
 
 // Kombiniert die Koordinaten mit der geschätzten Standortgenauigkeit.
 export type UserLocation = Coordinates & {
@@ -8,7 +10,61 @@ export type UserLocation = Coordinates & {
 }
 
 // Fordert den aktuellen Standort des Benutzers an.
-export function getUserLocation(): Promise<UserLocation> {
+export async function getUserLocation(): Promise<UserLocation> {
+  // Unter Android verwenden wir die native Standortermittlung.
+  if (Capacitor.getPlatform() === 'android') {
+    try {
+      // Berechtigung erst dann anfragen, wenn der Benutzer
+      // die Standortfunktion tatsächlich verwendet.
+      const permission = await Geolocation.requestPermissions()
+
+      const isAllowed = permission.location === 'granted' || permission.coarseLocation === 'granted'
+
+      if (!isAllowed) {
+        throw new Error('locationErrors.permissionDenied')
+      }
+
+      // Position und Genauigkeit vom Smartphone abrufen.
+      const position = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15_000,
+        maximumAge: 30_000,
+      })
+
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+      }
+    } catch (error) {
+      // Unsere bestehenden Übersetzungsschlüssel weiterverwenden.
+      if (error instanceof Error && error.message === 'locationErrors.permissionDenied') {
+        throw error
+      }
+
+      const code = (error as { code?: string } | null)?.code
+
+      if (code === 'OS-PLUG-GLOC-0003') {
+        throw new Error('locationErrors.permissionDenied', {
+          cause: error,
+        })
+      }
+
+      if (code === 'OS-PLUG-GLOC-0010') {
+        throw new Error('locationErrors.timeout', {
+          cause: error,
+        })
+      }
+
+      throw new Error('locationErrors.unexpected', {
+        cause: error,
+      })
+    }
+  }
+
+  // Darunter bleibt die bisherige Browser-Geolocation
+  // mit navigator.geolocation vollständig erhalten.
+
   // Erstellt eine asynchrone Verarbeitung.
   return new Promise((resolve, reject) => {
     // Prüft, ob der Browser die Standortermittlung unterstützt.

@@ -37,3 +37,7 @@ dist-ssr
 # Lokale Cloudflare-Entwicklungsdaten und geheime Zugangsschlüssel
 .dev.vars*
 .wrangler/
+
+# Android signing keys must never be committed.
+*.jks
+*.keystore

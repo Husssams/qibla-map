@@ -50,4 +50,22 @@ describe('updateQiblaConfirmation', () => {
       confirmed: true,
     })
   })
+
+
+  it('verwirft eine Bestätigung bei falscher Kamerahaltung', () => {
+    const confirmed = { confirmed: true }
+
+    expect(
+      updateQiblaConfirmation(confirmed, 0, false),
+    ).toEqual(INITIAL_QIBLA_CONFIRMATION)
+  })
+
+  it('verwirft eine Bestätigung ohne gültige Richtung', () => {
+    const confirmed = { confirmed: true }
+
+    expect(
+      updateQiblaConfirmation(confirmed, null, true),
+    ).toEqual(INITIAL_QIBLA_CONFIRMATION)
+  })
+
 })
