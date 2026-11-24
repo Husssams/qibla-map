@@ -21,6 +21,8 @@ export default function PrivacyPage() {
     'paypal',
     'retention',
     'rights',
+    'cameraSensors',
+    'legalBasis',
   ] as const
 
   return (
@@ -29,7 +31,7 @@ export default function PrivacyPage() {
 
       <p>{t('privacyPage.intro')}</p>
 
-      {/* Gibt die fünf Datenschutzabschnitte in der richtigen Reihenfolge aus. */}
+      {/* Gibt alle Datenschutzabschnitte in der richtigen Reihenfolge aus. */}
       {sections.map((section) => (
         <section key={section} aria-labelledby={`qm-privacy-${section}`}>
           <h3 id={`qm-privacy-${section}`}>{t(`privacyPage.${section}Title`)}</h3>
@@ -49,9 +51,6 @@ export default function PrivacyPage() {
           )}
         </section>
       ))}
-
-      {/* Kennzeichnet die noch nicht rechtlich freigegebene Fassung. */}
-      <p>{t('privacyPage.reviewNotice')}</p>
 
       {/* Immer sichtbare Navigation zu den drei Qibla-Werkzeugen. */}
       <QuickToolNavigation />

@@ -1,6 +1,9 @@
 {
   "name": "qibla-map-search",
   "main": "worker/index.ts",
+  "observability": {
+    "enabled": false,
+  },
   "assets": {
     // Die fertige React-Webseite liegt nach npm run build in dist.
     "directory": "./dist",
