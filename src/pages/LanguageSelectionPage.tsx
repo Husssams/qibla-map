@@ -22,6 +22,14 @@ export default function LanguageSelectionPage() {
   // Beim ersten Öffnen wurde noch keine Sprache ausgewählt.
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | null>(null)
 
+  // Die Suche filtert alle unterstützten Sprachen nach ihrem Namen.
+  const [searchQuery, setSearchQuery] = useState('')
+  const normalizedSearch = searchQuery.trim().toLocaleLowerCase()
+
+  const filteredLanguages = supportedLanguages.filter((language) =>
+    getLanguageName(language).toLocaleLowerCase().includes(normalizedSearch),
+  )
+
   // Standardmäßig zeigen wir Englisch an.
   // Bei der Auswahl einer Sprache ändern sich nur die Vorschautexte.
   const previewLanguage = selectedLanguage ?? 'en'
@@ -70,13 +78,30 @@ export default function LanguageSelectionPage() {
         {previewT('languageSelection.description')}
       </p>
 
+      {/* Sprachsuche oberhalb der vollständigen Sprachliste. */}
+      <label className="qm-language-selection__search-label" htmlFor="qm-language-search">
+        {previewT('languageSelection.searchLabel')}
+      </label>
+
+      <input
+        id="qm-language-search"
+        className="qm-language-selection__search"
+        type="search"
+        value={searchQuery}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        placeholder={previewT('languageSelection.searchPlaceholder')}
+        autoComplete="off"
+        lang={previewLanguage}
+        dir="auto"
+      />
+
       {/* Radiogroup erlaubt nur eine ausgewählte Sprache. */}
       <div
         className="qm-language-selection__options"
         role="radiogroup"
         aria-labelledby="qm-language-selection-title"
       >
-        {supportedLanguages.map((language) => (
+        {filteredLanguages.map((language) => (
           <label
             key={language.code}
             className={`qm-language-selection__option${
@@ -124,19 +149,29 @@ export default function LanguageSelectionPage() {
         ))}
       </div>
 
-      {/* Der Button bleibt deaktiviert, bis eine Sprache gewählt ist. */}
-      <button
-        type="button"
-        className="qm-primary-button qm-language-selection__continue"
-        disabled={!selectedLanguage}
-        onClick={() => {
-          void handleContinue()
-        }}
-        lang={selectedLanguage ?? 'en'}
-        dir={selectedLanguage === 'ar' ? 'rtl' : 'ltr'}
-      >
-        {previewT('languageSelection.continue')}
-      </button>
+      {/* Hinweis anzeigen, wenn keine Sprache gefunden wurde. */}
+      {filteredLanguages.length === 0 && (
+        <p className="qm-language-selection__empty" role="status">
+          {previewT('languageSelection.noResults')}
+        </p>
+      )}
+
+      {/* Weiter-Button bleibt beim Scrollen am unteren Bildschirmrand sichtbar. */}
+
+      <div className="qm-language-selection__footer">
+        <button
+          type="button"
+          className="qm-primary-button qm-language-selection__continue"
+          disabled={!selectedLanguage}
+          onClick={() => {
+            void handleContinue()
+          }}
+          lang={selectedLanguage ?? 'en'}
+          dir={selectedLanguage === 'ar' ? 'rtl' : 'ltr'}
+        >
+          {previewT('languageSelection.continue')}
+        </button>
+      </div>
     </section>
   )
 }

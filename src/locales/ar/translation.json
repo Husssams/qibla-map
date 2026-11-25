@@ -7,7 +7,10 @@
   "languageSelection": {
     "title": "اختر لغتك",
     "description": "اختر لغة لبدء استخدام القبلة. يمكنك تغيير اللغة لاحقًا في أي وقت.",
-    "continue": "متابعة"
+    "continue": "متابعة",
+    "searchLabel": "البحث عن لغة",
+    "searchPlaceholder": "اكتب اسم اللغة...",
+    "noResults": "لم يتم العثور على لغة مطابقة."
   },
   "testLocation": "موقع تجريبي",
   "reportedLocation": "الموقع المحدد",

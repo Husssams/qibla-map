@@ -7,7 +7,10 @@
   "languageSelection": {
     "title": "Choose your language",
     "description": "Select a language to start Qibla. You can change it at any time later.",
-    "continue": "Next"
+    "continue": "Next",
+    "searchLabel": "Search languages",
+    "searchPlaceholder": "Enter a language...",
+    "noResults": "No matching language found."
   },
   "testLocation": "Sample location",
   "reportedLocation": "Detected location",
