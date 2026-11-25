@@ -1,42 +1,61 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+
 import { supportedLanguages } from './constants/supportedLanguages'
 
-import de from './locales/de/translation.json'
-import en from './locales/en/translation.json'
-import ar from './locales/ar/translation.json'
+// Alle vorhandenen Übersetzungsdateien automatisch laden.
+const translationFiles = import.meta.glob<Record<string, unknown>>('./locales/*/translation.json', {
+  eager: true,
+  import: 'default',
+})
 
+// Nur Sprachen mit vorhandener Übersetzung freigeben.
+export const availableLanguages = supportedLanguages.filter((language) =>
+  Object.prototype.hasOwnProperty.call(
+    translationFiles,
+    `./locales/${language.code}/translation.json`,
+  ),
+)
+
+// Übersetzungen für i18next registrieren.
+const resources = Object.fromEntries(
+  availableLanguages.map((language) => [
+    language.code,
+    {
+      translation: translationFiles[`./locales/${language.code}/translation.json`],
+    },
+  ]),
+)
+
+// Sprache und Schreibrichtung des Dokuments festlegen.
 function updateDocumentLanguage(language: string) {
-  const selectedLanguage = supportedLanguages.find((item) => item.code === language)
+  const selectedLanguage = availableLanguages.find((item) => item.code === language)
 
   document.documentElement.lang = selectedLanguage?.code ?? 'en'
   document.documentElement.dir = selectedLanguage?.direction ?? 'ltr'
 }
 
-// Wir lesen die zuletzt ausgewählte Sprache aus dem Browser-Speicher.
+// Die zuletzt gewählte Sprache aus dem lokalen Speicher lesen.
 const savedLanguage = localStorage.getItem('qibla-map-language')
 
+// Nur eine verfügbare Sprache wiederherstellen.
 const initialLanguage =
-  supportedLanguages.find((language) => language.code === savedLanguage)?.code ?? 'en'
+  availableLanguages.find((language) => language.code === savedLanguage)?.code ?? 'en'
 
-// Wir übernehmen beim Start die gespeicherte Sprache.
 updateDocumentLanguage(initialLanguage)
 
-// Wir verbinden i18next mit React und registrieren unsere drei Sprachen.
+// Alle verfügbaren Sprachen bei i18next registrieren.
 void i18n.use(initReactI18next).init({
-  resources: {
-    de: { translation: de },
-    en: { translation: en },
-    ar: { translation: ar },
-  },
+  resources,
   lng: initialLanguage,
   fallbackLng: 'en',
+  supportedLngs: availableLanguages.map((language) => language.code),
   interpolation: {
     escapeValue: false,
   },
 })
 
-// Bei jedem Sprachwechsel aktualisieren wir Speicher und Schreibrichtung.
+// Sprachwechsel speichern und die Schreibrichtung aktualisieren.
 i18n.on('languageChanged', (language) => {
   localStorage.setItem('qibla-map-language', language)
   updateDocumentLanguage(language)

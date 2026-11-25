@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
-import { supportedLanguages } from '../constants/supportedLanguages'
+import { LANGUAGE_CHOICE_KEY, supportedLanguages } from '../constants/supportedLanguages'
+import { availableLanguages } from '../i18n'
 
 import './LanguageSelectionPage.css'
 
@@ -22,12 +23,14 @@ export default function LanguageSelectionPage() {
   // Beim ersten Öffnen wurde noch keine Sprache ausgewählt.
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode | null>(null)
 
-  // Die Suche filtert alle unterstützten Sprachen nach ihrem Namen.
+  // Die Suche berücksichtigt verfügbare Sprachen nach Name und Sprachcode.
   const [searchQuery, setSearchQuery] = useState('')
   const normalizedSearch = searchQuery.trim().toLocaleLowerCase()
 
-  const filteredLanguages = supportedLanguages.filter((language) =>
-    getLanguageName(language).toLocaleLowerCase().includes(normalizedSearch),
+  const filteredLanguages = availableLanguages.filter(
+    (language) =>
+      getLanguageName(language).toLocaleLowerCase().includes(normalizedSearch) ||
+      language.code.toLocaleLowerCase().includes(normalizedSearch),
   )
 
   // Standardmäßig zeigen wir Englisch an.
@@ -38,8 +41,9 @@ export default function LanguageSelectionPage() {
   // ohne die globale App-Sprache zu verändern.
   const previewT = i18n.getFixedT(previewLanguage)
 
-  // Arabisch benötigt die Schreibrichtung RTL.
-  const previewDirection = previewLanguage === 'ar' ? 'rtl' : 'ltr'
+  // Die Vorschau verwendet die Schreibrichtung der gewählten Sprache.
+  const previewDirection =
+    supportedLanguages.find((language) => language.code === previewLanguage)?.direction ?? 'ltr'
 
   // Diese Funktion wird NUR durch den Weiter-Button ausgeführt.
   async function handleContinue() {
@@ -53,7 +57,7 @@ export default function LanguageSelectionPage() {
     localStorage.setItem('qibla-map-language', selectedLanguage)
 
     // Zusätzlich merken, dass die Erstauswahl abgeschlossen ist.
-    localStorage.setItem('qibla-language-choice-completed', 'true')
+    localStorage.setItem(LANGUAGE_CHOICE_KEY, 'true')
 
     // Erst jetzt zur Kamera wechseln.
     navigate('/camera', { replace: true })
@@ -130,11 +134,11 @@ export default function LanguageSelectionPage() {
               )}
             </span>
 
-            {/* Sprache immer in ihrer eigenen Schrift darstellen. */}
+            {/* Sprachname in der eigenen Sprache und Schreibrichtung anzeigen. */}
             <span
               className="qm-language-selection__name"
               lang={language.code}
-              dir={language.code === 'ar' ? 'rtl' : 'ltr'}
+              dir={language.direction}
             >
               {getLanguageName(language)}
             </span>
@@ -167,7 +171,7 @@ export default function LanguageSelectionPage() {
             void handleContinue()
           }}
           lang={selectedLanguage ?? 'en'}
-          dir={selectedLanguage === 'ar' ? 'rtl' : 'ltr'}
+          dir={previewDirection}
         >
           {previewT('languageSelection.continue')}
         </button>

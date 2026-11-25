@@ -79,13 +79,13 @@
         "start": "Öffne die Kameraseite und tippe auf „Kamera starten“. Erlaube den Kamerazugriff.",
         "gps": "Tippe auf „Standort ermitteln“ und erlaube den GPS-Zugriff, damit die Qibla-Richtung berechnet werden kann.",
         "hold": "Halte dein Smartphone aufrecht und drehe dich langsam in die angezeigte Richtung.",
-        "confirm": "Wenn die Kamera genau zur Qibla ausgerichtet ist, wird die Kaaba in der Mitte bestätigt. Das Kamerabild wird kurzzeitig eingefroren und dein Gerät kann vibrieren."
+        "confirm": "Wenn die Kamera zur Qibla zeigt, erscheint ein grünes Häkchen. Das Kamerabild wird vorübergehend eingefroren und dein Smartphone kann vibrieren."
       },
       "compass": {
         "title": "Qibla mit dem Kompass finden",
         "gps": "Öffne den Kompass und tippe auf „Standort ermitteln“, um deine aktuelle Position zu verwenden.",
         "hold": "Halte dein Smartphone möglichst waagerecht und vermeide starke Neigungen.",
-        "direction": "Drehe dich langsam und beobachte die Kompassnadel, bis sie in Richtung der Kaaba zeigt.",
+        "direction": "Halte dein Smartphone waagerecht und drehe dich langsam, bis die grüne Qibla-Bestätigung erscheint.",
         "accuracy": "Halte Abstand zu Magneten und elektronischen Störquellen. Die Genauigkeit hängt von den Sensoren deines Geräts ab."
       },
       "map": {
@@ -159,12 +159,8 @@
     "west": "W",
     "turnRight": "Nach rechts drehen",
     "turnLeft": "Nach links drehen",
-    "aligned": "Laut Kompass bist du zur Qibla ausgerichtet.",
+    "aligned": "Kompass zur Qibla ausgerichtet.",
     "selectLocation": "Wähle zuerst einen Standort auf der Karte.",
-    "infoButton": "Über diesen Kompass",
-    "infoTitle": "Wie funktioniert der Qibla-Kompass?",
-    "infoExplanation": "Die feste goldene Nadel zeigt zur Oberkante deines Smartphones. Das Kaaba-Symbol markiert die Gebetsrichtung. Drehe dein Smartphone, bis das Kaaba-Symbol genau über der goldenen Nadel steht.",
-    "infoTip": "Für möglichst zuverlässige Ergebnisse mit der aktuellen Sensorberechnung halte dein Smartphone waagerecht, das Display nach oben zum Himmel und die Rückseite zum Boden. Halte Abstand zu Magneten und Metallgegenständen. Bei senkrechter Haltung können die Sensorwerte stärker schwanken. Die angezeigte Standortgenauigkeit beschreibt nur die GPS-Position, nicht die Genauigkeit des Kompasses.",
     "sensorActive": "Bewegungssensor aktiv",
     "sensorWaiting": "Warte auf Kompassdaten ...",
     "sensorPermission": "Bitte erlaube den Zugriff auf den Bewegungssensor.",
@@ -188,25 +184,15 @@
     "locating": "Standort wird ermittelt ...",
     "locationDetected": "GPS-Standort ermittelt, Genauigkeit: ±{{accuracy}} m",
     "bearingFromNorth": "Qibla-Richtung ab geografisch Nord",
-    "sensorTitle": "Orientierungssensoren",
-    "sensorWaiting": "Warte auf Sensordaten ...",
-    "sensorNoData": "Keine Sensordaten empfangen. Prüfe die Sensorberechtigung.",
-    "sensorAbsolute": "Absolute Orientierungsdaten vorhanden",
-    "sensorRelative": "Nur relative Orientierungsdaten verfügbar",
-    "screenAngle": "Bildschirmrotation",
     "postureWaiting": "Kamerahaltung wird geprüft ...",
     "postureNoData": "Die Kamerahaltung kann nicht erkannt werden. Prüfe die Sensorberechtigung.",
-    "postureReady": "Kamerahaltung geeignet. Die AR-Richtungsanzeige folgt später.",
-    "postureAdjust": "Bitte halte dein Smartphone aufrecht und richte die Rückkamera nach vorne.",
+    "postureReady": "Kamerahaltung geeignet.",
+    "postureAdjust": "Halte dein Smartphone aufrecht, Rückkamera nach vorne.",
     "cameraHeading": "Kamerablickrichtung laut Sensor",
     "turnRight": "Laut Sensor etwa {{degrees}}° nach rechts drehen.",
     "turnLeft": "Laut Sensor etwa {{degrees}}° nach links drehen.",
     "sensorAligned": "Laut Sensor stimmt die Kamerarichtung ungefähr mit der Qibla überein. Bitte zusätzlich überprüfen.",
-    "kaabaMarker": "Kaaba-Richtung",
-    "confirmationTitle": "Die Kamera zeigt zur Qibla",
-    "confirmationIntro": "Die Kamera zeigt laut Sensor ungefähr zur Qibla.",
-    "confirmationWarning": "Drehe dein Handy leicht nach links oder rechts. Wenn es vibriert, bist du laut Sensor zur Qibla ausgerichtet. Falls keine Vibration erfolgt, überprüfe deine Vibrationseinstellungen. Bei Unsicherheit überprüfe die Richtung auf der Karte.",
-    "verifyOnMap": "Richtung auf Karte überprüfen"
+    "confirmationTitle": "Die Kamera zeigt zur Qibla"
   },
 
   "directionHelp": {
