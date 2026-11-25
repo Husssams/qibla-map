@@ -100,7 +100,7 @@ export default function CompassPage() {
       // Eine vollständige absolute Sensormessung ist angekommen.
       hasReceivedValidHeading = true
 
-      // Nur maximal 8° Gesamtabweichung von horizontal zulassen.
+      // Nur maximal 5° Gesamtabweichung von horizontal zulassen.
       const tilted = !isCompassLevel(event.beta, event.gamma)
       setIsPhoneTilted(tilted)
 
@@ -193,6 +193,9 @@ export default function CompassPage() {
   // Positiv bedeutet rechts, negativ bedeutet links.
   const turnAngle =
     needleAngle === null ? null : needleAngle > 180 ? needleAngle - 360 : needleAngle
+
+  // Bestätigt die Qibla-Richtung innerhalb von 5°.
+  const isQiblaAligned = turnAngle !== null && Math.abs(turnAngle) <= 5
 
   // Ermittelt den Standort direkt auf der Kompassseite.
   async function handleDetectLocation() {
@@ -369,27 +372,62 @@ export default function CompassPage() {
           </g>
         )}
       </svg>
-      {/* Warnt bei starker Neigung vor einer unzuverlässigen Richtungsanzeige. */}
+
+      {/* Zeigt bei falscher Haltung eine deutliche Warnung. */}
       {isPhoneTilted && (
-        <p className="qm-alert qm-compass__tilt-warning" role="status">
-          {t('compassPage.tiltWarning')}
-        </p>
+        <div className="qm-compass__tilt-warning" role="alert">
+          <div className="qm-compass__tilt-alert">
+            <span className="qm-compass__tilt-alert-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+              >
+                <path d="M12 5v10" />
+                <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+              </svg>
+            </span>
+
+            <p>{t('compassPage.tiltWarning')}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Zeigt die bestätigte Qibla-Richtung in der Bildschirmmitte. */}
+      {!isPhoneTilted && isQiblaAligned && (
+        <div className="qm-compass__tilt-warning" role="status" aria-live="polite">
+          <div className="qm-compass__tilt-alert qm-compass__tilt-alert--success">
+            <span
+              className="qm-compass__tilt-alert-icon qm-compass__tilt-alert-icon--success"
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12.5 9.5 17 19 7" />
+              </svg>
+            </span>
+
+            <p>{t('compassPage.aligned')}</p>
+          </div>
+        </div>
       )}
 
       {/* Hinweise zu Messfehlern und Kompasskalibrierung. */}
-      <QiblaDirectionHelp/>
+      <QiblaDirectionHelp />
 
-      {/* Richtungsanweisungen nur mit echten Sensordaten anzeigen.
-    Ohne Standort darf weiterhin der Standorthinweis erscheinen. */}
-      {(hasHeading || !activeLocation) && (
-        <p
-          className="qm-compass__guidance"
-          data-aligned={turnAngle !== null && Math.abs(turnAngle) <= 5}
-        >
+      {/* Zeigt unter dem Kompass nur Standort- und Drehanweisungen an. */}
+      {(hasHeading || !activeLocation) && !isQiblaAligned && (
+        <p className="qm-compass__guidance">
           {turnAngle === null ? (
             t('compassPage.selectLocation')
-          ) : Math.abs(turnAngle) <= 5 ? (
-            t('compassPage.aligned')
           ) : (
             <>
               {t(turnAngle > 0 ? 'compassPage.turnRight' : 'compassPage.turnLeft')}{' '}

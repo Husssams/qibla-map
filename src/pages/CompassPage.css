@@ -84,10 +84,6 @@ html[lang='ar'] .qm-compass__direction {
   font-weight: 600;
 }
 
-/* Hebt die erfolgreiche Ausrichtung hervor. */
-.qm-compass__guidance[data-aligned='true'] {
-  color: var(--qm-qibla);
-}
 
 /* Standortermittlung oberhalb der Kompassscheibe. */
 .qm-compass__location {
@@ -127,35 +123,61 @@ html[lang='ar'] .qm-compass__direction {
   color: var(--qm-text-muted);
 }
 
-/* Zeigt den Neigungshinweis mittig über dem Bildschirm an. */
+/* Hält die Warnung beim Scrollen in der Bildschirmmitte. */
 .qm-compass__tilt-warning {
-  /* Positioniert den Hinweis unabhängig von der Scrollposition. */
   position: fixed;
-
-  /* Setzt den Ausgangspunkt in die Bildschirmmitte. */
-  top: 50%;
-  left: 50%;
-
-  /* Verschiebt das Element um die Hälfte seiner eigenen Größe. */
-  transform: translate(-50%, -50%);
-
-  /* Passt die Breite an kleinere Smartphones an. */
-  width: min(360px, calc(100vw - 32px));
-  box-sizing: border-box;
-
-  /* Legt den Hinweis über die übrigen Seitenelemente. */
+  inset: 0;
   z-index: 2000;
-
-  /* Macht den Hinweis gut lesbar und optisch hervorgehoben. */
-  background: var(--qm-surface);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-  text-align: center;
-
-  /* Entfernt den bisherigen Abstand für den normalen Seitenfluss. */
-  margin: 0;
-
-  /* Der Hinweis blockiert keine Berührungen der Webseite. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 20px;
   pointer-events: none;
+}
+
+/* Gleiche Warnkarte wie auf der Kameraseite. */
+.qm-compass__tilt-alert {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  width: min(100%, 440px);
+  padding: 30px 22px;
+  border: 2px solid #f05252;
+  border-radius: 22px;
+  background: rgba(18, 27, 25, 0.94);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+/* Rotes Warnsymbol mit weißem Ausrufezeichen. */
+.qm-compass__tilt-alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #fff;
+}
+
+.qm-compass__tilt-alert-icon svg {
+  width: 58px;
+  height: 58px;
+}
+
+/* Großer, gut lesbarer Warntext. */
+.qm-compass__tilt-alert p {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(24px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.4;
+  text-wrap: balance;
 }
 
 /* Zeigt den Überprüfungshinweis nur bei gemeldeter Qibla-Ausrichtung. */
@@ -189,4 +211,14 @@ html[lang='ar'] .qm-compass__direction {
   width: 100%;
   max-width: none;
   margin-inline: auto;
+}
+
+/* Grüne Bestätigung mit identischer Warngröße. */
+.qm-compass__tilt-alert--success {
+  border-color: #2eaf4a;
+}
+
+/* Grüner Kreis mit weißem Häkchen. */
+.qm-compass__tilt-alert-icon--success {
+  background: #2eaf4a;
 }
