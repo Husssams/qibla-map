@@ -1,13 +1,20 @@
-import i18n from 'i18next'
+import i18n, { type BackendModule } from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 import { supportedLanguages } from './constants/supportedLanguages'
+import englishTranslations from './locales/en/translation.json'
 
-// Alle vorhandenen Übersetzungsdateien automatisch laden.
-const translationFiles = import.meta.glob<Record<string, unknown>>('./locales/*/translation.json', {
-  eager: true,
-  import: 'default',
-})
+// Englisch bleibt fest eingebunden, alle anderen Sprachen werden bei Bedarf geladen.
+const translationFiles: Record<string, () => Promise<Record<string, unknown>>> = {
+  './locales/en/translation.json': () => Promise.resolve(englishTranslations),
+
+  ...import.meta.glob<Record<string, unknown>>(
+    ['./locales/*/translation.json', '!./locales/en/translation.json'],
+    {
+      import: 'default',
+    },
+  ),
+}
 
 // Nur Sprachen mit vorhandener Übersetzung freigeben.
 export const availableLanguages = supportedLanguages.filter((language) =>
@@ -17,15 +24,32 @@ export const availableLanguages = supportedLanguages.filter((language) =>
   ),
 )
 
-// Übersetzungen für i18next registrieren.
-const resources = Object.fromEntries(
-  availableLanguages.map((language) => [
-    language.code,
-    {
-      translation: translationFiles[`./locales/${language.code}/translation.json`],
-    },
-  ]),
-)
+// Übersetzungsdateien bei Bedarf an i18next übergeben.
+const translationBackend: BackendModule = {
+  type: 'backend',
+
+  init() {
+    // Keine zusätzliche Initialisierung erforderlich.
+  },
+
+  read(language, namespace, callback) {
+    const loadTranslation = translationFiles[`./locales/${language}/${namespace}.json`]
+
+    if (!loadTranslation) {
+      callback(new Error(`Translation not found: ${language}/${namespace}`), null)
+      return
+    }
+
+    void loadTranslation().then(
+      (translations) => {
+        callback(null, translations)
+      },
+      (error: unknown) => {
+        callback(error instanceof Error ? error : new Error(String(error)), null)
+      },
+    )
+  },
+}
 
 // Sprache und Schreibrichtung des Dokuments festlegen.
 function updateDocumentLanguage(language: string) {
@@ -44,16 +68,28 @@ const initialLanguage =
 
 updateDocumentLanguage(initialLanguage)
 
-// Alle verfügbaren Sprachen bei i18next registrieren.
-void i18n.use(initReactI18next).init({
-  resources,
-  lng: initialLanguage,
-  fallbackLng: 'en',
-  supportedLngs: availableLanguages.map((language) => language.code),
-  interpolation: {
-    escapeValue: false,
-  },
-})
+// Englisch sofort bereitstellen, weitere Sprachen dynamisch laden.
+void i18n
+  .use(translationBackend)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: {
+        translation: englishTranslations,
+      },
+    },
+    partialBundledLanguages: true,
+    lng: initialLanguage,
+    fallbackLng: 'en',
+    load: 'currentOnly',
+    supportedLngs: availableLanguages.map((language) => language.code),
+    react: {
+      bindI18n: 'languageChanged loaded',
+    },
+    interpolation: {
+      escapeValue: false,
+    },
+  })
 
 // Sprachwechsel speichern und die Schreibrichtung aktualisieren.
 i18n.on('languageChanged', (language) => {

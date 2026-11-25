@@ -117,11 +117,14 @@ export default function LanguageSelectionPage() {
               name="qibla-language"
               value={language.code}
               checked={selectedLanguage === language.code}
+
               onChange={() => {
-                // Nur die Auswahl ändern.
-                // Noch keine Navigation zur Kamera!
+                // Sprache für die Vorschau nachladen.
+                // Noch keine globale Sprachänderung oder Navigation!
                 setSelectedLanguage(language.code)
+                void i18n.loadLanguages(language.code)
               }}
+
               className="qm-language-selection__radio"
             />
 
