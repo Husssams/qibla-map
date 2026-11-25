@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import './CameraPage.css'
-import { AppLink } from '../components/navigation/AppNavigationLinks'
 
 import { getUserLocation, type UserLocation } from '../utils/location/getUserLocation'
 import { calculateQiblaBearing } from '../utils/qibla/qiblaBearing'
@@ -77,9 +76,12 @@ export default function CameraPage() {
   // Die Berechnung verwendet geografisch Nord, nicht magnetisch Nord.
   const qiblaBearing = cameraLocation ? calculateQiblaBearing(cameraLocation) : null
 
-  // Nur bei nahezu exakt aufrechter Hochformathaltung
-  // darf die Kamera die Qibla-Richtung bestätigen.
+  // Nur bei aufrechter Haltung darf die Qibla bestätigt werden.
   const isCameraUpright = orientation !== null && isCameraHeldUpright(orientation.beta)
+
+  // Die Warnung erscheint nur bei erkannter falscher Haltung.
+  const showPostureWarning =
+    status === 'active' && frozenFrame === null && orientation !== null && !isCameraUpright
 
   // Berechnet die horizontale Blickrichtung der Rückkamera.
   // Nur absolute Sensordaten liefern eine feste Nordreferenz.
@@ -490,7 +492,11 @@ export default function CameraPage() {
   }, [shouldVibrate])
 
   return (
-    <section className={`qm-camera${status !== 'idle' ? ' qm-camera--fullscreen' : ''}`}>
+    <section
+      className={`qm-camera${status !== 'idle' ? ' qm-camera--fullscreen' : ''}${
+        showPostureWarning ? ' qm-camera--posture-warning' : ''
+      }`}
+    >
       <h2>{t('navigation.arCamera')}</h2>
 
       <p className="qm-camera__description">{t('cameraPage.intro')}</p>
@@ -633,23 +639,42 @@ export default function CameraPage() {
         </div>
       )}
 
-      {/* Während des Standbildes keine wechselnden Sensorhinweise anzeigen. */}
-      {status === 'active' && frozenFrame === null && (
+      {/* Warnung bei falscher Gerätehaltung mittig anzeigen. */}
+      {showPostureWarning && (
+        <div className="qm-camera__posture-overlay" role="alert">
+          <div className="qm-camera__posture-alert">
+            <span className="qm-camera__posture-alert-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+              >
+                <path d="M12 5v10" />
+                <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+              </svg>
+            </span>
+
+            <p>{t('cameraPage.postureAdjust')}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Sensorhinweise nur bei geeigneter Haltung anzeigen. */}
+      {status === 'active' && frozenFrame === null && !showPostureWarning && (
         <div className="qm-camera__sensor">
           <p className="qm-camera__posture" role="status">
-            {/* Zeigt erst die Haltung und anschließend die geschätzte
-              Drehrichtung an. Bei fehlenden Daten bleibt die Warnung sichtbar. */}
+            {/* Zeigt den Sensorstatus oder die geschätzte Drehrichtung an. */}
             {!orientation
               ? t(sensorNoData ? 'cameraPage.postureNoData' : 'cameraPage.postureWaiting')
-              : !isCameraUpright
-                ? t('cameraPage.postureAdjust')
-                : turnAngle === null
-                  ? t('cameraPage.postureReady')
-                  : Math.abs(turnAngle) <= 2
-                    ? t('cameraPage.sensorAligned')
-                    : t(turnAngle > 0 ? 'cameraPage.turnRight' : 'cameraPage.turnLeft', {
-                        degrees: Math.round(Math.abs(turnAngle)),
-                      })}
+              : turnAngle === null
+                ? t('cameraPage.postureReady')
+                : Math.abs(turnAngle) <= 2
+                  ? t('cameraPage.sensorAligned')
+                  : t(turnAngle > 0 ? 'cameraPage.turnRight' : 'cameraPage.turnLeft', {
+                      degrees: Math.round(Math.abs(turnAngle)),
+                    })}
           </p>
 
           {/* Vorläufige Anzeige der Kamerablickrichtung.
@@ -662,21 +687,27 @@ export default function CameraPage() {
         </div>
       )}
 
-      {/* Nach erfolgreicher Aufnahme ersetzt die Bestätigungskarte
-          die bisherigen Links-/Rechts-Anweisungen. */}
+      {/* Kompakte Bestätigung bei erkannter Qibla-Richtung. */}
       {frozenFrame !== null && confirmation.confirmed && (
-        <div className="qm-camera__confirmation" role="status" aria-live="polite">
+        <div
+          className="qm-camera__confirmation qm-camera__confirmation--compact"
+          role="status"
+          aria-live="polite"
+        >
+          <span className="qm-camera__confirmation-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12.5 9.5 17 19 7" />
+            </svg>
+          </span>
+
           <h3>{t('cameraPage.confirmationTitle')}</h3>
-
-          <p>{t('cameraPage.confirmationIntro')}</p>
-
-          <p>{t('cameraPage.confirmationWarning')}</p>
-
-          {/* Führt zur vorhandenen Hauptkarte.
-        Beim Seitenwechsel gibt der Kamera-Cleanup die Ressourcen frei. */}
-          <AppLink to="/map" className="qm-camera__confirmation-link">
-            {t('cameraPage.verifyOnMap')}
-          </AppLink>
         </div>
       )}
 

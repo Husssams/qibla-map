@@ -170,7 +170,7 @@
     "sensorUnavailable": "Bewegungssensor nicht verfügbar. Prüfe die Sensorunterstützung und die HTTPS-Verbindung.",
     "enableSensor": "Bewegungssensor freigeben",
     "sensorNoData": "Dieses Gerät liefert keine Kompassdaten. Wenn du einen PC verwendest, kannst du die Gebetsrichtung mit dem Qibla-Pfeil auf der Karte ablesen.",
-    "tiltWarning": "Bitte halte dein Smartphone möglichst waagerecht, mit dem Display nach oben. Die Qibla-Richtung wird angezeigt, sobald das Gerät wieder ausreichend flach liegt."
+    "tiltWarning": "Halte dein Smartphone waagerecht, Display nach oben."
   },
   "cameraPage": {
     "intro": "Starte die Kamera, um deine Umgebung im Vollbild zu sehen.",
@@ -200,7 +200,7 @@
     "turnLeft": "Laut Sensor etwa {{degrees}}° nach links drehen.",
     "sensorAligned": "Laut Sensor stimmt die Kamerarichtung ungefähr mit der Qibla überein. Bitte zusätzlich überprüfen.",
     "kaabaMarker": "Kaaba-Richtung",
-    "confirmationTitle": "Qibla-Richtung gefunden",
+    "confirmationTitle": "Die Kamera zeigt zur Qibla",
     "confirmationIntro": "Die Kamera zeigt laut Sensor ungefähr zur Qibla.",
     "confirmationWarning": "Drehe dein Handy leicht nach links oder rechts. Wenn es vibriert, bist du laut Sensor zur Qibla ausgerichtet. Falls keine Vibration erfolgt, überprüfe deine Vibrationseinstellungen. Bei Unsicherheit überprüfe die Richtung auf der Karte.",
     "verifyOnMap": "Richtung auf Karte überprüfen"
