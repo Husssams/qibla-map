@@ -171,7 +171,7 @@
     "sensorUnavailable": "Motion sensor unavailable. Check sensor support and the HTTPS connection.",
     "enableSensor": "Enable motion sensor",
     "sensorNoData": "This device is not providing compass data. If you are using a computer, you can find the prayer direction using the Qibla arrow on the map.",
-    "tiltWarning": "Please hold your smartphone as flat as possible, with the screen facing up. The Qibla direction will appear when the device is sufficiently level again."
+    "tiltWarning": "Hold your phone flat, screen facing up."
   },
   "cameraPage": {
     "intro": "Start the camera to view your surroundings in fullscreen.",
@@ -201,7 +201,7 @@
     "turnLeft": "According to the sensor, turn approximately {{degrees}}° left.",
     "sensorAligned": "According to the sensor, the camera is approximately facing the Qibla. Please verify independently.",
     "kaabaMarker": "Kaaba direction",
-    "confirmationTitle": "Qibla direction found",
+    "confirmationTitle": "The camera points toward the Qibla",
     "confirmationIntro": "According to the sensor, the camera is approximately facing the Qibla.",
     "confirmationWarning": "Turn your phone slightly left or right. When it vibrates, the sensor indicates that you are facing the Qibla. If it does not vibrate, check your vibration settings. If in doubt, verify the direction on the map.",
     "verifyOnMap": "Verify direction on map"

@@ -392,3 +392,103 @@
 .qm-camera > .qm-quick-navigation {
   margin-top: 16px;
 }
+
+/* Kompakte Bestätigung mit grünem Kreis. */
+.qm-camera__confirmation--compact {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: min(100%, 340px);
+  min-height: 0;
+  margin: 16px auto;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.qm-camera__confirmation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #2eaf4a;
+  color: #ffffff;
+}
+
+.qm-camera__confirmation-icon svg {
+  width: 52px;
+  height: 52px;
+}
+
+.qm-camera__confirmation--compact h3 {
+  margin: 0;
+  font-size: clamp(18px, 4vw, 23px);
+  line-height: 1.4;
+}
+
+/* Nur das Kamerabild bei falscher Haltung unscharf machen. */
+.qm-camera--posture-warning .qm-camera__video {
+  filter: blur(9px) brightness(0.5);
+}
+
+/* Warnung unabhängig von der Position der Sensoranzeige zentrieren. */
+.qm-camera__posture-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 20px;
+  pointer-events: none;
+}
+
+/* Große, kontrastreiche Warnkarte. */
+.qm-camera__posture-alert {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  width: min(100%, 440px);
+  padding: 30px 22px;
+  border: 2px solid #f05252;
+  border-radius: 22px;
+  background: rgba(18, 27, 25, 0.94);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+/* Rotes Warnsymbol mit weißem Ausrufezeichen. */
+.qm-camera__posture-alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #fff;
+}
+
+.qm-camera__posture-alert-icon svg {
+  width: 58px;
+  height: 58px;
+}
+
+/* Warntext deutlich größer als normale Sensorhinweise. */
+.qm-camera__posture-alert p {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(24px, 5vw, 34px);
+  font-weight: 800;
+  line-height: 1.4;
+  text-wrap: balance;
+}
