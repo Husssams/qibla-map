@@ -10,6 +10,7 @@ A multilingual Qibla direction finder for the web and Android, built to make fin
 [![Languages](https://img.shields.io/badge/Languages-46-087F5B?style=flat-square)](#languages)
 [![TypeScript](https://img.shields.io/badge/TypeScript-React-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Android](https://img.shields.io/badge/Android-Capacitor%208-3DDC84?style=flat-square&logo=android&logoColor=white)](#android)
+[![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-B22222?style=flat-square)](LICENSE)
 
 **[Open Qibla](https://qibla.hussam-sattout.workers.dev/camera)** · [Features](#features) · [Screenshots](#screenshots) · [Languages](#languages) · [Development](#development) · [Deployment](#deployment)
 
@@ -339,6 +340,16 @@ For code changes, work on a focused branch, run the quality checks and submit a 
 Qibla is built on the work of the React, TypeScript, Vite, Leaflet, GeographicLib, i18next, Capacitor and Cloudflare developer communities. Place-search functionality uses Geoapify. Map data and service attribution are provided in the application where applicable.
 
 ---
+
+## License
+
+Copyright (c) 2026 Hussam Sattout. All rights reserved.
+
+Qibla is proprietary software. Public access to this repository does not grant permission to reuse, modify, redistribute or republish the original software without prior written authorization, except as permitted by applicable law and the GitHub Terms of Service.
+
+See the [LICENSE](LICENSE) file for details.
+
+Third-party dependencies remain subject to their respective licenses.
 
 <div align="center">
 
