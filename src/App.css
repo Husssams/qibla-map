@@ -260,12 +260,12 @@ img.qm-language-dropdown__flag {
   text-align: center;
 }
 
-/* Menü auf kleinen Bildschirmen am Auswahlfeld zentrieren. */
+/* Sprachmenü auf kleinen Bildschirmen an der Schreibrichtung ausrichten. */
 @media (max-width: 640px) {
   .qm-language-dropdown__panel {
+    inset-inline-start: 0;
     inset-inline-end: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    transform: none;
   }
 }
 
