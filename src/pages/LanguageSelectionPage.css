@@ -1,10 +1,11 @@
-/* Hauptkarte unserer Sprachauswahl */
+/* Hauptkarte mit Platz für den fixierten Weiter-Button. */
 .qm-language-selection {
   box-sizing: border-box;
   width: 100%;
   max-width: 800px;
   margin: 30px auto 0;
   padding: clamp(18px, 4vw, 40px);
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
   text-align: center;
 }
 
@@ -96,10 +97,27 @@
   font-weight: 700;
 }
 
-/* Weiter-Button unterhalb der gesamten Sprachliste. */
+/* Fixierter Bereich für den Weiter-Button. */
+.qm-language-selection__footer {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 40;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 800px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  border-top: 1px solid var(--qm-border);
+  background: var(--qm-surface);
+}
+
+/* Weiter-Button bleibt immer erreichbar. */
 .qm-language-selection__continue {
+  display: block;
+  width: 100%;
   max-width: 420px;
-  margin: 28px auto 0;
+  margin: 0 auto;
 }
 
 .qm-language-selection__continue:disabled {
@@ -132,4 +150,36 @@
   .qm-language-selection__name {
     font-size: 13px;
   }
+}
+
+/* Suchfeld oberhalb der Sprachauswahl. */
+.qm-language-selection__search-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--qm-text);
+  font-weight: 600;
+  text-align: start;
+}
+
+.qm-language-selection__search {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  margin-bottom: 22px;
+  padding: 10px 14px;
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  background: var(--qm-surface-alt);
+  color: var(--qm-text);
+  font: inherit;
+}
+
+.qm-language-selection__search:focus-visible {
+  outline: 3px solid var(--qm-gold);
+  outline-offset: 2px;
+}
+
+.qm-language-selection__empty {
+  margin: 20px 0;
+  color: var(--qm-text-muted);
 }

@@ -89,7 +89,9 @@ body {
 .qm-language-dropdown {
   position: relative;
   z-index: 30;
-  min-width: 145px;
+  width: clamp(145px, 20vw, 220px);
+  max-width: 45vw;
+  min-width: 0;
 }
 
 /* Der sichtbare Button der Sprachauswahl. */
@@ -116,25 +118,58 @@ body {
   display: none;
 }
 
-/* Geöffnete Liste direkt unter der Auswahl. */
-.qm-language-dropdown__list {
+/* Geöffnetes Sprachmenü mit feststehendem Suchfeld. */
+.qm-language-dropdown__panel {
   position: absolute;
   inset-block-start: calc(100% + 5px);
-  inset-inline-start: 0;
+  inset-inline-end: 0;
 
   box-sizing: border-box;
-  width: max(100%, 175px);
-  max-height: min(320px, 50dvh);
+  display: flex;
+  flex-direction: column;
+  width: min(280px, calc(100vw - 32px));
+  max-height: min(420px, 60dvh);
+  overflow: hidden;
 
-  margin: 0;
-  padding: 5px 0;
-  overflow-y: auto;
-
-  list-style: none;
   border: 1px solid var(--qm-border);
   border-radius: 12px;
   background: var(--qm-surface);
   box-shadow: var(--qm-shadow);
+}
+
+/* Das Suchfeld bleibt oberhalb der scrollbaren Liste. */
+.qm-language-dropdown__search-wrapper {
+  flex-shrink: 0;
+  padding: 10px;
+  border-bottom: 1px solid var(--qm-border);
+}
+
+.qm-language-dropdown__search {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+
+  border: 1px solid var(--qm-border);
+  border-radius: 8px;
+  background: var(--qm-surface-alt);
+  color: var(--qm-text);
+  font: inherit;
+}
+
+.qm-language-dropdown__search:focus-visible {
+  outline: 2px solid var(--qm-gold);
+  outline-offset: 2px;
+}
+
+/* Nur die Sprachliste wird vertikal gescrollt. */
+.qm-language-dropdown__list {
+  min-height: 0;
+  margin: 0;
+  padding: 5px 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
 }
 
 /* Einzelne Sprache. */
@@ -169,6 +204,69 @@ body {
 .qm-language-dropdown__list button:focus-visible {
   outline: 2px solid var(--qm-gold);
   outline-offset: 2px;
+}
+
+/* Flagge und Sprachname im geschlossenen Dropdown. */
+.qm-language-dropdown__selected {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Flagge und Sprachname in jeder Menüoption. */
+.qm-language-dropdown__option-main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Einheitliche Größe für Emoji- und SVG-Flaggen. */
+.qm-language-dropdown__flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 20px;
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+img.qm-language-dropdown__flag {
+  object-fit: contain;
+}
+
+/* Lange Sprachnamen dürfen den Header nicht verbreitern. */
+.qm-language-dropdown__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qm-language-dropdown__selection-mark {
+  flex-shrink: 0;
+}
+
+/* Meldung bei einer Suche ohne Treffer. */
+.qm-language-dropdown__empty {
+  padding: 12px 14px;
+  color: var(--qm-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Menü auf kleinen Bildschirmen am Auswahlfeld zentrieren. */
+@media (max-width: 640px) {
+  .qm-language-dropdown__panel {
+    inset-inline-end: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .qm-header .theme-toggle {
